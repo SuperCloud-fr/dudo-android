@@ -79,6 +79,23 @@ La toolchain de développement a été installée hors du profil utilisateur pou
 
 Ajoute `C:\tools\flutter\bin`, `C:\Android\Sdk\platform-tools` et `C:\Android\Sdk\emulator` au `PATH` pour retrouver `flutter` et `adb`.
 
+### CI et releases
+
+Le workflow [`.github/workflows/android.yml`](.github/workflows/android.yml) tourne sur GitHub Actions :
+
+- **push sur `main` et pull requests** : `flutter pub get`, `dart analyze`, `flutter test`, puis build de l'APK release ;
+- l'APK est publié comme artefact **`dudo-android-apk`** dans l'onglet Actions du run (conservation 14 jours) ;
+- **tag `v*`** : le même build attache l'APK à la GitHub Release, avec les notes générées.
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+L'APK produit par la CI est signé avec la clé debug du template, comme le build local : parfait pour tester et partager, pas encore pour le Play Store.
+
+**Cloudflare** : Workers Builds ne fournit ni Android SDK ni Gradle, donc il ne peut pas compiler l'APK. GitHub Actions s'en charge. Cloudflare pourra en revanche héberger le fichier (R2) ou servir la future API temps réel via un Worker.
+
 ## Architecture
 
 ```
