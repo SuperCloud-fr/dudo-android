@@ -1,5 +1,5 @@
 ﻿# Build a release APK even when the project lives under a non-ASCII path.
-# gen_snapshot (AOT) cannot read app.dill through "Clément"-style paths on
+# gen_snapshot (AOT) cannot read app.dill through non-ASCII paths on
 # Windows; mapping the repo to a stable ASCII drive letter fixes it without
 # moving the project.
 #

@@ -37,7 +37,7 @@ Builds :
 flutter build apk --debug
 
 # Sur ce poste Windows au chemin accentué, le build release direct échoue
-# (gen_snapshot ne lit pas app.dill sous « Clément »). Le script mappe le
+# (gen_snapshot ne lit pas app.dill sous un chemin utilisateur accentué). Le script mappe le
 # dépôt sur un lecteur ASCII temporaire le temps du build :
 powershell -ExecutionPolicy Bypass -File tool\build_release.ps1
 
@@ -64,7 +64,7 @@ La suite couvre les règles, les probabilités et la légalité des décisions d
 
 ### Note sur ce poste Windows
 
-Le dépôt vit sous `C:\Users\Clément Vuillermoz\...`, un chemin non ASCII que Gradle refuse par défaut. `android/gradle.properties` contient donc :
+Le dépôt vit sous un chemin utilisateur contenant un caractère accentué, que Gradle refuse par défaut. `android/gradle.properties` contient donc :
 
 ```properties
 android.overridePathCheck=true
