@@ -15,8 +15,95 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  security:
+    name: SAST, secrets & vulnerable deps
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full git history, so gitleaks scans every commit
+
+      - name: Secrets in code & history (gitleaks)
+        run: |
+          mkdir -p security
+          VERSION=$(curl -fsSL https://api.github.com/repos/gitleaks/gitleaks/releases/latest | jq -r .tag_name)
+          echo "gitleaks ${VERSION}"
+          curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/${VERSION}/gitleaks_${VERSION#v}_linux_x64.tar.gz" | tar -xz gitleaks
+          ./gitleaks detect \
+            --source . \
+            --redact --no-banner \
+            --report-format json \
+            --report-path security/gitleaks.json
+
+      - name: Vulnerable Dart dependencies (osv-scanner)
+        run: |
+          VERSION=$(curl -fsSL https://api.github.com/repos/google/osv-scanner/releases/latest | jq -r .tag_name)
+          echo "osv-scanner ${VERSION}"
+          curl -fsSL -o security/osv-scanner "https://github.com/google/osv-scanner/releases/download/${VERSION}/osv-scanner_linux_amd64"
+          chmod +x security/osv-scanner
+          ./security/osv-scanner scan --format text --output security/osv-report.txt .
+
+      - name: SAST — OWASP Top 10 (semgrep)
+        run: |
+          pip3 install --quiet semgrep
+          semgrep \
+            --config p/security-audit \
+            --config p/owasp-top-ten \
+            --config p/secrets \
+            --exclude assets \
+            --exclude docs \
+            --exclude .github \
+            --exclude .dart_tool \
+            --exclude build \
+            --metrics=off \
+            --json --output security/semgrep.json || true
+          jq '{
+            error:  [.results[] | select(.extra.severity == "ERROR")   | (.check_id + ":" + (.path // "n/a"))],
+            warning:[.results[] | select(.extra.severity == "WARNING") | (.check_id + ":" + (.path // "n/a"))]
+          }' security/semgrep.json > security/semgrep-findings.json
+
+      - name: Gate — block on ERROR severity
+        run: |
+          ERRORS=$(jq '.error | length' security/semgrep-findings.json)
+          echo "semgrep: ${ERRORS} finding(s) of severity ERROR"
+          if [ "${ERRORS}" != "0" ]; then
+            jq -r '.error[]' security/semgrep-findings.json
+            exit 1
+          fi
+
+      - name: Report
+        if: always()
+        run: |
+          GITLEAKS=$(jq '(.results // []) | length' security/gitleaks.json 2>/dev/null || echo '?')
+          SEMGREP_E=$(jq '.error // [] | length' security/semgrep-findings.json 2>/dev/null || echo '?')
+          SEMGREP_W=$(jq '.warning // [] | length' security/semgrep-findings.json 2>/dev/null || echo '?')
+          {
+            echo "### Checks cyber — OWASP Top 10"
+            echo ""
+            echo "| Vérification | Outil | Résultat | Bloquant |"
+            echo "|---|---|---|---|"
+            echo "| Secrets dans le code et l'historique | gitleaks | ${GITLEAKS} leak(s) | oui |"
+            echo "| Dépendances Dart avec CVE (pub.lock) | osv-scanner | voir rapport | oui |"
+            echo "| SAST OWASP Top 10 / security-audit / secrets | semgrep | ${SEMGREP_E} ERROR, ${SEMGREP_W} WARNING | ERROR seulement |"
+            echo "| Lint Android (release) | gradle lintRelease | voir rapport | non |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload security reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dudo-security-reports
+          path: security/
+          if-no-files-found: warn
+          retention-days: 30
+
   build-apk:
     name: Test & build APK
+    needs: security
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -72,6 +159,13 @@ jobs:
       - name: Build release APK
         run: flutter build apk --release
 
+      - name: Android lint (release)
+        run: |
+          chmod +x android/gradlew
+          cd android
+          ./gradlew --console=plain :app:lintRelease
+        continue-on-error: true
+
       - name: Prepare APK
         id: prepare
         run: |
@@ -104,6 +198,17 @@ jobs:
           path: ${{ steps.prepare.outputs.apk_path }}
           if-no-files-found: error
           retention-days: 14
+
+      - name: Upload lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dudo-android-lint
+          path: |
+            android/app/build/reports/lint-results-release.html
+            android/app/build/reports/lint-results-release.xml
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Attach APK to release
         if: startsWith(github.ref, 'refs/tags/v')

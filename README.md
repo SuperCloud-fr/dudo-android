@@ -96,6 +96,19 @@ L'APK produit par la CI est signé avec la clé debug du template, comme le buil
 
 **Cloudflare** : Workers Builds ne fournit ni Android SDK ni Gradle, donc il ne peut pas compiler l'APK. GitHub Actions s'en charge. Cloudflare pourra en revanche héberger le fichier (R2) ou servir la future API temps réel via un Worker.
 
+### Checks cyber en CI
+
+Un job **security** tourne avant le build et **bloque** la release en cas d'alerte :
+
+| Vérification | Outil | Portée |
+|---|---|---|
+| Secrets et clés dans le code **et l'historique git** | gitleaks | bloquant |
+| Dépendances Dart avec CVE connues (via `pubspec.lock`) | osv-scanner | bloquant |
+| SAST statique : `p/security-audit`, `p/owasp-top-ten`, `p/secrets` | semgrep | bloquant sur sévérité ERROR ; WARNING/INFO signalés |
+| Lint Android version release (permissions, trafic en clair…) | gradle `lintRelease` | non bloquant, rapport publié |
+
+Rapports envoyés en artefacts **`dudo-security-reports`** et **`dudo-android-lint`**. Le gate SAST ne punit que la sévérité ERROR pour éviter les faux positifs qui casserait les releases bêta ; les WARNING sont visibles dans la synthèse du job. L'application étant 100 % hors ligne, la plupart des catégories OWASP ne s'y prêtent pas : ces checks servent de garde-fous défensifs. Suivis possibles : scan de l'APK avec MobSF (OWASP MASVS / Mobile Top 10) et keystore de release signé.
+
 ## Architecture
 
 ```
