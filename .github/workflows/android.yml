@@ -45,7 +45,7 @@ jobs:
           echo "osv-scanner ${VERSION}"
           curl -fsSL -o security/osv-scanner "https://github.com/google/osv-scanner/releases/download/${VERSION}/osv-scanner_linux_amd64"
           chmod +x security/osv-scanner
-          ./security/osv-scanner scan --format text --output security/osv-report.txt .
+          ./security/osv-scanner scan --format markdown --output security/osv-report.md .
 
       - name: SAST — OWASP Top 10 (semgrep)
         run: |
