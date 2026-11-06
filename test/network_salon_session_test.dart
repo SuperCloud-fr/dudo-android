@@ -242,7 +242,7 @@ void main() {
   });
 
   test(
-    'salon introuvable sur les deux hôtes → échec sans message ferme',
+    'salon introuvable sur l\u2019hôte unique → échec sans message ferme',
     () async {
       final channels = <String, FakeWebSocketChannel>{};
       final session = NetworkSalonSession(
@@ -254,7 +254,7 @@ void main() {
       );
       final result = await session.joinSalon('S99FTH', 'Anne');
       expect(result.ok, isFalse);
-      expect(channels, hasLength(2));
+      expect(channels, hasLength(1));
       expect(session.connected, isFalse);
     },
   );
@@ -324,4 +324,73 @@ void main() {
     expect(message.fromSeat, 0);
     expect((message.payload as Map<String, dynamic>)['kind'], 'bid');
   });
+
+  test(
+    'reconnexion automatique après coupure, puis demande de resync',
+    () async {
+      final created = <FakeWebSocketChannel>[];
+      final session = NetworkSalonSession(
+        handshakeTimeout: const Duration(milliseconds: 80),
+        reconnectDelay: const Duration(milliseconds: 20),
+        createSalonCode: (_, _) async => 'S99FTH',
+        channelFactory: (uri) {
+          final channel = FakeWebSocketChannel.confirmed(uri);
+          created.add(channel);
+          return channel;
+        },
+      );
+
+      final creating = session.createSalon('Cap Hôte', 0);
+      await settle();
+      await untilOneSent(created.first);
+      created.first.serverSends(
+        salonFrame(
+          you: 0,
+          players: <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+          ],
+        ),
+      );
+      await creating;
+      expect(session.connected, isTrue);
+
+      // The relay drops the socket unexpectedly.
+      await created.first.serverCloses();
+      for (var index = 0; index < 100 && created.length < 2; index++) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      expect(created, hasLength(2));
+      expect(
+        session.messages.any(
+          (message) => message.body.contains('Connexion perdue'),
+        ),
+        isTrue,
+      );
+
+      // The recovery handshake replays the join, then asks the host for a
+      // fresh snapshot so a mid-game phone can resume.
+      await untilOneSent(created[1]);
+      created[1].serverSends(
+        salonFrame(
+          you: 0,
+          players: <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+          ],
+        ),
+      );
+      await settle(6);
+      expect(session.connected, isTrue);
+      expect(
+        framesOf(
+          created[1].sent,
+          'game',
+        ).any((frame) => frame.contains('"resync"')),
+        isTrue,
+      );
+      expect(
+        session.messages.any((message) => message.body.contains('Reconnecté')),
+        isTrue,
+      );
+    },
+  );
 }

@@ -178,6 +178,10 @@ class HostGameRelay {
         controller.seatNextRound(seat);
       case 'rematch':
         controller.seatRematch();
+      case 'resync':
+        // A player reconnected: hand them the full table immediately.
+        _lastPayload = '';
+        _broadcasting();
       default:
         break;
     }

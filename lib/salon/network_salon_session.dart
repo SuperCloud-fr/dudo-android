@@ -38,11 +38,11 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
     this.createSalonCode,
     this.channelFactory,
     this.handshakeTimeout = const Duration(seconds: 8),
+    this.reconnectDelay = const Duration(milliseconds: 1200),
   }) : baseUrls = List<String>.unmodifiable(baseUrls ?? defaultBaseUrls);
 
   static const List<String> defaultBaseUrls = [
     'https://api.dudo.supercloud.fr',
-    'https://dudo-worker.mac-vulli.workers.dev',
   ];
 
   final List<String> baseUrls;
@@ -59,6 +59,9 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
   /// How long each handshake attempt waits before trying the next host.
   final Duration handshakeTimeout;
 
+  /// Pause before trying to re-establish a dropped socket.
+  final Duration reconnectDelay;
+
   /// Worker-side seat of this device, set when the salon state lands.
   int you = -1;
 
@@ -68,6 +71,8 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
   Completer<void>? _startCompleter;
   bool _closedByServer = false;
   bool _disposed = false;
+  bool _recovering = false;
+  Timer? _recoveryTimer;
 
   final StreamController<RelayedTableMessage> _tableEvents =
       StreamController<RelayedTableMessage>.broadcast();
@@ -475,10 +480,43 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
     if (join != null && !join.isCompleted) {
       join.complete(const SalonJoinResult(ok: false));
     }
-    if (!_closedByServer && !_disposed) {
-      pushSystemMessage('Déconnexion du salon.');
+    if (_disposed || _closedByServer) {
+      notifyListeners();
+      return;
     }
-    notifyListeners();
+    // The relay dropped us unexpectedly: try one automatic recovery.
+    pushSystemMessage('Connexion perdue — tentative de reconnexion…');
+    _scheduleRecovery();
+  }
+
+  void _scheduleRecovery() {
+    _recoveryTimer?.cancel();
+    _recoveryTimer = Timer(reconnectDelay, () {
+      unawaited(_recover());
+    });
+  }
+
+  Future<void> _recover() async {
+    if (_disposed || _recovering) return;
+    _recovering = true;
+    final base = activeBaseUrl ?? baseUrls.first;
+    try {
+      final result = await _attemptHandshake(base, myName);
+      if (result.ok) {
+        pushSystemMessage('Reconnecté au salon $code.');
+        // Ask the host for a fresh table snapshot (mid-game recovery).
+        sendGame(const <String, dynamic>{'kind': 'resync'});
+      } else {
+        pushSystemMessage(
+          result.message ?? 'Salon injoignable — vérifie le code et réessaie.',
+        );
+      }
+    } catch (_) {
+      pushSystemMessage('Salon injoignable — vérifie le code et réessaie.');
+    } finally {
+      _recovering = false;
+      notifyListeners();
+    }
   }
 
   // -------------------------------------------------------------- cleanup
@@ -487,6 +525,8 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    _recoveryTimer?.cancel();
+    _recoveryTimer = null;
     _frames?.cancel();
     final channel = _channel;
     _channel = null;

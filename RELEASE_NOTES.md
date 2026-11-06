@@ -1,47 +1,54 @@
-# Dudo 0.1.0 — bêta 1
+# Dudo 0.2.0 — bêta 1 : la taverne s'ouvre
 
-Merci de faire partie des premiers testeurs. Dudo est un **Perudo de taverne en solo contre des pirates**, pour Android. Cinq dés, un gobelet, tout le monde ment.
+Merci de faire partie des premiers testeurs. Dudo est un **Perudo de taverne**, pour Android. Cinq dés, un gobelet, tout le monde ment.
 
-Cette bêta est réservée au groupe de testeurs invités. Merci de ne pas redistribuer l'APK en dehors du groupe.
+Cette bêta ouvre le **multijoueur en ligne** : jusqu'à 6 pirates, chacun sur son téléphone, avec un code de salon à six caractères.
 
-## Au menu de cette bêta
+## Nouveau dans cette bêta
 
-- 1 joueur + **1 à 5 pirates IA**, 5 dés par joueur.
-- Règles Perudo complètes : as joker, surenchères, **dudo**, **calza** optionnelle, perte de dé, élimination.
-- **3 difficultés** : Mousse, Flibustier, Capitaine. Les bots ne trichent pas : ils ne voient que leurs dés, le nombre de dés en jeu et le pari courant.
-- Table de taverne, gobelet privé, journal des coups, révélation dé par dé, écran de fin.
-- Interface française, portrait, une main. Aucun compte, aucune pub, aucun réseau.
+- **Salons en ligne** : « Créer un salon » génère un code à partager par SMS, WhatsApp, Signal ou mail ; « Rejoindre un salon » demande seulement le code et le nom.
+- **L'hôte mène la table** : il ajuste le nombre d'IA, lance la manche, et son téléphone arbitre les règles ; les autres téléphones rejouent ses décisions en direct.
+- **Manche entièrement à plusieurs** : enchères, dudo, calza, palifico, éliminations — chaque joueur ne voit que ses propres dés, les dés ne transitent jamais sur le réseau (chaque table tire les mêmes dés à partir d'une graine partagée).
+- **Fil du salon** : chat libre, phrases de pirate prêtes à l'emploi et réactions emoji, en direct.
+- **Retour à la taverne** : reconnexion automatique si la connexion tombe, et reprise de son siège en cours de partie.
+- **Solo inchangé** : 1 à 5 pirates IA, 3 difficultés (Mousse, Flibustier, Capitaine).
 
 ## Installation (Android 7.0+)
 
-1. Télécharge **`dudo-v0.1.0-beta.1.apk`** ci-dessous.
+1. Télécharge **`dudo-v0.2.0-beta.1.apk`** ci-dessous (ou l'artefact du run CI).
 2. Ouvre le fichier sur le téléphone.
-3. Si Android le demande, autorise l'installation depuis cette source (navigateur ou gestionnaire de fichiers), puis installe.
-4. Lance **Dudo** et choisis ton équipage.
+3. Si Android le demande, autorise l'installation depuis cette source, puis installe.
+4. Lance **Dudo**.
 
-Si une ancienne version de Dudo est déjà installée avec une autre signature, désinstalle-la d'abord.
+Désinstalle l'ancienne bêta si Android refuse l'installation (« signature différente »).
+
+## Tester à plusieurs
+
+1. L'hôte : **Salons multijoueurs → Créer un salon**, choisit son nom et le nombre d'IA, partage le code.
+2. Les amis : **Rejoindre un salon**, entrent le code et leur nom.
+3. Tout le monde apparaît à table ; l'hôte lance la manche.
+4. En cas de coupure réseau, le jeu tente de reconnecter et de reprendre le siège.
 
 ## Ce qu'on aimerait savoir
 
-- Est-ce que les règles et les comptes de dés sont clairs, surtout après un dudo ou une calza ?
-- Les bots te semblent-ils crédibles, ou trop prévisibles / trop agressifs ?
-- As-tu réussi à lire l'interface en une main, dans le noir, sans te perdre ?
-- Un bug, un crash, un écran bizarre ? Envoie le modèle du téléphone, la version d'Android et une capture si possible.
+- La connexion au salon est-elle simple et rapide ? Le code se partage-t-il bien ?
+- Les tours sont-ils compréhensibles quand ce n'est pas le tien ? Sens-tu les hésitations des autres ?
+- Le chat et les réactions tombent-ils au bon moment ?
+- Une coupure réseau, un retour en arrière, un écran bloqué ? Envoie le modèle du téléphone, la version d'Android et une capture.
 
 ## Limites connues
 
-- **APK signé avec la clé debug** du projet : c'est une build de test, pas encore une build Play Store. Play Protect peut afficher un avertissement.
-- **Solo uniquement** : pas de multijoueur en ligne pour l'instant.
+- **APK signé avec la clé debug** : build de test, pas encore une build Play Store. Play Protect peut afficher un avertissement.
+- Multijoueur en **ligne uniquement** via `api.dudo.supercloud.fr` ; pas de jeu en réseau local.
 - **Français uniquement**, portrait uniquement.
-- Pas encore de statistiques persistantes, de sons ni de mode palifico.
-- Le build universel est volumineux (~46 Mo) ; télécharge-le en Wi-Fi.
+- Pas encore de statistiques persistantes ni de sons.
 
 ## Confidentialité
 
-Dudo ne collecte rien : pas de compte, pas d'analytics, pas de réseau, pas de publicité. Le jeu fonctionne entièrement hors ligne.
+Dudo ne demande aucun compte et ne collecte rien. En solo, le jeu fonctionne entièrement hors ligne. En salon, seuls les messages nécessaires à la partie (pseudos, paris, chat) transitent par le Worker ; aucune publicité, aucun analytics.
 
 ## Retours
 
-Réponds dans le fil de test prévu, ou ouvre une issue sur le dépôt avec le label `beta`. Les retours les plus utiles sont les parties complètes, les moments où tu as hésité, et les écrans qui t'ont semblé faux.
+Réponds dans le fil de test prévu, ou ouvre une issue sur le dépôt avec le label `beta`. Les retours les plus utiles : parties complètes à plusieurs, moments d'hésitation, et écrans qui ont semblé faux.
 
 Bon jeu, et mentez bien.

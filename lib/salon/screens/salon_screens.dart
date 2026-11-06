@@ -379,6 +379,8 @@ class SalonLobbyScreen extends StatefulWidget {
 }
 
 class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
+  bool _tableOpened = false;
+
   @override
   void initState() {
     super.initState();
@@ -392,7 +394,16 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   }
 
   void _refresh() {
-    if (mounted) setState(() {});
+    if (!mounted) return;
+    setState(() {});
+    // Guests (and any late host) hop to the table as soon as the Worker
+    // confirms the round started.
+    if (widget.session is NetworkSalonSession &&
+        widget.session.isStarting &&
+        !_tableOpened) {
+      _tableOpened = true;
+      _pushTable(context);
+    }
   }
 
   bool get isHost => widget.session.role == SalonRole.host;
@@ -556,7 +567,6 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   /// the network table — relayed engine on the host, snapshot mirror on
   /// the guests. Local sessions navigate to their offline engine as before.
   Future<void> _openTable(BuildContext context) async {
-    final navigator = Navigator.of(context, rootNavigator: true);
     await widget.session.startGame();
     if (!context.mounted) return;
     if (!widget.session.isStarting) {
@@ -567,6 +577,13 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       );
       return;
     }
+    _pushTable(context);
+  }
+
+  /// Builds the table (host relay or guest mirror) and pushes the screen.
+  void _pushTable(BuildContext context) {
+    if (!context.mounted) return;
+    final navigator = Navigator.of(context, rootNavigator: true);
 
     if (widget.session is! NetworkSalonSession) {
       navigator.push(
