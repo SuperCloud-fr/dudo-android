@@ -8,6 +8,8 @@ import '../../core/widgets/tavern_background.dart';
 import '../../core/widgets/tavern_button.dart';
 import '../../game/models/game_config.dart';
 import '../../screens/game/game_screen.dart';
+import '../network_game.dart';
+import '../network_salon_session.dart';
 import '../salon_models.dart';
 import '../widgets/reaction_bar.dart';
 import '../widgets/salon_bits.dart';
@@ -481,24 +483,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                                 icon: Icons.sports_esports_outlined,
                                 expand: true,
                                 onPressed: session.players.length >= 2
-                                    ? () async {
-                                        await session.startGame();
-                                        if (context.mounted) {
-                                          Navigator.of(
-                                            context,
-                                            rootNavigator: true,
-                                          ).push(
-                                            MaterialPageRoute<void>(
-                                              builder: (_) => GameScreen(
-                                                config: GameConfig(
-                                                  opponentCount:
-                                                      session.bots.length,
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        }
-                                      }
+                                    ? () => _openTable(context)
                                     : null,
                               ),
                             if (!isHost) ...[
@@ -565,6 +550,59 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
     if (quit == true && context.mounted) {
       Navigator.of(context).pop();
     }
+  }
+
+  /// Starts the round: sends `start` and, once the Worker accepts, opens
+  /// the network table — relayed engine on the host, snapshot mirror on
+  /// the guests. Local sessions navigate to their offline engine as before.
+  Future<void> _openTable(BuildContext context) async {
+    final navigator = Navigator.of(context, rootNavigator: true);
+    await widget.session.startGame();
+    if (!context.mounted) return;
+    if (!widget.session.isStarting) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('La manche n\u2019a pas pu démarrer. Réessaie.'),
+        ),
+      );
+      return;
+    }
+
+    if (widget.session is! NetworkSalonSession) {
+      navigator.push(
+        MaterialPageRoute<void>(
+          builder: (_) => GameScreen(
+            config: GameConfig(opponentCount: widget.session.bots.length),
+          ),
+        ),
+      );
+      return;
+    }
+
+    final network = widget.session as NetworkSalonSession;
+    final names = [
+      for (var seat = 0; seat < network.players.length; seat++)
+        network.players.firstWhere((player) => player.seat == seat).name,
+    ];
+
+    if (network.role == SalonRole.host) {
+      final relay = HostGameRelay(session: network, names: names);
+      relay.start();
+      navigator.push(
+        MaterialPageRoute<void>(
+          builder: (_) => GameScreen(controller: relay.controller),
+        ),
+      );
+      return;
+    }
+    final guest = GuestGameController(
+      config: GameConfig(opponentCount: names.length - 1),
+      session: network,
+      names: names,
+    );
+    navigator.push(
+      MaterialPageRoute<void>(builder: (_) => GameScreen(controller: guest)),
+    );
   }
 }
 

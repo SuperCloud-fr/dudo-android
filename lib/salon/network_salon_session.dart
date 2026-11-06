@@ -77,6 +77,18 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
 
   bool get connected => _channel != null;
 
+  /// Sends a host-authoritative payload (bid, dudo, calza, nextRound,
+  /// rematch). Used by the guests; [HostGameRelay] broadcasts big snapshots
+  /// with [sendSnapshot].
+  void sendGame(Map<String, dynamic> payload) {
+    _sendJson(<String, dynamic>{'type': 'game', 'payload': payload});
+  }
+
+  /// Sends a full table snapshot (host side only).
+  void sendSnapshot(Map<String, dynamic> payload) {
+    _sendJson(<String, dynamic>{'type': 'snapshot', 'payload': payload});
+  }
+
   // -------------------------------------------------------------- creation
 
   @override

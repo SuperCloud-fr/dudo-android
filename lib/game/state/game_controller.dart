@@ -18,15 +18,33 @@ class GameController extends ChangeNotifier {
     Random? random,
     this.botDelay = const Duration(milliseconds: 820),
     this.autoPlayBots = true,
+    this.tableNames,
+    this.roundSeeds,
+    this.autoStartRound = true,
   }) : random = random ?? Random() {
     _buildPlayers();
-    _startRound(starterSeat: 0);
+    if (autoStartRound) {
+      _startRound(starterSeat: 0);
+    }
   }
 
   final GameConfig config;
   final Random random;
   final Duration botDelay;
   final bool autoPlayBots;
+
+  /// Seat names in seat order (seat 0 included). When provided, the table
+  /// is built from these names with no bots — network games drive every
+  /// seat from outside (WS commands / snapshots).
+  final List<String>? tableNames;
+
+  /// Optional per-round seed source. When provided, every round's dice are
+  /// rolled with `Random(seed)` so remote players replaying the same seed
+  /// get the exact same dice; solo games keep their inner `random`.
+  final int Function()? roundSeeds;
+
+  /// False for network guests: the first snapshot builds the round.
+  final bool autoStartRound;
 
   final List<Player> players = <Player>[];
   final List<TableEvent> journal = <TableEvent>[];
@@ -40,6 +58,9 @@ class GameController extends ChangeNotifier {
   ChallengeOutcome? outcome;
   bool outcomeApplied = false;
   GameResult? result;
+
+  /// Seed of the dice currently on the table (network games only).
+  int? lastRoundSeed;
 
   Timer? _botTimer;
   bool _disposed = false;
@@ -79,6 +100,23 @@ class GameController extends ChangeNotifier {
       journal.where((event) => event.round == round).toList(growable: false);
 
   void _buildPlayers() {
+    if (tableNames != null) {
+      // Network table: one seat per salon player, all driven externally.
+      for (var seat = 0; seat < tableNames!.length; seat++) {
+        final profile = crew[seat % crew.length];
+        players.add(
+          Player(
+            seat: seat,
+            name: tableNames![seat],
+            isHuman: true,
+            sigil: profile.sigil,
+            accent: profile.accent,
+            nerve: profile.nerve,
+          ),
+        );
+      }
+      return;
+    }
     players.add(
       Player(
         seat: 0,
@@ -105,6 +143,15 @@ class GameController extends ChangeNotifier {
   }
 
   void _startRound({required int starterSeat}) {
+    final seed = roundSeeds?.call();
+    lastRoundSeed = seed;
+    final roundRandom = seed == null ? null : Random(seed);
+    int Function() nextDie;
+    if (roundRandom == null) {
+      nextDie = () => 1 + random.nextInt(6);
+    } else {
+      nextDie = () => 1 + roundRandom.nextInt(6);
+    }
     round++;
     currentBid = null;
     outcome = null;
@@ -115,7 +162,7 @@ class GameController extends ChangeNotifier {
         .any((player) => player.diceCount == 1);
     for (final player in players) {
       if (player.isAlive) {
-        player.roll(() => 1 + random.nextInt(6));
+        player.roll(nextDie);
       }
     }
     currentPlayer = _firstAliveFrom(starterSeat);
@@ -147,6 +194,43 @@ class GameController extends ChangeNotifier {
   bool callHumanCalza() {
     if (!canHumanCalza) return false;
     _resolveChallenge(ChallengeKind.calza, currentPlayer);
+    return true;
+  }
+
+  // ------------------------------------------------------- seat commands
+  // Network games drive every seat from the outside: the guest's WS
+  // commands land here (validated against the current turn), and the
+  // saloon-shaped outcome is broadcast back as a snapshot.
+
+  bool seatBid(int seat, Bid bid) {
+    if (seat != currentPlayer || phase != GamePhase.bidding) return false;
+    return _placeBid(bid.copyWith(playerSeat: seat));
+  }
+
+  bool seatDudo(int seat) {
+    if (seat != currentPlayer) return false;
+    if (currentBid == null || currentBid!.playerSeat == seat) return false;
+    _resolveChallenge(ChallengeKind.dudo, seat);
+    return true;
+  }
+
+  bool seatCalza(int seat, bool calzaEnabled) {
+    if (seat != currentPlayer || !calzaEnabled) return false;
+    if (currentBid == null || currentBid!.playerSeat == seat) return false;
+    _resolveChallenge(ChallengeKind.calza, seat);
+    return true;
+  }
+
+  bool seatNextRound(int seat) {
+    if (phase != GamePhase.roundOver) return false;
+    // Any live seat may wave the round forward; the host triggers it.
+    nextRound();
+    return true;
+  }
+
+  bool seatRematch() {
+    if (phase != GamePhase.gameOver) return false;
+    rematch();
     return true;
   }
 
