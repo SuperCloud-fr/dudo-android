@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/gestures/shake_detector.dart';
 import '../../../core/theme/app_colors.dart';
 import 'palifico_chip.dart';
 import '../../../core/theme/app_typography.dart';
@@ -37,6 +38,7 @@ class PeekOverlay extends StatefulWidget {
 class _PeekOverlayState extends State<PeekOverlay>
     with SingleTickerProviderStateMixin {
   late final AnimationController _reveal;
+  late final ShakeDetector _shake;
   bool _revealed = false;
 
   @override
@@ -46,6 +48,9 @@ class _PeekOverlayState extends State<PeekOverlay>
       vsync: this,
       duration: const Duration(milliseconds: 900),
     );
+    // Shake the phone to mix the dice: the cup lifts, just like a real
+    // table. Tapping the cup stays available as a fallback.
+    _shake = ShakeDetector(onShake: _liftCup)..start();
   }
 
   @override
@@ -58,12 +63,13 @@ class _PeekOverlayState extends State<PeekOverlay>
 
   @override
   void dispose() {
+    _shake.dispose();
     _reveal.dispose();
     super.dispose();
   }
 
   void _liftCup() {
-    if (_revealed) return;
+    if (_revealed || !mounted) return;
     HapticFeedback.mediumImpact();
     setState(() => _revealed = true);
     if (MediaQuery.disableAnimationsOf(context)) {
@@ -118,7 +124,7 @@ class _PeekOverlayState extends State<PeekOverlay>
                             Text(
                               _revealed
                                   ? 'Garde ce secret. Le reste de la table ne voit rien.'
-                                  : 'Soulève le cuir. Personne d\'autre ne verra tes dés.',
+                                  : 'Secoue le téléphone comme au vrai comptoir : le cuir se soulève, et toi seul vois tes dés.',
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: AppColors.parchmentMuted),
@@ -407,10 +413,14 @@ class _CupHint extends StatelessWidget {
       children: [
         TextButton.icon(
           onPressed: onTap,
-          icon: const Icon(Icons.touch_app_outlined, size: 18),
-          label: const Text('Touche le gobelet pour révéler tes dés'),
+          icon: const Icon(Icons.vibration, size: 18),
+          label: const Text('Secoue le téléphone pour brasser tes dés'),
         ),
-        const SizedBox(height: 4),
+        TextButton(
+          onPressed: onTap,
+          child: const Text('… ou touche le gobelet pour le soulever'),
+        ),
+        const SizedBox(height: 2),
         Text(
           'Prends ton temps. Les autres pirates attendent.',
           textAlign: TextAlign.center,

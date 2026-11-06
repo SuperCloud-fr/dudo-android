@@ -1,7 +1,7 @@
 name: dudo
 description: "Dudo — le jeu de dés du mensonge"
 publish_to: "none"
-version: 0.2.0+5
+version: 0.2.0+6
 
 environment:
   sdk: ^3.13.7
@@ -14,6 +14,7 @@ dependencies:
   share_plus: ^13.3.1
   url_launcher: ^6.3.3
   web_socket_channel: ^3.0.3
+  sensors_plus: ^7.0.0
 
 dev_dependencies:
   flutter_test:
