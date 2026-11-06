@@ -133,11 +133,11 @@ class HomeScreen extends StatelessWidget {
                                   Flexible(
                                     child: Text(
                                       'v0.1 · 2 à 6 joueurs',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(
-                                          color: AppColors.parchmentMuted,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            color: AppColors.parchmentMuted,
                                             letterSpacing: 0.4,
                                           ),
                                       maxLines: 1,

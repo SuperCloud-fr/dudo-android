@@ -21,6 +21,7 @@ Future<void> pumpApp(
     }
     previousOnError?.call(d);
   };
+  tester.platformDispatcher.textScaleFactorTestValue = 1.15;
   await tester.pumpWidget(const DudoApp());
   await tester.pump(const Duration(milliseconds: 350));
 }
@@ -89,11 +90,13 @@ void main() {
     final exc = tester.takeException();
     if (exc != null) {
       debugPrint('SMALL-EXC: $exc');
-      FlutterError.dumpErrorToConsole(FlutterErrorDetails(
-        exception: exc,
-        context: ErrorDescription('petit téléphone'),
-        library: 'test',
-      ));
+      FlutterError.dumpErrorToConsole(
+        FlutterErrorDetails(
+          exception: exc,
+          context: ErrorDescription('petit téléphone'),
+          library: 'test',
+        ),
+      );
     }
     expect(exc, isNull);
 

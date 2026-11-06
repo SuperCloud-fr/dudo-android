@@ -147,71 +147,89 @@ class _PeekOverlayState extends State<PeekOverlay>
                                           CrossAxisAlignment.stretch,
                                       children: [
                                         Center(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 14,
-                                              vertical: 7,
+                                          child: ConstrainedBox(
+                                            constraints: const BoxConstraints(
+                                              maxWidth: 320,
                                             ),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.leatherDeep
-                                                  .withValues(alpha: 0.8),
-                                              borderRadius:
-                                                  BorderRadius.circular(999),
-                                              border: Border.all(
-                                                color: AppColors.brassDim
-                                                    .withValues(alpha: 0.5),
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 14,
+                                                    vertical: 7,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: AppColors.leatherDeep
+                                                    .withValues(alpha: 0.8),
+                                                borderRadius:
+                                                    BorderRadius.circular(999),
+                                                border: Border.all(
+                                                  color: AppColors.brassDim
+                                                      .withValues(alpha: 0.5),
+                                                ),
                                               ),
-                                            ),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const Icon(
-                                                  Icons.casino_outlined,
-                                                  size: 15,
-                                                  color: AppColors.brassBright,
-                                                ),
-                                                const SizedBox(width: 7),
-                                                Text(
-                                                  '${widget.dice.length} '
-                                                  '${widget.dice.length == 1 ? 'dé' : 'dés'} en main',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .labelMedium
-                                                      ?.copyWith(
-                                                        color:
-                                                            AppColors.parchment,
-                                                      ),
-                                                ),
-                                                const SizedBox(width: 9),
-                                                Container(
-                                                  width: 3,
-                                                  height: 3,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                        color:
-                                                            AppColors.brassDim,
-                                                        shape: BoxShape.circle,
-                                                      ),
-                                                ),
-                                                const SizedBox(width: 9),
-                                                Text(
-                                                  aces == 0
-                                                      ? 'pas de paco'
-                                                      : aces == 1
-                                                      ? '1 paco'
-                                                      : '$aces paco',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .labelMedium
-                                                      ?.copyWith(
-                                                        color: aces == 0
-                                                            ? AppColors
-                                                                  .parchmentMuted
-                                                            : AppColors
-                                                                  .bloodBright,
-                                                      ),
-                                                ),
-                                              ],
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.casino_outlined,
+                                                    size: 15,
+                                                    color:
+                                                        AppColors.brassBright,
+                                                  ),
+                                                  const SizedBox(width: 7),
+                                                  Flexible(
+                                                    child: Text(
+                                                      '${widget.dice.length} '
+                                                      '${widget.dice.length == 1 ? 'dé' : 'dés'} en main',
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .labelMedium
+                                                          ?.copyWith(
+                                                            color: AppColors
+                                                                .parchment,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 9),
+                                                  Container(
+                                                    width: 3,
+                                                    height: 3,
+                                                    decoration:
+                                                        const BoxDecoration(
+                                                          color: AppColors
+                                                              .brassDim,
+                                                          shape:
+                                                              BoxShape.circle,
+                                                        ),
+                                                  ),
+                                                  const SizedBox(width: 9),
+                                                  Flexible(
+                                                    child: Text(
+                                                      aces == 0
+                                                          ? 'pas de paco'
+                                                          : aces == 1
+                                                          ? '1 paco'
+                                                          : '$aces paco',
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .labelMedium
+                                                          ?.copyWith(
+                                                            color: aces == 0
+                                                                ? AppColors
+                                                                      .parchmentMuted
+                                                                : AppColors
+                                                                      .bloodBright,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
