@@ -22,6 +22,13 @@ Future<void> settleRoute(WidgetTester tester) async {
 
 void main() {
   testWidgets('la taverne mène à une partie complète', (tester) async {
+    FlutterError.onError = (FlutterErrorDetails d) {
+      debugPrint('OVF: ${d.exception}');
+      debugPrint(
+        '${d.stack ?? FlutterError.demangleStackTrace(StackTrace.empty) ?? FlutterError.demangleStackTrace(StackTrace.current)}',
+      );
+      FlutterError.dumpErrorToConsole(d);
+    };
     await pumpApp(tester);
 
     expect(find.text('DUDO'), findsOneWidget);
@@ -76,7 +83,16 @@ void main() {
 
   testWidgets('la taverne tient sur un petit téléphone', (tester) async {
     await pumpApp(tester, size: const Size(360, 640));
-    expect(tester.takeException(), isNull);
+    final exc = tester.takeException();
+    if (exc != null) {
+      debugPrint('SMALL-EXC: $exc');
+      FlutterError.dumpErrorToConsole(FlutterErrorDetails(
+        exception: exc,
+        context: ErrorDescription('petit téléphone'),
+        library: 'test',
+      ));
+    }
+    expect(exc, isNull);
 
     await tester.tap(find.text('JOUER'));
     await settleRoute(tester);

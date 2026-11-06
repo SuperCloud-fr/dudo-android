@@ -130,15 +130,19 @@ class HomeScreen extends StatelessWidget {
                                       ),
                                     ),
                                   const SizedBox(width: 8),
-                                  Text(
-                                    'v0.1 · 2 à 6 joueurs',
+                                  Flexible(
+                                    child: Text(
+                                      'v0.1 · 2 à 6 joueurs',
                                     style: Theme.of(context)
                                         .textTheme
                                         .labelSmall
                                         ?.copyWith(
                                           color: AppColors.parchmentMuted,
-                                          letterSpacing: 0.4,
-                                        ),
+                                            letterSpacing: 0.4,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -224,42 +228,46 @@ class _SwayingSignState extends State<SwayingSign>
                 widget.width * 0.07,
                 height * 0.08,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const DiceFace(
-                    value: 1,
-                    size: 38,
-                    highlight: true,
-                    rotation: -0.05,
-                  ),
-                  SizedBox(height: height * 0.03),
-                  Text(
-                    'DUDO',
-                    style: AppTypography.inscription(
-                      size: widget.width * 0.18,
-                      color: AppColors.parchment,
-                      letterSpacing: widget.width * 0.026,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.topCenter,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const DiceFace(
+                      value: 1,
+                      size: 38,
+                      highlight: true,
+                      rotation: -0.05,
+                    ),
+                    SizedBox(height: height * 0.03),
+                    Text(
+                      'DUDO',
+                      style: AppTypography.inscription(
+                        size: widget.width * 0.18,
+                        color: AppColors.parchment,
+                        letterSpacing: widget.width * 0.026,
+                        height: 1,
+                      ),
+                    ),
+                    SizedBox(height: height * 0.025),
+                    Container(
+                      width: widget.width * 0.18,
                       height: 1,
+                      color: AppColors.brassDim,
                     ),
-                  ),
-                  SizedBox(height: height * 0.025),
-                  Container(
-                    width: widget.width * 0.18,
-                    height: 1,
-                    color: AppColors.brassDim,
-                  ),
-                  SizedBox(height: height * 0.018),
-                  Text(
-                    'LE JEU DU MENSONGE',
-                    style: AppTypography.inscription(
-                      size: widget.width * 0.028,
-                      weight: FontWeight.w400,
-                      color: AppColors.brass,
-                      letterSpacing: 2.4,
+                    SizedBox(height: height * 0.018),
+                    Text(
+                      'LE JEU DU MENSONGE',
+                      style: AppTypography.inscription(
+                        size: widget.width * 0.028,
+                        weight: FontWeight.w400,
+                        color: AppColors.brass,
+                        letterSpacing: 2.4,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

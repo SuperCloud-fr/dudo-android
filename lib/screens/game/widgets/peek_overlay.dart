@@ -232,7 +232,7 @@ class _PeekOverlayState extends State<PeekOverlay>
                                         TavernButton(
                                           label: widget.humanStarts
                                               ? 'Ouvrir les hostilités'
-                                              : 'Laisser ${widget.starterName} ouvrir',
+                                              : 'C’est à ${widget.starterName} d’ouvrir',
                                           icon: Icons.visibility_outlined,
                                           expand: true,
                                           onPressed: widget.onReady,
