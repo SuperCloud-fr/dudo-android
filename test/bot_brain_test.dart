@@ -176,4 +176,58 @@ void main() {
       }
     });
   });
+
+  group('palifico', () {
+    test('un bot respecte la face verrouillee', () {
+      for (var seed = 0; seed < 200; seed++) {
+        final random = Random(seed);
+        final qty = 2 + random.nextInt(4);
+        final own = List<int>.generate(
+          1 + random.nextInt(5),
+          (_) => 1 + random.nextInt(6),
+        );
+        final total = max(qty + 1, 8 + random.nextInt(22));
+        final action =
+            BotBrain(
+              difficulty: BotDifficulty.values[seed % 3],
+              random: random,
+            ).decide(
+              ownDice: own,
+              totalDice: total,
+              selfSeat: 0,
+              currentBid: Bid(quantity: qty, face: 4, playerSeat: 1),
+              calzaEnabled: true,
+              nerve: (seed % 5 - 2) * 0.05,
+              palifico: true,
+            );
+        if (action is BidAction) {
+          expect(action.bid.face, 4);
+          expect(action.bid.quantity, greaterThan(qty));
+        }
+      }
+    });
+
+    test('un bot ouvre au moins 2 de en palifico', () {
+      for (var seed = 0; seed < 100; seed++) {
+        final random = Random(seed);
+        final own = List<int>.generate(5, (_) => 1 + random.nextInt(6));
+        final action =
+            BotBrain(
+              difficulty: BotDifficulty.values[seed % 3],
+              random: random,
+            ).decide(
+              ownDice: own,
+              totalDice: 15 + random.nextInt(10),
+              selfSeat: 0,
+              currentBid: null,
+              calzaEnabled: true,
+              nerve: 0,
+              palifico: true,
+            );
+        if (action is BidAction) {
+          expect(action.bid.quantity, greaterThanOrEqualTo(2));
+        }
+      }
+    });
+  });
 }

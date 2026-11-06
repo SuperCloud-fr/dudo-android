@@ -5,20 +5,39 @@ abstract final class PerudoRules {
   static const int faces = 6;
   static const int maxDicePerPlayer = 5;
 
+  /// In a palifico round (a player is down to one die), the opening bid must
+  /// be worth at least this many dice, and every later bid is locked on the
+  /// opening face.
+  static const int palificoOpeningMinimum = 2;
+
   /// A bid is legal when it strictly raises the previous one.
   ///
   /// Standard conversions:
   /// - normal → aces: at least half the quantity, rounded up;
   /// - aces → normal: double the aces plus one;
   /// - normal → normal: more dice, or the same dice with a higher face.
+  ///
+  /// Palifico (a live player sits at exactly one die):
+  /// - the opening bid fixes the face of the whole round;
+  /// - later bids must keep that face and may only raise the quantity;
+  /// - aces are not wild (they only count as aces);
+  /// - the opening bid must be worth at least [palificoOpeningMinimum].
   static bool isLegalRaise({
     required Bid? previous,
     required Bid next,
     required int totalDice,
+    bool palifico = false,
   }) {
     if (next.quantity < 1 || next.quantity > totalDice) return false;
     if (next.face < 1 || next.face > faces) return false;
-    if (previous == null) return true;
+    if (previous == null) {
+      if (!palifico) return true;
+      return totalDice >= palificoOpeningMinimum &&
+          next.quantity >= palificoOpeningMinimum;
+    }
+    if (palifico) {
+      return next.face == previous.face && next.quantity > previous.quantity;
+    }
 
     if (previous.face == 1) {
       if (next.face == 1) {
@@ -37,9 +56,23 @@ abstract final class PerudoRules {
     return false;
   }
 
-  /// Smallest quantity that can be announced for [face].
-  static int minQuantityForFace({required Bid? previous, required int face}) {
-    if (previous == null) return 1;
+  /// Smallest quantity that can be announced for [face], or null when that
+  /// face cannot be bid at all (palifico rounds lock the face to the one
+  /// already announced). Aces are not wild during a palifico round.
+  static int? minQuantityForFace({
+    required Bid? previous,
+    required int face,
+    bool palifico = false,
+  }) {
+    if (face < 1 || face > faces) return null;
+    if (previous == null) {
+      if (palifico) return palificoOpeningMinimum;
+      return 1;
+    }
+    if (palifico) {
+      if (face != previous.face) return null;
+      return previous.quantity + 1;
+    }
     if (previous.face == 1) {
       if (face == 1) return previous.quantity + 1;
       return previous.quantity * 2 + 1;
@@ -53,9 +86,16 @@ abstract final class PerudoRules {
     required Bid? previous,
     required int face,
     required int totalDice,
+    bool palifico = false,
   }) {
     if (face < 1 || face > faces) return false;
-    return minQuantityForFace(previous: previous, face: face) <= totalDice;
+    final min = minQuantityForFace(
+      previous: previous,
+      face: face,
+      palifico: palifico,
+    );
+    if (min == null) return false;
+    return min <= totalDice;
   }
 
   /// All legal bids for the player to move, ordered from the cheapest raise
@@ -64,10 +104,16 @@ abstract final class PerudoRules {
     required Bid? previous,
     required int totalDice,
     required int playerSeat,
+    bool palifico = false,
   }) {
     final bids = <Bid>[];
     for (final face in _faceOrder(previous)) {
-      final min = minQuantityForFace(previous: previous, face: face);
+      final min = minQuantityForFace(
+        previous: previous,
+        face: face,
+        palifico: palifico,
+      );
+      if (min == null) continue;
       for (var quantity = min; quantity <= totalDice; quantity++) {
         bids.add(Bid(quantity: quantity, face: face, playerSeat: playerSeat));
       }
@@ -81,11 +127,13 @@ abstract final class PerudoRules {
     required Bid? previous,
     required int totalDice,
     required int playerSeat,
+    bool palifico = false,
   }) {
     final all = legalBids(
       previous: previous,
       totalDice: totalDice,
       playerSeat: playerSeat,
+      palifico: palifico,
     );
     return all.isEmpty ? null : all.first;
   }
@@ -96,14 +144,35 @@ abstract final class PerudoRules {
     required Bid? previous,
     required int totalDice,
     required int playerSeat,
+    bool palifico = false,
   }) {
     if (totalDice <= 0) return null;
     if (previous == null) {
+      if (palifico) {
+        if (totalDice < palificoOpeningMinimum) return null;
+        return Bid(
+          quantity: palificoOpeningMinimum,
+          face: 2,
+          playerSeat: playerSeat,
+        );
+      }
       final quantity = totalDice >= 10 ? 3 : 2;
       if (quantity <= totalDice) {
         return Bid(quantity: quantity, face: 2, playerSeat: playerSeat);
       }
       return Bid(quantity: 1, face: 2, playerSeat: playerSeat);
+    }
+
+    if (palifico) {
+      final raise = previous.quantity + 1;
+      if (raise <= totalDice) {
+        return Bid(
+          quantity: raise,
+          face: previous.face,
+          playerSeat: playerSeat,
+        );
+      }
+      return null;
     }
 
     if (previous.face != 1) {
@@ -166,26 +235,32 @@ abstract final class PerudoRules {
     return a.face.compareTo(b.face);
   }
 
-  /// How many dice in [dice] satisfy [face]. Aces are wild, except when
-  /// counting a bid on aces.
-  static int countForFace(Iterable<int> dice, int face) {
+  /// How many dice in [dice] satisfy [face]. Aces are wild for every other
+  /// face — except during a palifico round, where they only count as aces.
+  static int countForFace(
+    Iterable<int> dice,
+    int face, {
+    bool palifico = false,
+  }) {
     if (face == 1) return dice.where((die) => die == 1).length;
+    if (palifico) return dice.where((die) => die == face).length;
     return dice.where((die) => die == face || die == 1).length;
   }
 
-  static bool bidHolds(Bid bid, Iterable<int> dice) {
-    return countForFace(dice, bid.face) >= bid.quantity;
+  static bool bidHolds(Bid bid, Iterable<int> dice, {bool palifico = false}) {
+    return countForFace(dice, bid.face, palifico: palifico) >= bid.quantity;
   }
 
-  static bool bidExact(Bid bid, Iterable<int> dice) {
-    return countForFace(dice, bid.face) == bid.quantity;
+  static bool bidExact(Bid bid, Iterable<int> dice, {bool palifico = false}) {
+    return countForFace(dice, bid.face, palifico: palifico) == bid.quantity;
   }
 
   /// True when a die matches [face] for the reveal highlight.
-  static bool dieMatches(int die, int face) {
+  static bool dieMatches(int die, int face, {bool palifico = false}) {
     if (face == 1) return die == 1;
+    if (palifico) return die == face;
     return die == face || die == 1;
   }
 
-  static String faceName(int face) => face == 1 ? 'as' : '$face';
+  static String faceName(int face) => face == 1 ? 'paco' : '$face';
 }

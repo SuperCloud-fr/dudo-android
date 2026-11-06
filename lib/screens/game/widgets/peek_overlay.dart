@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_colors.dart';
+import 'palifico_chip.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/dice_face.dart';
 import '../../../core/widgets/leather_cup.dart';
@@ -16,6 +17,7 @@ class PeekOverlay extends StatefulWidget {
     super.key,
     required this.round,
     required this.dice,
+    required this.palifico,
     required this.humanStarts,
     required this.starterName,
     required this.onReady,
@@ -23,6 +25,7 @@ class PeekOverlay extends StatefulWidget {
 
   final int round;
   final List<int> dice;
+  final bool palifico;
   final bool humanStarts;
   final String starterName;
   final VoidCallback onReady;
@@ -120,6 +123,18 @@ class _PeekOverlayState extends State<PeekOverlay>
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: AppColors.parchmentMuted),
                             ),
+                            if (widget.palifico) ...[
+                              const SizedBox(height: 14),
+                              const Center(child: PalificoChip(size: 11)),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Manche palifico : une seule face pour tous les paris.',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(fontStyle: FontStyle.italic),
+                              ),
+                              const SizedBox(height: 8),
+                            ],
                             const SizedBox(height: 20),
                             _buildCupAndDice(context),
                             const SizedBox(height: 18),
@@ -181,10 +196,10 @@ class _PeekOverlayState extends State<PeekOverlay>
                                                 const SizedBox(width: 9),
                                                 Text(
                                                   aces == 0
-                                                      ? 'pas d\'as'
+                                                      ? 'pas de paco'
                                                       : aces == 1
-                                                      ? '1 as'
-                                                      : '$aces as',
+                                                      ? '1 paco'
+                                                      : '$aces paco',
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .labelMedium
@@ -202,7 +217,9 @@ class _PeekOverlayState extends State<PeekOverlay>
                                         ),
                                         const SizedBox(height: 14),
                                         Text(
-                                          'Les as comptent pour toutes les faces.',
+                                          widget.palifico
+                                              ? 'Manche palifico : les paco ne comptent que comme paco.'
+                                              : 'Les paco comptent pour toutes les faces.',
                                           textAlign: TextAlign.center,
                                           style: Theme.of(context)
                                               .textTheme

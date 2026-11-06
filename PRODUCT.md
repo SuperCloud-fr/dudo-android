@@ -29,7 +29,7 @@ Played on a personal Android phone in portrait orientation, with touch and hapti
 ## Capabilities and Constraints
 
 - Solo game: one human plus 1–5 AI pirates; 5 dice per player; last player with dice wins.
-- Standard Perudo bidding with aces (1s) wild; legal raises enforced by the engine; dudo challenges and optional calza.
+- Standard Perudo bidding with aces (1s) wild; legal raises enforced by the engine; dudo challenges, optional calza, and palifico rounds when a pirate is reduced to one die.
 - Three bot difficulties that differ in risk tolerance and bluffing, using only information a player would have.
 - French-language interface. No online play, no monetisation, no analytics in this MVP.
 - Android-first. An iOS repository and a Cloudflare Worker API are possible follow-ups, deliberately out of scope here.

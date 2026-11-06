@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+
 import 'package:dudo/game/logic/bot_brain.dart';
 import 'package:dudo/game/models/game_config.dart';
 import 'package:dudo/game/models/table_event.dart';
@@ -19,11 +21,29 @@ GameController createGame({required int seed, required GameConfig config}) {
 GameController playToEnd({required int seed, required GameConfig config}) {
   final controller = createGame(seed: seed, config: config);
   var steps = 0;
+  var trackedRound = -1;
+  int? faceLocked;
 
   while (controller.phase != GamePhase.gameOver && steps < 20000) {
     steps++;
     for (final player in controller.players) {
       expect(player.diceCount, inInclusiveRange(0, 5));
+    }
+
+    if (controller.round != trackedRound) {
+      trackedRound = controller.round;
+      faceLocked = null;
+    }
+    if (controller.palifico) {
+      final pending = controller.currentBid;
+      if (pending != null) {
+        faceLocked ??= pending.face;
+        expect(
+          pending.face,
+          faceLocked,
+          reason: 'seed $seed, step $steps: palifico broken',
+        );
+      }
     }
 
     switch (controller.phase) {
@@ -43,12 +63,21 @@ GameController playToEnd({required int seed, required GameConfig config}) {
                 currentBid: controller.currentBid,
                 calzaEnabled: config.calzaEnabled,
                 nerve: 0,
+                palifico: controller.palifico,
               );
           final accepted = switch (action) {
             BidAction(:final bid) => controller.submitHumanBid(bid),
             DudoAction() => controller.callHumanDudo(),
             CalzaAction() => controller.callHumanCalza(),
           };
+          if (!accepted) {
+            debugPrint(
+              'REFUSED seed=$seed step=$steps act=${action.runtimeType}'
+              ' curBid=${controller.currentBid?.label}'
+              ' palifico=${controller.palifico}'
+              ' dice=${player.dice}',
+            );
+          }
           expect(
             accepted,
             isTrue,

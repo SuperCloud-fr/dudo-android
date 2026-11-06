@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import 'palifico_chip.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/dice_face.dart';
 import '../../../core/widgets/tavern_button.dart';
@@ -14,12 +15,14 @@ class RevealOverlay extends StatefulWidget {
   const RevealOverlay({
     super.key,
     required this.outcome,
+    required this.palifico,
     required this.players,
     required this.applied,
     required this.onContinue,
   });
 
   final ChallengeOutcome outcome;
+  final bool palifico;
   final List<Player> players;
   final bool applied;
   final VoidCallback onContinue;
@@ -117,6 +120,10 @@ class _RevealOverlayState extends State<RevealOverlay>
                                         color: AppColors.parchmentMuted,
                                       ),
                                 ),
+                                if (widget.palifico) ...[
+                                  const SizedBox(height: 8),
+                                  const Center(child: PalificoChip(size: 10)),
+                                ],
                                 const SizedBox(height: 16),
                                 _bidRecap(context, outcome, accent),
                                 const SizedBox(height: 14),
@@ -252,7 +259,7 @@ class _RevealOverlayState extends State<RevealOverlay>
     Color accent,
   ) {
     final faceLabel = outcome.bid.face == 1
-        ? 'as'
+        ? 'paco'
         : 'dés de ${outcome.bid.face}';
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -268,23 +275,27 @@ class _RevealOverlayState extends State<RevealOverlay>
           ),
         ),
         const SizedBox(width: 10),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                faceLabel,
-                style: Theme.of(context).textTheme.titleMedium
-                    ?.copyWith(color: AppColors.parchment),
-              ),
-              Text(
-                'sur la table · ${outcome.bid.quantity} annoncés',
-                style: Theme.of(context).textTheme.bodySmall
-                    ?.copyWith(color: AppColors.parchmentMuted),
-              ),
-            ],
+        Flexible(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 5),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  faceLabel,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium
+                      ?.copyWith(color: AppColors.parchment),
+                ),
+                Text(
+                  'sur la table · ${outcome.bid.quantity} annoncés',
+                  style: Theme.of(context).textTheme.bodySmall
+                      ?.copyWith(color: AppColors.parchmentMuted),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -300,7 +311,12 @@ class _RevealOverlayState extends State<RevealOverlay>
         _DiceRow(
           player: alive[index],
           face: face,
-          matches: PerudoRules.countForFace(alive[index].dice, face),
+          palifico: widget.palifico,
+          matches: PerudoRules.countForFace(
+            alive[index].dice,
+            face,
+            palifico: widget.palifico,
+          ),
           isBidder: alive[index].seat == outcome.bidderSeat,
           isCaller: alive[index].seat == outcome.callerSeat,
           animation: _rowAnimation(index),
@@ -397,6 +413,7 @@ class _DiceRow extends StatelessWidget {
   const _DiceRow({
     required this.player,
     required this.face,
+    required this.palifico,
     required this.matches,
     required this.isBidder,
     required this.isCaller,
@@ -405,6 +422,7 @@ class _DiceRow extends StatelessWidget {
 
   final Player player;
   final int face;
+  final bool palifico;
   final int matches;
   final bool isBidder;
   final bool isCaller;
@@ -467,8 +485,16 @@ class _DiceRow extends StatelessWidget {
                     DiceFace(
                       value: die,
                       size: 25,
-                      highlight: PerudoRules.dieMatches(die, face),
-                      dimmed: !PerudoRules.dieMatches(die, face),
+                      highlight: PerudoRules.dieMatches(
+                        die,
+                        face,
+                        palifico: palifico,
+                      ),
+                      dimmed: !PerudoRules.dieMatches(
+                        die,
+                        face,
+                        palifico: palifico,
+                      ),
                     ),
                 ],
               ),

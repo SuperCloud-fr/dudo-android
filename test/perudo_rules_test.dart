@@ -230,4 +230,154 @@ void main() {
       expect(PerudoRules.dieMatches(2, 1), isFalse);
     });
   });
+
+  group('palifico', () {
+    test('les paco ne sont plus jokers hors du bet paco', () {
+      const dice = [1, 5, 5, 3];
+      expect(PerudoRules.countForFace(dice, 5, palifico: true), 2);
+      expect(PerudoRules.countForFace(dice, 6, palifico: true), 0);
+      expect(PerudoRules.countForFace(dice, 5), 3);
+      expect(PerudoRules.dieMatches(1, 5, palifico: true), isFalse);
+      expect(PerudoRules.dieMatches(1, 1, palifico: true), isTrue);
+      expect(PerudoRules.bidExact(bid(2, 5), dice, palifico: true), isTrue);
+      expect(PerudoRules.bidExact(bid(3, 5), dice, palifico: true), isFalse);
+    });
+
+    test('l\'ouverture doit annoncer au moins 2 de', () {
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: null,
+          next: bid(1, 3),
+          totalDice: 12,
+          palifico: true,
+        ),
+        isFalse,
+      );
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: null,
+          next: bid(2, 3),
+          totalDice: 12,
+          palifico: true,
+        ),
+        isTrue,
+      );
+      expect(
+        PerudoRules.minQuantityForFace(previous: null, face: 3, palifico: true),
+        2,
+      );
+    });
+
+    test('les encheres restent sur la face imposee', () {
+      const previous = Bid(quantity: 3, face: 4, playerSeat: 1);
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: previous,
+          next: bid(4, 4),
+          totalDice: 20,
+          palifico: true,
+        ),
+        isTrue,
+      );
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: previous,
+          next: bid(4, 5),
+          totalDice: 20,
+          palifico: true,
+        ),
+        isFalse,
+      );
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: previous,
+          next: bid(3, 4),
+          totalDice: 20,
+          palifico: true,
+        ),
+        isFalse,
+      );
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: previous,
+          next: bid(5, 4),
+          totalDice: 20,
+          palifico: true,
+        ),
+        isTrue,
+      );
+    });
+
+    test('pas de conversion depuis les paco en palifico', () {
+      const previous = Bid(quantity: 2, face: 1, playerSeat: 1);
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: previous,
+          next: bid(5, 2),
+          totalDice: 20,
+          palifico: true,
+        ),
+        isFalse,
+      );
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: previous,
+          next: bid(3, 1),
+          totalDice: 20,
+          palifico: true,
+        ),
+        isTrue,
+      );
+    });
+
+    test('legalBids ne propose que la face verrouillee', () {
+      final bids = PerudoRules.legalBids(
+        previous: bid(2, 4),
+        totalDice: 10,
+        playerSeat: 0,
+        palifico: true,
+      );
+      expect(bids, isNotEmpty);
+      expect(bids.every((b) => b.face == 4), isTrue);
+      expect(bids.first.quantity, 3);
+      expect(
+        PerudoRules.legalBids(
+          previous: bid(10, 4),
+          totalDice: 10,
+          playerSeat: 0,
+          palifico: true,
+        ),
+        isEmpty,
+      );
+    });
+
+    test('suggestedRaise en palifico', () {
+      expect(
+        PerudoRules.suggestedRaise(
+          previous: bid(3, 4),
+          totalDice: 10,
+          playerSeat: 0,
+          palifico: true,
+        ),
+        bid(4, 4),
+      );
+      expect(
+        PerudoRules.suggestedRaise(
+          previous: bid(10, 4),
+          totalDice: 10,
+          playerSeat: 0,
+          palifico: true,
+        ),
+        isNull,
+      );
+      final opening = PerudoRules.suggestedRaise(
+        previous: null,
+        totalDice: 20,
+        playerSeat: 0,
+        palifico: true,
+      );
+      expect(opening!.quantity, 2);
+      expect(opening.face, 2);
+    });
+  });
 }

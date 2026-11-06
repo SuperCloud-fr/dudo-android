@@ -149,6 +149,11 @@ class _DicePainter extends CustomPainter {
       return;
     }
 
+    if (value == 1) {
+      _paintPaco(canvas, size);
+      return;
+    }
+
     final pipRadius = size.width * (value == 1 ? 0.095 : 0.075);
     for (final index in _layout[value]!) {
       final position = Offset(
@@ -172,6 +177,46 @@ class _DicePainter extends CustomPainter {
         Paint()..color = Colors.white.withValues(alpha: 0.22),
       );
     }
+  }
+
+  /// A little parrot head on the paco die: a deep red oval for the head,
+  /// a hooked beak, and an eye of ivory inked in near-black.
+  void _paintPaco(Canvas canvas, Size size) {
+    final cx = size.width / 2;
+    final cy = size.height / 2 + size.width * 0.012;
+    final r = size.width * 0.115;
+
+    canvas.drawCircle(
+      Offset(cx, cy + size.width * 0.014),
+      r,
+      Paint()..color = Colors.black.withValues(alpha: 0.13),
+    );
+
+    final bird = Path()
+      ..addOval(Rect.fromCircle(center: Offset(cx, cy), radius: r))
+      ..moveTo(cx + r * 0.62, cy - r * 0.18)
+      ..quadraticBezierTo(
+        cx + r * 2.05,
+        cy - r * 0.02,
+        cx + r * 1.62,
+        cy + r * 0.55,
+      )
+      ..quadraticBezierTo(
+        cx + r * 1.30,
+        cy + r * 0.72,
+        cx + r * 0.58,
+        cy + r * 0.34,
+      )
+      ..close();
+    canvas.drawPath(bird, Paint()..color = AppColors.ace);
+
+    final eye = Offset(cx - r * 0.30, cy - r * 0.38);
+    canvas.drawCircle(
+      eye,
+      size.width * 0.032,
+      Paint()..color = AppColors.ivory,
+    );
+    canvas.drawCircle(eye, size.width * 0.0145, Paint()..color = AppColors.pip);
   }
 
   void _paintCompass(Canvas canvas, Size size) {

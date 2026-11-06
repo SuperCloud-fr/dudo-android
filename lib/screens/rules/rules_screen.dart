@@ -72,11 +72,11 @@ class RulesScreen extends StatelessWidget {
                                     SizedBox(height: 10),
                                     _Callout(
                                       icon: Icons.auto_awesome,
-                                      title: 'Les as sont jokers',
+                                      title: 'Les paco sont jokers',
                                       text:
-                                          'Un as (1) compte pour n\'importe quelle face. '
-                                          'Il ne compte que comme un as quand le pari porte sur les as. '
-                                          'Un as vaut donc deux dés normaux au moment de surenchérir.',
+                                          'Un paco (1) compte pour n\'importe quelle face. '
+                                          'Il ne compte que comme un paco quand le pari porte sur les paco. '
+                                          'Un paco vaut donc deux dés normaux au moment de surenchérir.',
                                     ),
                                   ],
                                 ),
@@ -121,12 +121,12 @@ class RulesScreen extends StatelessWidget {
                                       'Même nombre, face plus haute : 4 dés de 5 → 4 dés de 6.',
                                     ),
                                     _Bullet(
-                                      'Vers les as : au moins la moitié, arrondie au-dessus : '
-                                      '4 dés de 5 → 2 as.',
+                                      'Vers les paco : au moins la moitié, arrondie au-dessus : '
+                                      '4 dés de 5 → 2 paco.',
                                     ),
                                     _Bullet(
-                                      'Depuis les as : le double plus un : '
-                                      '2 as → 5 dés de n\'importe quelle face.',
+                                      'Depuis les paco : le double plus un : '
+                                      '2 paco → 5 dés de n\'importe quelle face.',
                                     ),
                                     SizedBox(height: 10),
                                     _ConversionRow(),
@@ -184,6 +184,31 @@ class RulesScreen extends StatelessWidget {
                                   'Un pirate qui perd son dernier dé est à l\'eau. '
                                   'Le dernier survivant gagne la taverne. '
                                   'Le perdant de la manche ouvre la suivante.',
+                                ),
+                              ),
+
+                              _RuleSection(
+                                number: 8,
+                                title: 'Palifico',
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Quand un pirate tombe à un seul dé, la manche suivante devient palifico : le ton monte, et les paris se verrouillent.',
+                                    ),
+                                    const SizedBox(height: 10),
+                                    _Callout(
+                                      icon: Icons.lock_outline,
+                                      title: 'Face imposée',
+                                      text: 'Le premier pari choisit la face. Tous les suivants doivent monter la quantité de cette même face ; impossible de changer de valeur.',
+                                    ),
+                                    const SizedBox(height: 10),
+                                    _Callout(
+                                      icon: Icons.push_pin_outlined,
+                                      title: 'Paco sans joker',
+                                      text: 'Les paco ne comptent que comme paco. L\'ouverture se fait avec au moins deux dés.',
+                                    ),
+                                  ],
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -304,7 +329,7 @@ class _DiceShowcase extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Cinq dés, un as joker, et aucune raison de dire la vérité.',
+            'Cinq dés, un paco joker, et aucune raison de dire la vérité.',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall
                 ?.copyWith(color: AppColors.parchmentDim, fontSize: 12),

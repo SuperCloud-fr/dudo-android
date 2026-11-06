@@ -33,6 +33,7 @@ class GameController extends ChangeNotifier {
 
   GamePhase phase = GamePhase.peek;
   int round = 0;
+  bool palifico = false;
   int starter = 0;
   int currentPlayer = 0;
   Bid? currentBid;
@@ -64,12 +65,14 @@ class GameController extends ChangeNotifier {
     previous: currentBid,
     totalDice: totalDice,
     playerSeat: 0,
+    palifico: palifico,
   );
 
   Bid? get defaultHumanBid => PerudoRules.suggestedRaise(
     previous: currentBid,
     totalDice: totalDice,
     playerSeat: 0,
+    palifico: palifico,
   );
 
   List<TableEvent> get roundEvents =>
@@ -107,6 +110,9 @@ class GameController extends ChangeNotifier {
     outcome = null;
     outcomeApplied = false;
     phase = GamePhase.peek;
+    palifico = players
+        .where((player) => player.isAlive)
+        .any((player) => player.diceCount == 1);
     for (final player in players) {
       if (player.isAlive) {
         player.roll(() => 1 + random.nextInt(6));
@@ -151,6 +157,7 @@ class GameController extends ChangeNotifier {
       previous: currentBid,
       next: normalized,
       totalDice: totalDice,
+      palifico: palifico,
     );
     if (!legal) return false;
 
@@ -190,6 +197,7 @@ class GameController extends ChangeNotifier {
       currentBid: currentBid,
       calzaEnabled: config.calzaEnabled,
       nerve: player.nerve,
+      palifico: palifico,
     );
 
     switch (action) {
@@ -219,6 +227,7 @@ class GameController extends ChangeNotifier {
       previous: currentBid,
       totalDice: totalDice,
       playerSeat: seat,
+      palifico: palifico,
     );
     if (fallback != null && _placeBid(fallback)) return;
     if (currentBid != null && currentBid!.playerSeat != seat) {
@@ -236,7 +245,11 @@ class GameController extends ChangeNotifier {
     for (final player in players) {
       if (player.isAlive) allDice.addAll(player.dice);
     }
-    final actual = PerudoRules.countForFace(allDice, bid.face);
+    final actual = PerudoRules.countForFace(
+      allDice,
+      bid.face,
+      palifico: palifico,
+    );
     final exact = actual == bid.quantity;
     final callerWon = kind == ChallengeKind.dudo
         ? actual < bid.quantity

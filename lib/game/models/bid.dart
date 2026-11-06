@@ -18,20 +18,20 @@ class Bid {
 
   bool get isAces => face == 1;
 
-  String get faceLabel => isAces ? 'as' : '$face';
+  String get faceLabel => isAces ? 'paco' : '$face';
 
   /// "3 as" or "4 dés de 5".
   String get label {
-    if (isAces) return '$quantity as';
+    if (isAces) return '$quantity paco';
     return '$quantity ${quantity == 1 ? 'dé' : 'dés'} de $face';
   }
 
   /// Compact form used in the bid history.
-  String get shortLabel => '$quantity×${isAces ? 'A' : face}';
+  String get shortLabel => '$quantity×${isAces ? 'P' : face}';
 
   String get spokenLabel {
     if (isAces) {
-      return 'au moins $quantity as';
+      return 'au moins $quantity paco';
     }
     return 'au moins $quantity ${quantity == 1 ? 'dé' : 'dés'} de valeur $face';
   }

@@ -17,14 +17,20 @@ import 'widgets/bid_sheet.dart';
 import 'widgets/game_over_overlay.dart';
 import 'widgets/journal_sheet.dart';
 import 'widgets/peek_overlay.dart';
+import 'widgets/palifico_chip.dart';
 import 'widgets/player_seat.dart';
 import 'widgets/reveal_overlay.dart';
 import 'widgets/table_pieces.dart';
 
 class GameScreen extends StatefulWidget {
-  const GameScreen({super.key, required this.config});
+  const GameScreen({
+    super.key,
+    this.config = const GameConfig(),
+    this.controller,
+  });
 
   final GameConfig config;
+  final GameController? controller;
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -38,7 +44,7 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = GameController(config: widget.config);
+    _controller = widget.controller ?? GameController(config: widget.config);
     _lastPhase = _controller.phase;
     _controller.addListener(_onGameChanged);
   }
@@ -133,6 +139,10 @@ class _GameScreenState extends State<GameScreen> {
                   style: Theme.of(context).textTheme.labelMedium
                       ?.copyWith(color: AppColors.brass, letterSpacing: 2.4),
                 ),
+                if (_controller.palifico) ...[
+                  const SizedBox(height: 4),
+                  const Center(child: PalificoChip(size: 10)),
+                ],
                 const SizedBox(height: 2),
                 Text(
                   '${_controller.totalDice} dés en jeu',
@@ -214,6 +224,7 @@ class _GameScreenState extends State<GameScreen> {
                   children: [
                     BidCard(
                       bid: bid,
+                      palifico: _controller.palifico,
                       bidderName: bid == null
                           ? ''
                           : names[bid.playerSeat] ?? '',
@@ -240,6 +251,7 @@ class _GameScreenState extends State<GameScreen> {
       child: DiceTray(
         dice: human.dice,
         diceCount: human.diceCount,
+        palifico: _controller.palifico,
         active: _controller.isHumanTurn,
       ),
     );
@@ -330,10 +342,14 @@ class _GameScreenState extends State<GameScreen> {
         ),
         child: Row(
           children: [
-            Text(
-              '${player.name} réfléchit',
-              style: Theme.of(context).textTheme.titleSmall
-                  ?.copyWith(color: AppColors.parchmentDim, fontSize: 13),
+            Flexible(
+              child: Text(
+                '${player.name} réfléchit',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall
+                    ?.copyWith(color: AppColors.parchmentDim, fontSize: 13),
+              ),
             ),
             const SizedBox(width: 10),
             const ThinkingDots(),
@@ -404,6 +420,7 @@ class _GameScreenState extends State<GameScreen> {
         return PeekOverlay(
           key: ValueKey('peek-${_controller.round}'),
           round: _controller.round,
+          palifico: _controller.palifico,
           dice: _controller.human.dice,
           humanStarts: _controller.starter == 0,
           starterName: _controller.players[_controller.starter].name,
@@ -417,6 +434,7 @@ class _GameScreenState extends State<GameScreen> {
         return RevealOverlay(
           key: ValueKey('reveal-${_controller.round}'),
           outcome: outcome,
+          palifico: _controller.palifico,
           players: _controller.players,
           applied: applied,
           onContinue: applied
@@ -452,6 +470,7 @@ class _GameScreenState extends State<GameScreen> {
       builder: (context) {
         return BidSheet(
           previous: previous,
+          palifico: _controller.palifico,
           previousBidderName: previous == null
               ? ''
               : _controller.players[previous.playerSeat].name,
@@ -527,7 +546,7 @@ class _GameScreenState extends State<GameScreen> {
           ),
           content: Text(
             'Tu penses qu\'il y a exactement ${bid.quantity} '
-            '${bid.face == 1 ? 'as' : 'dés de ${bid.face}'} sur la table. '
+            '${bid.face == 1 ? 'paco' : 'dés de ${bid.face}'} sur la table. '
             'Compte exact : tu gagnes un dé. Sinon, tu en perds un.',
           ),
           actions: [

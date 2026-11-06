@@ -100,6 +100,7 @@ void main() {
       Align(
         alignment: Alignment.bottomCenter,
         child: BidSheet(
+          palifico: false,
           previous: const Bid(quantity: 4, face: 5, playerSeat: 1),
           previousBidderName: 'Barbe-Noire',
           totalDice: 20,

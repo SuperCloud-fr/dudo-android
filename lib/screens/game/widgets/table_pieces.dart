@@ -10,11 +10,13 @@ class DiceTray extends StatelessWidget {
     required this.dice,
     required this.diceCount,
     this.active = false,
+    this.palifico = false,
   });
 
   final List<int> dice;
   final int diceCount;
   final bool active;
+  final bool palifico;
 
   static const _angles = [-0.045, 0.035, -0.02, 0.05, -0.03];
 
@@ -23,7 +25,7 @@ class DiceTray extends StatelessWidget {
     final values = dice.isEmpty ? List<int>.filled(diceCount, 1) : dice;
     return Semantics(
       label:
-          'Ta main : ${values.map((die) => die == 1 ? 'as' : '$die').join(', ')}',
+          'Ta main : ${values.map((die) => die == 1 ? 'paco' : '$die').join(', ')}',
       excludeSemantics: true,
       child: Container(
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
@@ -59,7 +61,7 @@ class DiceTray extends StatelessWidget {
             SectionLabel(
               'Ta main',
               trailing: Text(
-                '${values.length} ${values.length == 1 ? 'dé' : 'dés'} · as joker',
+                '${values.length} ${values.length == 1 ? 'dé' : 'dés'} · ${palifico ? 'paco simples' : 'paco joker'}',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: AppColors.parchmentMuted,
                   letterSpacing: 0.4,

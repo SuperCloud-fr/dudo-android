@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'palifico_chip.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/dice_face.dart';
@@ -9,6 +10,7 @@ class BidCard extends StatelessWidget {
   const BidCard({
     super.key,
     required this.bid,
+    required this.palifico,
     required this.bidderName,
     required this.totalDice,
     required this.starterName,
@@ -16,6 +18,7 @@ class BidCard extends StatelessWidget {
   });
 
   final Bid? bid;
+  final bool palifico;
   final String bidderName;
   final int totalDice;
   final String starterName;
@@ -44,7 +47,16 @@ class BidCard extends StatelessWidget {
               ).animate(animation),
               child: ScaleTransition(
                 scale: Tween<double>(begin: 0.96, end: 1).animate(animation),
-                child: child,
+                child: palifico
+                    ? Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const PalificoChip(),
+                          const SizedBox(height: 10),
+                          child,
+                        ],
+                      )
+                    : child,
               ),
             ),
           );
@@ -55,12 +67,14 @@ class BidCard extends StatelessWidget {
                 starterName: starterName,
                 humanOpens: humanOpens,
                 totalDice: totalDice,
+                palifico: palifico,
               )
             : _FilledBid(
                 key: ValueKey(
                   '${current.quantity}-${current.face}-${current.playerSeat}',
                 ),
                 bid: current,
+                palifico: palifico,
                 bidderName: bidderName,
                 totalDice: totalDice,
               ),
@@ -73,17 +87,20 @@ class _FilledBid extends StatelessWidget {
   const _FilledBid({
     super.key,
     required this.bid,
+    required this.palifico,
     required this.bidderName,
     required this.totalDice,
   });
 
   final Bid bid;
+  final bool palifico;
   final String bidderName;
   final int totalDice;
 
   @override
   Widget build(BuildContext context) {
     return _BidShell(
+      palifico: palifico,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -113,7 +130,7 @@ class _FilledBid extends StatelessWidget {
                   DiceFace(value: bid.face, size: 38),
                   const SizedBox(height: 4),
                   Text(
-                    bid.isAces ? 'AS' : 'DÉS',
+                    bid.isAces ? 'PACO' : 'DÉS',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: AppColors.brassBright,
                       letterSpacing: 1.4,
@@ -125,9 +142,11 @@ class _FilledBid extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            bid.isAces
-                ? 'Seuls les as comptent'
-                : 'Les as comptent pour cette face',
+            palifico && !bid.isAces
+                ? 'Manche palifico : les paco ne comptent pas'
+                : bid.isAces
+                ? 'Seuls les paco comptent'
+                : 'Les paco comptent pour cette face',
             style: Theme.of(context).textTheme.bodySmall
                 ?.copyWith(fontSize: 11.5, color: AppColors.parchmentMuted),
           ),
@@ -179,11 +198,13 @@ class _FilledBid extends StatelessWidget {
 class _EmptyBid extends StatelessWidget {
   const _EmptyBid({
     super.key,
+    required this.palifico,
     required this.starterName,
     required this.humanOpens,
     required this.totalDice,
   });
 
+  final bool palifico;
   final String starterName;
   final bool humanOpens;
   final int totalDice;
@@ -191,6 +212,7 @@ class _EmptyBid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _BidShell(
+      palifico: palifico,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -224,9 +246,10 @@ class _EmptyBid extends StatelessWidget {
 }
 
 class _BidShell extends StatelessWidget {
-  const _BidShell({required this.child});
+  const _BidShell({required this.child, required this.palifico});
 
   final Widget child;
+  final bool palifico;
 
   @override
   Widget build(BuildContext context) {

@@ -47,7 +47,11 @@ abstract final class DiceProbability {
     return _pmf(needed, unknownDice, chance);
   }
 
-  static double chanceForFace(int face) => face == 1 ? 1 / 6 : 2 / 6;
+  static double chanceForFace(int face, {bool palifico = false}) {
+    if (face == 1) return 1 / 6;
+    if (palifico) return 1 / 6;
+    return 2 / 6;
+  }
 }
 
 double _pmf(int successes, int trials, double chance) {
@@ -83,6 +87,7 @@ class BotBrain {
     required Bid? currentBid,
     required bool calzaEnabled,
     required double nerve,
+    bool palifico = false,
   }) {
     if (totalDice <= 0) {
       return const DudoAction();
@@ -96,6 +101,7 @@ class BotBrain {
         currentBid: currentBid,
         calzaEnabled: calzaEnabled,
         nerve: nerve,
+        palifico: palifico,
       );
     }
     return _openBid(
@@ -103,6 +109,7 @@ class BotBrain {
       totalDice: totalDice,
       selfSeat: selfSeat,
       nerve: nerve,
+      palifico: palifico,
     );
   }
 
@@ -113,10 +120,18 @@ class BotBrain {
     required Bid currentBid,
     required bool calzaEnabled,
     required double nerve,
+    required bool palifico,
   }) {
     final unknown = max(0, totalDice - ownDice.length);
-    final ownMatches = PerudoRules.countForFace(ownDice, currentBid.face);
-    final chance = DiceProbability.chanceForFace(currentBid.face);
+    final ownMatches = PerudoRules.countForFace(
+      ownDice,
+      currentBid.face,
+      palifico: palifico,
+    );
+    final chance = DiceProbability.chanceForFace(
+      currentBid.face,
+      palifico: palifico,
+    );
     final needed = max(0, currentBid.quantity - ownMatches);
     final pCurrent = DiceProbability.atLeast(
       needed: needed,
@@ -139,15 +154,20 @@ class BotBrain {
       previous: currentBid,
       totalDice: totalDice,
       playerSeat: selfSeat,
+      palifico: palifico,
     );
     final safe = <Bid>[];
     final probabilities = <Bid, double>{};
     for (final bid in candidates) {
-      final own = PerudoRules.countForFace(ownDice, bid.face);
+      final own = PerudoRules.countForFace(
+        ownDice,
+        bid.face,
+        palifico: palifico,
+      );
       final p = DiceProbability.atLeast(
         needed: max(0, bid.quantity - own),
         unknownDice: unknown,
-        chance: DiceProbability.chanceForFace(bid.face),
+        chance: DiceProbability.chanceForFace(bid.face, palifico: palifico),
       );
       probabilities[bid] = p;
       final bar = (difficulty.raiseConfidence - nerve * 0.05).clamp(0.40, 0.82);
@@ -189,11 +209,13 @@ class BotBrain {
     required int totalDice,
     required int selfSeat,
     required double nerve,
+    required bool palifico,
   }) {
     final candidates = PerudoRules.legalBids(
       previous: null,
       totalDice: totalDice,
       playerSeat: selfSeat,
+      palifico: palifico,
     );
     if (candidates.isEmpty) return const DudoAction();
 

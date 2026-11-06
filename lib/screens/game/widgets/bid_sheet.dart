@@ -7,6 +7,7 @@ import '../../../core/widgets/dice_face.dart';
 import '../../../core/widgets/ornaments.dart';
 import '../../../core/widgets/tavern_button.dart';
 import '../../../game/logic/perudo_rules.dart';
+import 'palifico_chip.dart';
 import '../../../game/models/bid.dart';
 
 class BidSheet extends StatefulWidget {
@@ -16,6 +17,7 @@ class BidSheet extends StatefulWidget {
     required this.previousBidderName,
     required this.totalDice,
     required this.initial,
+    required this.palifico,
     required this.calzaEnabled,
   });
 
@@ -23,6 +25,7 @@ class BidSheet extends StatefulWidget {
   final String previousBidderName;
   final int totalDice;
   final Bid? initial;
+  final bool palifico;
   final bool calzaEnabled;
 
   @override
@@ -42,8 +45,14 @@ class _BidSheetState extends State<BidSheet> {
     _ensureSelectableFace();
   }
 
-  int get _minQuantity =>
-      PerudoRules.minQuantityForFace(previous: widget.previous, face: _face);
+  int? get _minQuantity => PerudoRules.minQuantityForFace(
+    previous: widget.previous,
+    face: _face,
+    palifico: widget.palifico,
+  );
+
+  int get _displayMin =>
+      _minQuantity != null && _minQuantity! >= 1 ? _minQuantity! : 1;
 
   bool get _facePossible => PerudoRules.canBidFace(
     previous: widget.previous,
@@ -53,46 +62,57 @@ class _BidSheetState extends State<BidSheet> {
 
   bool get _isLegal =>
       _facePossible &&
-      _quantity >= _minQuantity &&
+      _minQuantity != null &&
+      _quantity >= _minQuantity! &&
       _quantity <= widget.totalDice &&
       PerudoRules.isLegalRaise(
         previous: widget.previous,
         next: Bid(quantity: _quantity, face: _face, playerSeat: 0),
         totalDice: widget.totalDice,
+        palifico: widget.palifico,
       );
 
   void _ensureSelectableFace() {
-    if (_facePossible && _minQuantity <= widget.totalDice) return;
+    if (widget.palifico && widget.previous != null) {
+      _face = widget.previous!.face;
+      _quantity = _displayMin.clamp(1, widget.totalDice);
+      return;
+    }
+    if (_facePossible &&
+        _minQuantity != null &&
+        _minQuantity! <= widget.totalDice) {
+      return;
+    }
     for (final face in const [2, 3, 4, 5, 6, 1]) {
       if (PerudoRules.canBidFace(
         previous: widget.previous,
         face: face,
         totalDice: widget.totalDice,
+        palifico: widget.palifico,
       )) {
         _face = face;
-        _quantity = _minQuantity;
+        _quantity = _minQuantity ?? 1;
         return;
       }
     }
   }
 
   void _selectFace(int face) {
-    if (!PerudoRules.canBidFace(
+    final min = PerudoRules.minQuantityForFace(
       previous: widget.previous,
       face: face,
-      totalDice: widget.totalDice,
-    )) {
-      return;
-    }
+      palifico: widget.palifico,
+    );
+    if (min == null) return;
     HapticFeedback.selectionClick();
     setState(() {
       _face = face;
-      _quantity = _minQuantity;
+      _quantity = min;
     });
   }
 
   void _changeQuantity(int delta) {
-    final next = (_quantity + delta).clamp(_minQuantity, widget.totalDice);
+    final next = (_quantity + delta).clamp(_displayMin, widget.totalDice);
     if (next == _quantity) return;
     HapticFeedback.selectionClick();
     setState(() => _quantity = next);
@@ -109,7 +129,7 @@ class _BidSheetState extends State<BidSheet> {
   Widget build(BuildContext context) {
     final previous = widget.previous;
     final faceWord = _face == 1
-        ? 'as'
+        ? 'paco'
         : 'dé${_quantity == 1 ? '' : 's'} de $_face';
     final summary = _face == 1
         ? 'Je parie qu\'il y a au moins $_quantity as sur la table.'
@@ -147,6 +167,10 @@ class _BidSheetState extends State<BidSheet> {
                     ),
                   ),
                 ),
+                if (widget.palifico) ...[
+                  const Center(child: PalificoChip()),
+                  const SizedBox(height: 10),
+                ],
                 const SizedBox(height: 18),
                 SectionLabel(
                   previous == null ? 'Ouvrir les hostilités' : 'Ta surenchère',
@@ -196,10 +220,10 @@ class _BidSheetState extends State<BidSheet> {
                 const SizedBox(height: 18),
                 _QuantityPicker(
                   quantity: _quantity,
-                  min: _minQuantity,
+                  min: _displayMin,
                   max: widget.totalDice,
                   isAces: _face == 1,
-                  onMinus: _quantity > _minQuantity
+                  onMinus: _quantity > _displayMin
                       ? () => _changeQuantity(-1)
                       : null,
                   onPlus: _quantity < widget.totalDice
@@ -208,7 +232,9 @@ class _BidSheetState extends State<BidSheet> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'FACE',
+                  widget.palifico && widget.previous != null
+                      ? 'FACE IMPOSÉE'
+                      : 'FACE',
                   style: Theme.of(context).textTheme.labelSmall
                       ?.copyWith(color: AppColors.brassDim, letterSpacing: 2),
                 ),
@@ -226,6 +252,7 @@ class _BidSheetState extends State<BidSheet> {
                               previous: previous,
                               face: face,
                               totalDice: widget.totalDice,
+                              palifico: widget.palifico,
                             ),
                             onTap: () => _selectFace(face),
                           ),
@@ -239,6 +266,7 @@ class _BidSheetState extends State<BidSheet> {
                           previous: previous,
                           face: 1,
                           totalDice: widget.totalDice,
+                          palifico: widget.palifico,
                         ),
                         onTap: () => _selectFace(1),
                         ace: true,
@@ -283,9 +311,13 @@ class _BidSheetState extends State<BidSheet> {
                             ),
                             const SizedBox(height: 3),
                             Text(
-                              _face == 1
-                                  ? 'Seuls les as comptent.'
-                                  : 'Les as comptent pour cette face.',
+                              widget.palifico
+                                  ? widget.previous != null
+                                        ? 'Face imposée : manche palifico.'
+                                        : 'Palifico : la face ouverte vaut pour toute la manche.'
+                                  : _face == 1
+                                  ? 'Seuls les paco comptent.'
+                                  : 'Les paco comptent pour cette face.',
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
                                     color: AppColors.parchmentMuted,
@@ -393,7 +425,7 @@ class _QuantityPicker extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isAces ? 'as' : (quantity == 1 ? 'dé' : 'dés'),
+                  isAces ? 'paco' : (quantity == 1 ? 'dé' : 'dés'),
                   style: Theme.of(context).textTheme.labelMedium
                       ?.copyWith(color: AppColors.brass, letterSpacing: 2),
                 ),
@@ -488,7 +520,7 @@ class _FaceOption extends StatelessWidget {
       button: true,
       selected: selected,
       enabled: enabled,
-      label: ace ? 'As, joker' : 'Valeur $face',
+      label: ace ? 'Paco, joker' : 'Valeur $face',
       excludeSemantics: true,
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 160),
@@ -518,7 +550,7 @@ class _FaceOption extends StatelessWidget {
                     DiceFace(value: face, size: 27),
                     const SizedBox(height: 3),
                     Text(
-                      ace ? 'AS' : '$face',
+                      ace ? 'PACO' : '$face',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: ace
                             ? AppColors.bloodBright

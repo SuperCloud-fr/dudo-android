@@ -11,7 +11,7 @@ Dudo est un jeu de dés **solo contre des pirates** pour Android, écrit en Flut
 ## Ce qui est jouable
 
 - **1 joueur + 1 à 5 pirates IA**, 5 dés par joueur, dernière personne avec un dé gagne.
-- **Règles Perudo complètes** : as joker, surenchères légales, dudo, calza optionnelle, perte de dé, élimination, manche suivante ouverte par le perdant.
+- **Règles Perudo complètes** : as joker, surenchères légales, dudo, calza optionnelle, palifico quand un pirate reste à un seul dé, perte de dé, élimination, manche suivante ouverte par le perdant.
 - **Trois difficultés** : Mousse (prudent), Flibustier (équilibré), Capitaine (probabiliste et féroce).
 - **IA sans triche** : chaque bot ne connaît que ses propres dés, le nombre de dés en jeu et le pari courant. Il estime les probabilités par loi binomiale, avec du bluff et du caractère.
 - **Une vraie table** : gobelet privé, pari courant, historique des trois derniers coups, journal complet, confirmation avant un dudo ou une calza, résultats expliqués dé par dé.
@@ -150,7 +150,7 @@ Taverne sombre et chaleureuse : bois, cuir, feutre vert, laiton, ivoire. Cinzel 
 - **Dépôt iOS** : réutiliser `lib/`, ajouter la cible iOS, vérifier safe areas, back-swipe et Reduce Motion.
 - **API Cloudflare Worker** : salons temps réel, état autoritatif, reconnexion ; le moteur de règles est déjà isolé et portable.
 - **Pass-and-play** sur un seul téléphone.
-- **Palifico**, statistiques persistantes, sons de dés, thèmes de table.
+- statistiques persistantes, sons de dés, thèmes de table.
 
 ## Crédits
 

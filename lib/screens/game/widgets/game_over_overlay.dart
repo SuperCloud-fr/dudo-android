@@ -65,9 +65,6 @@ class _GameOverOverlayState extends State<GameOverOverlay>
     final won = widget.result.humanWon;
     final winner = widget.players[widget.result.winnerSeat];
     final accent = won ? AppColors.brassBright : AppColors.bloodBright;
-    final scale = MediaQuery.disableAnimationsOf(context)
-        ? 1.0
-        : Curves.easeOutBack.transform((_entrance.value / 0.7).clamp(0.0, 1.0));
 
     return SizedBox.expand(
       child: Material(
@@ -95,129 +92,150 @@ class _GameOverOverlayState extends State<GameOverOverlay>
                     child: Center(
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 440),
-                        child: Opacity(
-                          opacity: _entrance.value.clamp(0.0, 1.0),
-                          child: Transform.scale(
-                            scale: 0.94 + scale * 0.06,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SectionLabel(
-                                  won
-                                      ? 'La taverne est à toi'
-                                      : 'Fin de l\'aventure',
-                                  trailing: Text(
-                                    widget.difficultyLabel.toUpperCase(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(color: AppColors.brassDim),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Center(
-                                  child: Container(
-                                    width: 104,
-                                    height: 104,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: RadialGradient(
-                                        colors: [
-                                          accent.withValues(alpha: 0.35),
-                                          AppColors.leatherDeep,
-                                        ],
+                        child: AnimatedBuilder(
+                          animation: _entrance,
+                          builder: (context, _) {
+                            final scale =
+                                MediaQuery.disableAnimationsOf(context)
+                                ? 1.0
+                                : Curves.easeOutBack.transform(
+                                    (_entrance.value / 0.7).clamp(0.0, 1.0),
+                                  );
+                            return Opacity(
+                              opacity: _entrance.value.clamp(0.0, 1.0),
+                              child: Transform.scale(
+                                scale: 0.94 + scale * 0.06,
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    SectionLabel(
+                                      won
+                                          ? 'La taverne est à toi'
+                                          : 'Fin de l\'aventure',
+                                      trailing: Text(
+                                        widget.difficultyLabel.toUpperCase(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .labelSmall
+                                            ?.copyWith(
+                                              color: AppColors.brassDim,
+                                            ),
                                       ),
-                                      border: Border.all(
-                                        color: accent,
-                                        width: 2,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Center(
+                                      child: Container(
+                                        width: 104,
+                                        height: 104,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: RadialGradient(
+                                            colors: [
+                                              accent.withValues(alpha: 0.35),
+                                              AppColors.leatherDeep,
+                                            ],
+                                          ),
+                                          border: Border.all(
+                                            color: accent,
+                                            width: 2,
+                                          ),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: accent.withValues(
+                                                alpha: 0.24,
+                                              ),
+                                              blurRadius: 32,
+                                            ),
+                                          ],
+                                        ),
+                                        child: Icon(
+                                          won
+                                              ? Icons.emoji_events_outlined
+                                              : Icons.waves,
+                                          size: 50,
+                                          color: accent,
+                                        ),
                                       ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: accent.withValues(alpha: 0.24),
-                                          blurRadius: 32,
+                                    ),
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      won ? 'TU RÈGNES' : 'PAR-DESSUS BORD',
+                                      textAlign: TextAlign.center,
+                                      maxLines: 2,
+                                      style: AppTypography.inscription(
+                                        size: won ? 40 : 30,
+                                        color: won
+                                            ? AppColors.brassBright
+                                            : AppColors.parchment,
+                                        letterSpacing: won ? 4 : 2,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      won
+                                          ? 'L\'équipage a rendu les armes. La dernière chope est pour toi.'
+                                          : 'Les pirates t\'ont eu. ${winner.name} garde la main sur le tonneau.',
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            color: AppColors.parchmentMuted,
+                                          ),
+                                    ),
+                                    const SizedBox(height: 18),
+                                    Wrap(
+                                      alignment: WrapAlignment.center,
+                                      spacing: 10,
+                                      runSpacing: 8,
+                                      children: [
+                                        _Stat(
+                                          value: '${widget.result.rounds}',
+                                          label: 'manches',
+                                        ),
+                                        _Stat(
+                                          value:
+                                              '${widget.result.humanDiceLeft}',
+                                          label: 'dés restants',
                                         ),
                                       ],
                                     ),
-                                    child: Icon(
-                                      won
-                                          ? Icons.emoji_events_outlined
-                                          : Icons.waves,
-                                      size: 50,
-                                      color: accent,
+                                    const SizedBox(height: 20),
+                                    Text(
+                                      'LE DERNIER MOT',
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .labelSmall
+                                          ?.copyWith(
+                                            color: AppColors.brassDim,
+                                            letterSpacing: 2,
+                                          ),
                                     ),
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                Text(
-                                  won ? 'TU RÈGNES' : 'PAR-DESSUS BORD',
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  style: AppTypography.inscription(
-                                    size: won ? 40 : 30,
-                                    color: won
-                                        ? AppColors.brassBright
-                                        : AppColors.parchment,
-                                    letterSpacing: won ? 4 : 2,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  won
-                                      ? 'L\'équipage a rendu les armes. La dernière chope est pour toi.'
-                                      : 'Les pirates t\'ont eu. ${winner.name} garde la main sur le tonneau.',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(
-                                        color: AppColors.parchmentMuted,
-                                      ),
-                                ),
-                                const SizedBox(height: 18),
-                                Wrap(
-                                  alignment: WrapAlignment.center,
-                                  spacing: 10,
-                                  runSpacing: 8,
-                                  children: [
-                                    _Stat(
-                                      value: '${widget.result.rounds}',
-                                      label: 'manches',
+                                    const SizedBox(height: 10),
+                                    ..._standings(context, accent),
+                                    const SizedBox(height: 22),
+                                    TavernButton(
+                                      label: 'Rejouer',
+                                      icon: Icons.replay,
+                                      expand: true,
+                                      onPressed: widget.onRematch,
                                     ),
-                                    _Stat(
-                                      value: '${widget.result.humanDiceLeft}',
-                                      label: 'dés restants',
+                                    const SizedBox(height: 10),
+                                    TavernButton(
+                                      label: 'Retour à la taverne',
+                                      icon: Icons.home_outlined,
+                                      tone: TavernButtonTone.ghost,
+                                      expand: true,
+                                      onPressed: widget.onMenu,
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 20),
-                                Text(
-                                  'LE DERNIER MOT',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.labelSmall
-                                      ?.copyWith(
-                                        color: AppColors.brassDim,
-                                        letterSpacing: 2,
-                                      ),
-                                ),
-                                const SizedBox(height: 10),
-                                ..._standings(context, accent),
-                                const SizedBox(height: 22),
-                                TavernButton(
-                                  label: 'Rejouer',
-                                  icon: Icons.replay,
-                                  expand: true,
-                                  onPressed: widget.onRematch,
-                                ),
-                                const SizedBox(height: 10),
-                                TavernButton(
-                                  label: 'Retour à la taverne',
-                                  icon: Icons.home_outlined,
-                                  tone: TavernButtonTone.ghost,
-                                  expand: true,
-                                  onPressed: widget.onMenu,
-                                ),
-                              ],
-                            ),
-                          ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
