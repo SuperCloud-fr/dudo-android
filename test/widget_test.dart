@@ -22,13 +22,6 @@ Future<void> settleRoute(WidgetTester tester) async {
 
 void main() {
   testWidgets('la taverne mène à une partie complète', (tester) async {
-    FlutterError.onError = (FlutterErrorDetails d) {
-      debugPrint('OVF: ${d.exception}');
-      debugPrint(
-        '${d.stack ?? FlutterError.demangleStackTrace(StackTrace.empty) ?? FlutterError.demangleStackTrace(StackTrace.current)}',
-      );
-      FlutterError.dumpErrorToConsole(d);
-    };
     await pumpApp(tester);
 
     expect(find.text('DUDO'), findsOneWidget);
