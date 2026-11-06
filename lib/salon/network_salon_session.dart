@@ -297,13 +297,21 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
   @override
   Future<void> startGame() async {
     if (_disposed || role != SalonRole.host || isStarting) return;
+    // Several taps while the Worker answers must not queue several rounds.
+    final pending = _startCompleter;
+    if (pending != null) return pending.future;
     final completer = Completer<void>();
     _startCompleter = completer;
     _sendJson(const <String, dynamic>{'type': 'start'});
     await completer.future.timeout(handshakeTimeout, onTimeout: () {});
-    _startCompleter = null;
-    isStarting = true;
-    notifyListeners();
+    final confirmed = completer.isCompleted;
+    if (identical(_startCompleter, completer)) {
+      _startCompleter = null;
+    }
+    if (confirmed) {
+      isStarting = true;
+      notifyListeners();
+    }
   }
 
   void _sendBots(int count) {

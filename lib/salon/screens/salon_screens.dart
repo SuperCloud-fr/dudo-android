@@ -388,6 +388,7 @@ class SalonLobbyScreen extends StatefulWidget {
 
 class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   bool _tableOpened = false;
+  bool _starting = false;
 
   @override
   void initState() {
@@ -498,10 +499,17 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                             const SizedBox(height: 16),
                             if (isHost)
                               TavernButton(
-                                label: 'Lancer la manche',
-                                icon: Icons.sports_esports_outlined,
+                                label: _starting
+                                    ? 'La manche se prépare…'
+                                    : 'Lancer la manche',
+                                icon: _starting
+                                    ? Icons.hourglass_top
+                                    : Icons.sports_esports_outlined,
                                 expand: true,
-                                onPressed: session.players.length >= 2
+                                onPressed:
+                                    session.players.length >= 2 &&
+                                        !_starting &&
+                                        !_tableOpened
                                     ? () => _openTable(context)
                                     : null,
                               ),
@@ -575,9 +583,12 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   /// the network table — relayed engine on the host, snapshot mirror on
   /// the guests. Local sessions navigate to their offline engine as before.
   Future<void> _openTable(BuildContext context) async {
+    if (_starting || _tableOpened) return;
+    setState(() => _starting = true);
     await widget.session.startGame();
     if (!context.mounted) return;
     if (!widget.session.isStarting) {
+      if (mounted) setState(() => _starting = false);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('La manche n\u2019a pas pu démarrer. Réessaie.'),
@@ -585,6 +596,9 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       );
       return;
     }
+    // The started-listener may already have pushed the table.
+    if (_tableOpened) return;
+    _tableOpened = true;
     _pushTable(context);
   }
 

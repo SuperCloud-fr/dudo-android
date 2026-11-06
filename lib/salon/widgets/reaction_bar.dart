@@ -113,10 +113,8 @@ class _ReactionBarState extends State<ReactionBar> {
                           widget.onSendReaction(emoji);
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 3,
-                          ),
+                          width: 34,
+                          height: 30,
                           alignment: Alignment.center,
                           child: Text(
                             emoji,

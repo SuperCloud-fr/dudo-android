@@ -183,6 +183,65 @@ void main() {
     expect(harness.session.isStarting, isTrue);
   });
 
+  test('startGame concurrent → un seul start émis vers le Worker', () async {
+    final harness = Harness();
+    final creation = harness.session.createSalon('Cap Hôte', 0);
+    await settle();
+    final channel = harness.channel(
+      'wss://api.dudo.supercloud.fr/salons/S99FTH/ws',
+    );
+    await untilOneSent(channel);
+    channel.serverSends(
+      salonFrame(
+        you: 0,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+          {'seat': 1, 'name': 'Anne', 'bot': false},
+        ],
+      ),
+    );
+    await creation;
+
+    final first = harness.session.startGame();
+    final second = harness.session.startGame();
+    final third = harness.session.startGame();
+    await settle();
+    expect(framesOf(channel.sent, 'start'), hasLength(1));
+
+    channel.serverSends(const <String, dynamic>{'type': 'started'});
+    await Future.wait([first, second, third]);
+    expect(harness.session.isStarting, isTrue);
+  });
+
+  test(
+    'startGame sans confirmation du Worker ne prétend pas démarré',
+    () async {
+      final harness = Harness(timeoutMillis: 40);
+      final creation = harness.session.createSalon('Cap Hôte', 0);
+      await settle();
+      final channel = harness.channel(
+        'wss://api.dudo.supercloud.fr/salons/S99FTH/ws',
+      );
+      await untilOneSent(channel);
+      channel.serverSends(
+        salonFrame(
+          you: 0,
+          players: <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+            {'seat': 1, 'name': 'Anne', 'bot': false},
+          ],
+        ),
+      );
+      await creation;
+
+      await harness.session.startGame();
+      expect(harness.session.isStarting, isFalse);
+      // A second press may retry once the pending attempt expired.
+      await harness.session.startGame();
+      expect(framesOf(channel.sent, 'start'), hasLength(2));
+    },
+  );
+
   test('startGame côté invité reste silencieux', () async {
     final harness = Harness();
     final joining = harness.session.joinSalon('S99FTH', 'Anne');
