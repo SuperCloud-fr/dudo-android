@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The multiplayer salon talks to api.dudo.supercloud.fr over HTTPS/WSS.
+         Release builds do NOT inherit the debug/profile manifests, so the
+         permission must live here. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:label="Dudo"
         android:name="${applicationName}"

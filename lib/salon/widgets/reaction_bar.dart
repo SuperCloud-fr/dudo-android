@@ -49,7 +49,18 @@ class _ReactionBarState extends State<ReactionBar> {
   @override
   void initState() {
     super.initState();
-    _targetPlayer = _secondPlayer;
+    _targetPlayer = widget.players.isEmpty ? null : _secondPlayer;
+  }
+
+  @override
+  void didUpdateWidget(covariant ReactionBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_targetPlayer == null && widget.players.isNotEmpty) {
+      _targetPlayer = _secondPlayer;
+    } else if (_targetPlayer != null &&
+        !widget.players.any((player) => player.seat == _targetPlayer!.seat)) {
+      _targetPlayer = widget.players.isEmpty ? null : _secondPlayer;
+    }
   }
 
   @override

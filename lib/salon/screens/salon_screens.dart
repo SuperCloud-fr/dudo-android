@@ -199,14 +199,22 @@ class _CreateSalonScreenState extends State<CreateSalonScreen> {
                             ? 'Toi'
                             : _name.text.trim();
                         await widget.session.createSalon(name, _bots);
-                        if (context.mounted) {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute<void>(
-                              builder: (_) =>
-                                  SalonLobbyScreen(session: widget.session),
-                            ),
-                          );
+                        if (!context.mounted) return;
+                        if (widget.session.code.isEmpty ||
+                            widget.session.players.isEmpty) {
+                          final last = widget.session.messages.isEmpty
+                              ? 'La création du salon a échoué.'
+                              : widget.session.messages.last.body;
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(SnackBar(content: Text(last)));
+                          return;
                         }
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute<void>(
+                            builder: (_) =>
+                                SalonLobbyScreen(session: widget.session),
+                          ),
+                        );
                       },
                     ),
                   ],
