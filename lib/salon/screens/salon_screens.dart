@@ -14,11 +14,12 @@ import '../widgets/salon_bits.dart';
 import '../widgets/salon_crew_card.dart';
 
 /// "Créer un salon" / "Rejoindre un salon" and the lobby with code sharing,
-/// IA adjustment, live reactions and chat.
+/// IA adjustment, live reactions and chat. Works with any [SalonSession]
+/// implementation (local prototype or network backend).
 class SalonHomeScreen extends StatelessWidget {
   const SalonHomeScreen({super.key, required this.session});
 
-  final LocalSalonSession session;
+  final SalonSession session;
 
   @override
   Widget build(BuildContext context) {
@@ -60,8 +61,8 @@ class SalonHomeScreen extends StatelessWidget {
                     const SizedBox(height: 6),
                     const SalonHint(
                       'Les amis entrent avec un code à six caractères. '
-                      'Pour l\u2019instant la manche se joue hors-ligne contre '
-                      'l\u2019équipage du salon.',
+                      'L\u2019hôte distribue les pirates IA, le salon '
+                      'communique en direct par le Worker.',
                     ),
                     const SizedBox(height: 24),
                     TavernButton(
@@ -106,7 +107,7 @@ class SalonHomeScreen extends StatelessWidget {
 class CreateSalonScreen extends StatefulWidget {
   const CreateSalonScreen({super.key, required this.session});
 
-  final LocalSalonSession session;
+  final SalonSession session;
 
   @override
   State<CreateSalonScreen> createState() => _CreateSalonScreenState();
@@ -220,7 +221,7 @@ class _CreateSalonScreenState extends State<CreateSalonScreen> {
 class JoinSalonScreen extends StatefulWidget {
   const JoinSalonScreen({super.key, required this.session});
 
-  final LocalSalonSession session;
+  final SalonSession session;
 
   @override
   State<JoinSalonScreen> createState() => _JoinSalonScreenState();
@@ -332,6 +333,15 @@ class _JoinSalonScreenState extends State<JoinSalonScreen> {
                                     _code.text,
                                     _name.text.trim(),
                                   );
+                                  if (context.mounted && !result.ok) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          result.message ?? 'Salon injoignable pour l\u2019instant.',
+                                        ),
+                                      ),
+                                    );
+                                  }
                                   if (context.mounted && result.ok) {
                                     Navigator.of(context).pushReplacement(
                                       MaterialPageRoute<void>(
@@ -360,7 +370,7 @@ class _JoinSalonScreenState extends State<JoinSalonScreen> {
 class SalonLobbyScreen extends StatefulWidget {
   const SalonLobbyScreen({super.key, required this.session});
 
-  final LocalSalonSession session;
+  final SalonSession session;
 
   @override
   State<SalonLobbyScreen> createState() => _SalonLobbyScreenState();
@@ -465,31 +475,32 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                             ],
                             _PlayersCard(session: session, isHost: isHost),
                             const SizedBox(height: 16),
-                            TavernButton(
-                              label: 'Lancer la manche',
-                              icon: Icons.sports_esports_outlined,
-                              expand: true,
-                              onPressed: session.players.length >= 2
-                                  ? () async {
-                                      await session.startGame();
-                                      if (context.mounted) {
-                                        Navigator.of(
-                                          context,
-                                          rootNavigator: true,
-                                        ).push(
-                                          MaterialPageRoute<void>(
-                                            builder: (_) => GameScreen(
-                                              config: GameConfig(
-                                                opponentCount:
-                                                    session.bots.length,
+                            if (isHost)
+                              TavernButton(
+                                label: 'Lancer la manche',
+                                icon: Icons.sports_esports_outlined,
+                                expand: true,
+                                onPressed: session.players.length >= 2
+                                    ? () async {
+                                        await session.startGame();
+                                        if (context.mounted) {
+                                          Navigator.of(
+                                            context,
+                                            rootNavigator: true,
+                                          ).push(
+                                            MaterialPageRoute<void>(
+                                              builder: (_) => GameScreen(
+                                                config: GameConfig(
+                                                  opponentCount:
+                                                      session.bots.length,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        );
+                                          );
+                                        }
                                       }
-                                    }
-                                  : null,
-                            ),
+                                    : null,
+                              ),
                             if (!isHost) ...[
                               const SizedBox(height: 8),
                               const SalonHint(
@@ -560,7 +571,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
 class _ShareRow extends StatelessWidget {
   const _ShareRow({required this.session});
 
-  final LocalSalonSession session;
+  final SalonSession session;
 
   @override
   Widget build(BuildContext context) {
@@ -628,7 +639,7 @@ class _ShareRow extends StatelessWidget {
 class _PlayersCard extends StatelessWidget {
   const _PlayersCard({required this.session, required this.isHost});
 
-  final LocalSalonSession session;
+  final SalonSession session;
   final bool isHost;
 
   @override

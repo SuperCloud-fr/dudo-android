@@ -8,6 +8,8 @@ import '../../core/widgets/dice_face.dart';
 import '../../core/widgets/ornaments.dart';
 import '../../core/widgets/tavern_background.dart';
 import '../../core/widgets/tavern_button.dart';
+import '../../salon/network_salon_session.dart';
+import '../../salon/screens/salon_screens.dart';
 import '../rules/rules_screen.dart';
 import '../setup/setup_screen.dart';
 
@@ -94,6 +96,22 @@ class HomeScreen extends StatelessWidget {
                                   Navigator.of(context).push(
                                     MaterialPageRoute<void>(
                                       builder: (_) => const SetupScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              TavernButton(
+                                label: 'Salons multijoueurs',
+                                icon: Icons.groups_3_outlined,
+                                tone: TavernButtonTone.ghost,
+                                expand: true,
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => SalonHomeScreen(
+                                        session: NetworkSalonSession(),
+                                      ),
                                     ),
                                   );
                                 },
