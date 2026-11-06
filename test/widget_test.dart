@@ -11,6 +11,16 @@ Future<void> pumpApp(
   tester.view.physicalSize = Size(size.width * 3, size.height * 3);
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
+  final previousOnError = FlutterError.onError;
+  FlutterError.onError = (FlutterErrorDetails d) {
+    debugPrint('OVF-DATA:');
+    if (d.informationCollector != null) {
+      for (final info in d.informationCollector!.call()) {
+        debugPrint('OVF-INFO: $info');
+      }
+    }
+    previousOnError?.call(d);
+  };
   await tester.pumpWidget(const DudoApp());
   await tester.pump(const Duration(milliseconds: 350));
 }
