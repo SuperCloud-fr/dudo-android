@@ -1,6 +1,13 @@
-# Dudo 0.2.0 — bêta 2 : la table respire
+# Dudo 0.2.0 — bêta 3 : l'équipage s'internationalise
 
 Merci de faire partie des premiers testeurs. Dudo est un **Perudo de taverne**, pour Android. Cinq dés, un gobelet, tout le monde ment.
+
+## Nouveau dans cette bêta 3
+
+- **Anglais** : l'app suit la langue du téléphone (français par défaut) — accueil, règles, partie et salon traduits avec l'esprit du jeu conservé ; c'est le début de la chaîne de traduction.
+- **Icône de l'app redessinée** : le dé « paco » au perroquet, écran de démarrage aligné.
+- **Typographie de marque** : les titres passent en **Alkatra** (gravé à la main, brief d'identité visuelle) ; le corps reste Alegreya Sans.
+- **Salons plus solides** : l'app parle désormais l'**API v1** du serveur (`/api/v1/salons`), affiche clairement le délai si la création est bridée (429), et limite elle-même le débit du chat et des réactions (rafale de 3, puis 1 par seconde) pour ne jamais risquer l'expulsion.
 
 Cette bêta couvre le **multijoueur en ligne** : jusqu'à 6 pirates, chacun sur son téléphone, avec un code de salon à six caractères.
 
