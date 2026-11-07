@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -24,17 +23,29 @@ class SalonRequestThrottled implements Exception {
 /// and say so.
 mixin _ChatBucket {
   static const _capacity = 3;
-  static const _window = Duration(seconds: 3);
+  static const _refillPerSecond = 1.0;
 
-  final List<DateTime> _chatStamps = <DateTime>[];
+  double _tokens = _capacity.toDouble();
+  DateTime _lastTick = DateTime.now();
+  int _remainingWait = 1;
 
   bool _spendChat() {
     final now = DateTime.now();
-    _chatStamps.removeWhere((stamp) => now.difference(stamp) > _window);
-    if (_chatStamps.length >= _capacity) return false;
-    _chatStamps.add(now);
-    return true;
+    final elapsed = now.difference(_lastTick).inMilliseconds / 1000.0;
+    final tokens = _tokens + elapsed * _refillPerSecond;
+    _lastTick = now;
+    if (tokens >= 1) {
+      // Spend the token AFTER capping the free refill at capacity.
+      _tokens = (tokens > _capacity ? _capacity.toDouble() : tokens) - 1;
+      return true;
+    }
+    _tokens = tokens;
+    final wait = (1 - tokens).ceil();
+    _remainingWait = wait < 1 ? 1 : wait;
+    return false;
   }
+
+  int get _chatWait => _remainingWait;
 }
 
 /// A `game` or `snapshot` payload relayed by the Worker from the host
@@ -65,7 +76,7 @@ class RelayedTableMessage {
 /// Worker serves the site and the API on dudo.supercloud.fr and the old
 /// api.* host no longer resolves.
 class NetworkSalonSession extends SalonSession
-    with _ChatBucket
+    with _ChatBucket, WidgetsBindingObserver
     implements SalonBackend {
   NetworkSalonSession({
     List<String>? baseUrls,
@@ -73,7 +84,12 @@ class NetworkSalonSession extends SalonSession
     this.channelFactory,
     this.handshakeTimeout = const Duration(seconds: 8),
     this.reconnectDelay = const Duration(milliseconds: 1200),
-  }) : baseUrls = List<String>.unmodifiable(baseUrls ?? defaultBaseUrls);
+  }) : baseUrls = List<String>.unmodifiable(baseUrls ?? defaultBaseUrls) {
+    // Phone sleep cuts the WS; observe the lifecycle so a locked screen
+    // suspends the recovery machinery and an unlock reconnects ONCE with
+    // a plain sentence instead of a failure loop.
+    WidgetsBinding.instance.addObserver(this);
+  }
 
   static const List<String> defaultBaseUrls = [
     'https://dudo.supercloud.fr',
@@ -104,6 +120,11 @@ class NetworkSalonSession extends SalonSession
   Completer<SalonJoinResult>? _joinCompleter;
   Completer<void>? _startCompleter;
   bool _closedByServer = false;
+
+  /// True from the moment Android freezes the app (screen locked) to its
+  /// resume, so socket losses during the doze stay silent here and the
+  /// resume tells the story once, in one sentence.
+  bool _appSuspended = false;
   bool _disposed = false;
   bool _recovering = false;
   Timer? _recoveryTimer;
@@ -338,23 +359,43 @@ class NetworkSalonSession extends SalonSession
 
   @override
   Future<void> sendReaction(String emoji) async {
-    if (_channel == null) return;
+    if (_channel == null) {
+      pushSystemMessage(
+        'La connexion au salon est lâchée — la réaction ne peut pas partir.',
+      );
+      return;
+    }
     if (!_spendChat()) {
-      pushSystemMessage('Trop de messages, ralentis un peu.');
+      pushSystemMessage('Débit du salon atteint — attends ${_chatWait}s.');
       return;
     }
     _sendJson(<String, dynamic>{'type': 'reaction', 'emoji': emoji});
+    _appendDialogue(
+      {'seat': you >= 0 ? you : 0, 'name': myName, 'emoji': emoji},
+      bodyOf: (_) => '',
+      emojiOf: (raw) => '${raw['emoji'] ?? ''}',
+    );
   }
 
   @override
   Future<void> sendChat(String body) async {
     final text = body.trim();
-    if (_channel == null || text.isEmpty) return;
+    if (text.isEmpty) return;
+    if (_channel == null) {
+      pushSystemMessage(
+        'La connexion au salon est lâchée — le message ne peut pas partir.',
+      );
+      return;
+    }
     if (!_spendChat()) {
-      pushSystemMessage('Trop de messages, ralentis un peu.');
+      pushSystemMessage('Débit du salon atteint — attends ${_chatWait}s.');
       return;
     }
     _sendJson(<String, dynamic>{'type': 'chat', 'text': text});
+    _appendDialogue(
+      {'seat': you >= 0 ? you : 0, 'name': myName, 'text': text},
+      bodyOf: (raw) => '${raw['text'] ?? ''}',
+    );
   }
 
   @override
@@ -520,6 +561,20 @@ class NetworkSalonSession extends SalonSession
     if (stringBody.isEmpty && (stringEmoji ?? '').isEmpty) {
       return;
     }
+
+    // Optimistic sends are rendered the moment the user speaks; when the
+    // server echo of the very same line lands, skip it instead of
+    // duplicating the bubble.
+    if (messages.isNotEmpty && messages.last.isMine) {
+      final last = messages.last;
+      final sameLine =
+          last.isMine &&
+          last.body == stringBody &&
+          last.emoji == stringEmoji &&
+          DateTime.now().difference(last.at) < const Duration(seconds: 4);
+      if (sameLine) return;
+    }
+
     messages.add(
       SalonMessage(
         authorSeat: seat,
@@ -555,6 +610,12 @@ class NetworkSalonSession extends SalonSession
       notifyListeners();
       return;
     }
+    // While the phone dozes, the socket dies quietly: no failure loop in
+    // the thread, the resume message tells the whole story.
+    if (_appSuspended) {
+      _scheduleRecovery();
+      return;
+    }
     // The relay dropped us unexpectedly: try one automatic recovery. The
     // close code travels in the message so a phone-side mystery shows up
     // in the thread instead of staying silent (e.g. 1006 = transport lost
@@ -566,6 +627,30 @@ class NetworkSalonSession extends SalonSession
         : ' (fermeture $closeCode${closeReason == null || closeReason.isEmpty ? '' : ' — $closeReason'})';
     pushSystemMessage('Connexion perdue$detail — tentative de reconnexion…');
     _scheduleRecovery();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+      case AppLifecycleState.detached:
+        _appSuspended = true;
+        // Timers frozen by the OS fire back-to-back on resume and miss —
+        // drop the queued retry, the resume handles one clean attempt.
+        _recoveryTimer?.cancel();
+        _recoveryTimer = null;
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.resumed:
+        final wasSuspended = _appSuspended;
+        _appSuspended = false;
+        if (!wasSuspended || _disposed || code.isEmpty) return;
+        if (_channel != null) return; // socket survived the doze
+        pushSystemMessage(
+          'Le téléphone a mis le salon en sommeil — reconnexion…',
+        );
+        _scheduleRecovery();
+    }
   }
 
   void _scheduleRecovery() {
@@ -614,6 +699,7 @@ class NetworkSalonSession extends SalonSession
   void dispose() {
     if (_disposed) return;
     _disposed = true;
+    WidgetsBinding.instance.removeObserver(this);
     _recoveryTimer?.cancel();
     _recoveryTimer = null;
     _frames?.cancel();

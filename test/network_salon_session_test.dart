@@ -536,7 +536,7 @@ void main() {
     expect(framesOf(channel.sent, 'chat'), hasLength(3));
     expect(
       harness.session.messages.last.body,
-      contains('ralentis'),
+      contains('attends'),
       reason: 'le refus local doit être visible',
     );
   });
