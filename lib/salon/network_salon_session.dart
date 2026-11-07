@@ -7,6 +7,35 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'salon_models.dart';
 
+/// Raised when the edge refuses a salon creation (429 + retry-after).
+class SalonRequestThrottled implements Exception {
+  SalonRequestThrottled(this.retryAfter);
+
+  final int retryAfter;
+
+  @override
+  String toString() => ' SalonRequestThrottled($retryAfter)';
+}
+
+/// Client mirror of the Worker's chat bucket: a burst of 3 then one
+/// message per second. Chat and reactions share the same bucket there,
+/// and 3 refusals evict the socket (1008), so the app must pace itself
+/// and say so.
+mixin _ChatBucket {
+  static const _capacity = 3;
+  static const _window = Duration(seconds: 3);
+
+  final List<DateTime> _chatStamps = <DateTime>[];
+
+  bool _spendChat() {
+    final now = DateTime.now();
+    _chatStamps.removeWhere((stamp) => now.difference(stamp) > _window);
+    if (_chatStamps.length >= _capacity) return false;
+    _chatStamps.add(now);
+    return true;
+  }
+}
+
 /// A `game` or `snapshot` payload relayed by the Worker from the host
 /// (host-authoritative play). Every client replays it locally.
 @immutable
@@ -32,7 +61,9 @@ class RelayedTableMessage {
 /// Candidate hosts ([baseUrls]) are tried in order; the first one whose
 /// handshake completes wins and is remembered in [activeBaseUrl], so the
 /// app keeps working while api.dudo.supercloud.fr is being wired up.
-class NetworkSalonSession extends SalonSession implements SalonBackend {
+class NetworkSalonSession extends SalonSession
+    with _ChatBucket
+    implements SalonBackend {
   NetworkSalonSession({
     List<String>? baseUrls,
     this.createSalonCode,
@@ -115,6 +146,12 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
       try {
         if (await _openSalon(base, host, wanted)) return;
       } catch (error) {
+        if (error is SalonRequestThrottled) {
+          pushSystemMessage(
+            'Trop de demandes de création — réessaie dans ~${error.retryAfter} s.',
+          );
+          return;
+        }
         lastFailure = error.toString();
       }
     }
@@ -144,14 +181,23 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
   Future<String?> _postSalonCode(String base, String host) async {
     final client = HttpClient()..connectionTimeout = handshakeTimeout;
     try {
+      // API v1 (2026-11): the Worker keeps /salons as a legacy alias; the
+      // app speaks the versioned surface. A 429 carries retry-after.
       final request = await client
-          .postUrl(Uri.parse('$base/salons'))
+          .postUrl(Uri.parse('$base/api/v1/salons'))
           .timeout(handshakeTimeout);
       request.headers
         ..set(HttpHeaders.contentTypeHeader, 'application/json')
         ..set(HttpHeaders.acceptHeader, 'application/json');
       request.write(jsonEncode({'name': host}));
       final response = await request.close().timeout(handshakeTimeout);
+      if (response.statusCode == 429) {
+        // The edge protects creation per IP; surface the wait instead of
+        // blindly hammering the other hosts.
+        final waitRaw = response.headers.value(HttpHeaders.retryAfterHeader);
+        final wait = int.tryParse(waitRaw ?? '') ?? 1;
+        throw SalonRequestThrottled(wait);
+      }
       if (response.statusCode != 201) {
         return null;
       }
@@ -257,7 +303,9 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
   }
 
   Future<WebSocketChannel> _connect(String base) async {
-    final uri = Uri.parse('$base/salons/$code/ws')
+    // API v1 (2026-11): the versioned WS surface; the legacy /salons
+    // path remains a Worker-side alias.
+    final uri = Uri.parse('$base/api/v1/salons/$code/ws')
         .replace(scheme: base.startsWith('https://') ? 'wss' : 'ws');
     final factory = channelFactory;
     if (factory != null) {
@@ -288,6 +336,10 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
   @override
   Future<void> sendReaction(String emoji) async {
     if (_channel == null) return;
+    if (!_spendChat()) {
+      pushSystemMessage('Trop de messages, ralentis un peu.');
+      return;
+    }
     _sendJson(<String, dynamic>{'type': 'reaction', 'emoji': emoji});
   }
 
@@ -295,6 +347,10 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
   Future<void> sendChat(String body) async {
     final text = body.trim();
     if (_channel == null || text.isEmpty) return;
+    if (!_spendChat()) {
+      pushSystemMessage('Trop de messages, ralentis un peu.');
+      return;
+    }
     _sendJson(<String, dynamic>{'type': 'chat', 'text': text});
   }
 
