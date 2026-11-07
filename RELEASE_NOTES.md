@@ -1,7 +1,6 @@
-# Dudo 0.2.0 — bêta 3 : l'équipage s'internationalise
+# Dudo 0.2.0 — bêta 4 : l'équipage change de port
 
-Merci de faire partie des premiers testeurs. Dudo est un **Perudo de taverne**, pour Android. Cinq dés, un gobelet, tout le monde ment.
-
+Les salons parlent au nouveau serveur **`https://dudo.supercloud.fr`** — le point de montage `api.*` n'existe plus en DNS. La beta 3 ne peut pas rejoindre les salons, celle-ci oui. Aucun autre changement.
 ## Nouveau dans cette bêta 3
 
 - **Anglais** : l'app suit la langue du téléphone (français par défaut) — accueil, règles, partie et salon traduits avec l'esprit du jeu conservé ; c'est le début de la chaîne de traduction.
