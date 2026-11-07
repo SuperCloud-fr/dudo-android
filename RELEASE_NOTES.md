@@ -1,6 +1,9 @@
-# Dudo 0.2.0 — bêta 4 : l'équipage change de port
+# Dudo 0.2.0 — bêta 5 : le salon parle de ses coupures
 
-Les salons parlent au nouveau serveur **`https://dudo.supercloud.fr`** — le point de montage `api.*` n'existe plus en DNS. La beta 3 ne peut pas rejoindre les salons, celle-ci oui. Aucun autre changement.
+- Les messages système expliquent **pourquoi** la connexion a lâché (code de fermeture WebSocket, erreur réseau du téléphone) — utile pour croiser les blocages VPN/DNS opérateur/box.
+- L'accueil garde son pied de page hors du bandeau feutre (le chevauchement « v0.1 · … » est corrigé).
+
+Rappel bêta 4 : l'app parle au serveur **`https://dudo.supercloud.fr`** — la beta 3 ne voit pas les salons.
 
 ## bêta 3
 

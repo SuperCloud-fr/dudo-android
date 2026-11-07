@@ -38,8 +38,10 @@ class HomeScreen extends StatelessWidget {
             SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
+                  // The felt band rises on tall screens; keep the
+                  // scroll column's footer clear of it.
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(24, 18, 24, 18),
+                    padding: const EdgeInsets.fromLTRB(24, 18, 24, 110),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(
                         minHeight: constraints.maxHeight - 36,
