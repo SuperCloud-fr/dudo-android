@@ -179,44 +179,100 @@ class _DicePainter extends CustomPainter {
     }
   }
 
-  /// A little parrot head on the paco die: a deep red oval for the head,
-  /// a hooked beak, and an eye of ivory inked in near-black.
+  /// A little parrot head on the paco die: a round head, a fat hooked beak
+  /// overlays it (darker mandibles + ivory highlight), an ivory eye ring
+  /// and a small swept crest. Reads clean from 12 px to 240 px.
   void _paintPaco(Canvas canvas, Size size) {
-    final cx = size.width / 2;
+    // Pull the figure left: the hooked beak extends right, so the visual
+    // centre of the face sits on the die's centre.
+    final cx = size.width / 2 - size.width * 0.055;
     final cy = size.height / 2 + size.width * 0.012;
-    final r = size.width * 0.115;
+    final r = size.width * 0.185;
 
+    // Soft drop shadow keeps the face from floating on the ivory body.
     canvas.drawCircle(
-      Offset(cx, cy + size.width * 0.014),
-      r,
-      Paint()..color = Colors.black.withValues(alpha: 0.13),
+      Offset(cx, cy + size.width * 0.020),
+      r * 1.05,
+      Paint()..color = Colors.black.withValues(alpha: 0.10),
     );
 
-    final bird = Path()
-      ..addOval(Rect.fromCircle(center: Offset(cx, cy), radius: r))
-      ..moveTo(cx + r * 0.62, cy - r * 0.18)
+    // Round head: the personality of the face.
+    canvas.drawCircle(Offset(cx, cy), r, Paint()..color = AppColors.ace);
+
+    // Lower mandible: a dark wedge peeking from under the hook, over the
+    // chin, its grain hinting at the mouth.
+    final lower = Path()
+      ..moveTo(cx + r * 0.24, cy + r * 0.78)
       ..quadraticBezierTo(
-        cx + r * 2.05,
-        cy - r * 0.02,
-        cx + r * 1.62,
-        cy + r * 0.55,
+        cx + r * 0.95,
+        cy + r * 1.06,
+        cx + r * 1.42,
+        cy + r * 0.66,
       )
       ..quadraticBezierTo(
-        cx + r * 1.30,
-        cy + r * 0.72,
-        cx + r * 0.58,
-        cy + r * 0.34,
+        cx + r * 1.00,
+        cy + r * 0.82,
+        cx + r * 0.55,
+        cy + r * 1.08,
       )
       ..close();
-    canvas.drawPath(bird, Paint()..color = AppColors.ace);
+    canvas.drawPath(lower, Paint()..color = AppColors.brassDim);
 
-    final eye = Offset(cx - r * 0.30, cy - r * 0.38);
-    canvas.drawCircle(
-      eye,
-      size.width * 0.032,
-      Paint()..color = AppColors.ivory,
+    // Upper mandible: one big brass mass. A bloated circle with the hook
+    // curling to a point at the chin, both drawn after the head so the
+    // beak confidently overlaps the face.
+    final blobCenter = Offset(cx + r * 1.14, cy - r * 0.10);
+    final blobRadius = r * 0.64;
+    final upper = Path()
+      ..addArc(
+        Rect.fromCircle(center: blobCenter, radius: blobRadius),
+        math.pi * 5 / 6,
+        math.pi * 25 / 18,
+      )
+      ..cubicTo(
+        cx + r * 1.35,
+        cy + r * 0.85,
+        cx + r * 1.10,
+        cy + r * 1.05,
+        cx + r * 0.55,
+        cy + r * 1.02,
+      )
+      ..cubicTo(
+        cx + r * 0.90,
+        cy + r * 0.65,
+        cx + r * 0.95,
+        cy + r * 0.20,
+        cx + r * 0.80,
+        cy + r * 0.16,
+      )
+      ..close();
+    canvas.drawPath(upper, Paint()..color = AppColors.brass);
+
+    // Candle-lit sheen riding the top of the beak's bulge.
+    final sheen = Path()
+      ..addArc(
+        Rect.fromCircle(center: blobCenter, radius: blobRadius * 0.72),
+        -math.pi * 5 / 9,
+        math.pi * 5 / 18,
+      );
+    canvas.drawPath(
+      sheen,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = size.width * 0.014
+        ..strokeCap = StrokeCap.round
+        ..color = Colors.white.withValues(alpha: 0.55),
     );
-    canvas.drawCircle(eye, size.width * 0.0145, Paint()..color = AppColors.pip);
+
+    // Ivory eye ring with a deep pupil and a candle-lit glint.
+    final eye = Offset(cx + r * 0.22, cy - r * 0.14);
+    canvas.drawCircle(eye, r * 0.32, Paint()..color = AppColors.ivory);
+    canvas.drawCircle(eye, r * 0.18, Paint()..color = AppColors.pip);
+    canvas.drawCircle(
+      Offset(eye.dx - r * 0.06, eye.dy - r * 0.07),
+      r * 0.055,
+      Paint()..color = Colors.white.withValues(alpha: 0.9),
+    );
   }
 
   void _paintCompass(Canvas canvas, Size size) {
