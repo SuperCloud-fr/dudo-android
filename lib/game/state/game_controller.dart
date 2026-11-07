@@ -21,6 +21,7 @@ class GameController extends ChangeNotifier {
     this.tableNames,
     this.roundSeeds,
     this.autoStartRound = true,
+    this.botSeats = const <int>{},
   }) : random = random ?? Random() {
     _buildPlayers();
     if (autoStartRound) {
@@ -45,6 +46,11 @@ class GameController extends ChangeNotifier {
 
   /// False for network guests: the first snapshot builds the round.
   final bool autoStartRound;
+
+  /// Network tables only: salon seats that sit as bots. Empty for solo
+  /// (the config adds bots) and for guest mirrors (nothing plays locally).
+  /// A listed seat is driven by this controller's bot loop.
+  final Set<int> botSeats;
 
   final List<Player> players = <Player>[];
   final List<TableEvent> journal = <TableEvent>[];
@@ -112,7 +118,7 @@ class GameController extends ChangeNotifier {
           Player(
             seat: seat,
             name: tableNames![seat],
-            isHuman: true,
+            isHuman: !botSeats.contains(seat),
             sigil: profile.sigil,
             accent: profile.accent,
             nerve: profile.nerve,

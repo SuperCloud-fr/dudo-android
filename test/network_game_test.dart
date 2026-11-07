@@ -63,11 +63,15 @@ class TwoPhones {
           )
           .toList();
 
-  HostGameRelay startHostRelay() {
+  HostGameRelay startHostRelay({
+    Set<int> botSeats = const <int>{},
+    List<String> names = const ['Cap Hôte', 'Anne', 'Bob'],
+  }) {
     relay = HostGameRelay(
       session: hostHarness.session,
-      names: ['Cap Hôte', 'Anne', 'Bob'],
+      names: names,
       seedFactory: () => 424242,
+      botSeats: botSeats,
     );
     relay!.start();
     return relay!;
@@ -79,7 +83,9 @@ void main() {
 
   /// Both phones handshake against the scripted Worker, the salon frame
   /// lands on each socket, then the relay and the mirror come up.
-  Future<TwoPhones> openTable() async {
+  Future<TwoPhones> openTable({
+    List<Map<String, dynamic>> seats = TwoPhones.salonJson,
+  }) async {
     final phones = TwoPhones();
     final creating = phones.hostHarness.session.createSalon('Cap Hôte', 0);
     final joining = phones.guestHarness.session.joinSalon('S99FTH', 'Anne');
@@ -88,8 +94,8 @@ void main() {
     final guestChannel = phones.guestChannel();
     await untilOneSent(hostChannel);
     await untilOneSent(guestChannel);
-    hostChannel.serverSends(salonFrame(you: 0, players: TwoPhones.salonJson));
-    guestChannel.serverSends(salonFrame(you: 1, players: TwoPhones.salonJson));
+    hostChannel.serverSends(salonFrame(you: 0, players: seats));
+    guestChannel.serverSends(salonFrame(you: 1, players: seats));
     final joinResult = await joining;
     await creating;
     await settle();
@@ -247,4 +253,70 @@ void main() {
       relay.dispose();
     },
   );
+
+  test('les PNJ du salon jouent sur le téléphone de l\u2019hôte', () async {
+    final phones = await openTable(
+      seats: const [
+        {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+        {'seat': 1, 'name': 'Anne', 'bot': false},
+        {'seat': 2, 'name': 'Mérou', 'bot': true},
+      ],
+    );
+
+    final relay = phones.startHostRelay(
+      botSeats: {2},
+      names: ['Cap Hôte', 'Anne', 'Mérou'],
+    );
+    final host = relay.controller;
+
+    final guest = GuestGameController(
+      config: const GameConfig(opponentCount: 2),
+      session: phones.guestHarness.session,
+      names: ['Cap Hôte', 'Anne', 'Mérou'],
+    );
+    await phones.forwardHostToGuest();
+
+    // The bot seat is no longer holed up as a human on the host engine.
+    expect(host.players[2].isHuman, isFalse);
+    expect(host.autoPlayBots, isTrue);
+    // The guest mirror stays view-only: nobody plays locally.
+    expect(guest.autoPlayBots, isFalse);
+    expect(guest.players[1].isHuman, isTrue);
+
+    host.beginBidding();
+    expect(
+      host.submitHumanBid(const Bid(quantity: 2, face: 2, playerSeat: 0)),
+      isTrue,
+      reason: 'l\u2019hôte ouvre',
+    );
+    expect(host.currentBid!.playerSeat, 0);
+
+    // The guest Anne raises through the relay.
+    relay.handleTable(
+      RelayedTableMessage(
+        kind: 'game',
+        fromSeat: 1,
+        payload: const <String, dynamic>{'kind': 'bid', 'quantity': 3, 'face': 2},
+      ),
+    );
+    expect(host.currentBid!.playerSeat, 1);
+    expect(host.currentPlayer, 2, reason: 'au tour du PNJ');
+
+    // Online bots play when told to (same code path as the solo timer).
+    host.performBotMove();
+    final botEvent = host.journal.last;
+    expect(botEvent.playerSeat, 2);
+    expect(
+      botEvent.kind == TableEventKind.bid || botEvent.kind == TableEventKind.dudo,
+      isTrue,
+      reason: 'le PNJ enchérit ou annonce dudo',
+    );
+
+    // The bot's move is broadcast; the guest sees it re-based.
+    await phones.forwardHostToGuest();
+    expect(guest.journal.last.playerSeat, 1, reason: 'siège 2 vu de chez Anne');
+
+    guest.dispose();
+    relay.dispose();
+  });
 }

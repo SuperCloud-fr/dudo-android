@@ -105,6 +105,7 @@ class HostGameRelay {
     GameConfig? config,
     bool calzaEnabled = true,
     int Function()? seedFactory,
+    Set<int> botSeats = const <int>{},
   }) {
     controller = GameController(
       config:
@@ -114,8 +115,11 @@ class HostGameRelay {
             calzaEnabled: calzaEnabled,
           ),
       tableNames: names,
+      botSeats: botSeats,
+      // Salon bots play on the host phone and their bids flow through the
+      // usual snapshot broadcast; guests stay pure mirrors.
+      autoPlayBots: botSeats.isNotEmpty,
       roundSeeds: seedFactory ?? _defaultRollSeed,
-      autoPlayBots: false,
     );
     controller.addListener(_broadcasting);
     _tableSubscription = session.tableEvents.listen(handleTable);

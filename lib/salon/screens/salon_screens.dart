@@ -625,7 +625,16 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
     ];
 
     if (network.role == SalonRole.host) {
-      final relay = HostGameRelay(session: network, names: names);
+      // Salon bots sit on those seats; the host controller plays them.
+      final botSeats = {
+        for (final player in network.players)
+          if (player.isBot) player.seat,
+      };
+      final relay = HostGameRelay(
+        session: network,
+        names: names,
+        botSeats: botSeats,
+      );
       relay.start();
       navigator.push(
         MaterialPageRoute<void>(
