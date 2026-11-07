@@ -22,7 +22,7 @@ Future<void> pumpApp(
     previousOnError?.call(d);
   };
   tester.platformDispatcher.textScaleFactorTestValue = 1.15;
-  await tester.pumpWidget(const DudoApp());
+  await tester.pumpWidget(const DudoApp(locale: Locale('fr')));
   await tester.pump(const Duration(milliseconds: 350));
 }
 

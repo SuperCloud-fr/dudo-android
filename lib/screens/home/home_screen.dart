@@ -8,6 +8,7 @@ import '../../core/widgets/dice_face.dart';
 import '../../core/widgets/ornaments.dart';
 import '../../core/widgets/tavern_background.dart';
 import '../../core/widgets/tavern_button.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../salon/network_salon_session.dart';
 import '../../salon/screens/salon_screens.dart';
 import '../rules/rules_screen.dart';
@@ -19,6 +20,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.ink,
       body: TavernBackground(
@@ -50,9 +52,9 @@ class HomeScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               SectionLabel(
-                                'Taverne du dernier dé',
+                                l10n.homeTavernSection,
                                 trailing: Text(
-                                  'SOLO · HORS LIGNE',
+                                  l10n.homeSoloBadge,
                                   style: Theme.of(context).textTheme.labelSmall
                                       ?.copyWith(
                                         color: AppColors.brassDim,
@@ -71,7 +73,7 @@ class HomeScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 24),
                               Text(
-                                'Cinq dés. Un gobelet.\nTout le monde ment.',
+                                l10n.homeTagline,
                                 textAlign: TextAlign.center,
                                 style: AppTypography.inscription(
                                   size: 21,
@@ -83,14 +85,14 @@ class HomeScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Le Perudo des pirates, contre un équipage qui sait bluffer.',
+                                l10n.homeSubtitle,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(color: AppColors.parchmentMuted),
                               ),
                               const SizedBox(height: 26),
                               TavernButton(
-                                label: 'Jouer',
+                                label: l10n.ctaPlay,
                                 icon: Icons.casino_outlined,
                                 expand: true,
                                 onPressed: () {
@@ -103,7 +105,7 @@ class HomeScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 10),
                               TavernButton(
-                                label: 'Salons multijoueurs',
+                                label: l10n.ctaSalons,
                                 icon: Icons.groups_3_outlined,
                                 tone: TavernButtonTone.ghost,
                                 expand: true,
@@ -130,7 +132,7 @@ class HomeScreen extends StatelessWidget {
                                   Icons.menu_book_outlined,
                                   size: 17,
                                 ),
-                                label: const Text('Comment jouer ?'),
+                                label: Text(l10n.ctaHowTo),
                               ),
                               TextButton.icon(
                                 onPressed: () {
@@ -144,7 +146,7 @@ class HomeScreen extends StatelessWidget {
                                   Icons.tune_outlined,
                                   size: 17,
                                 ),
-                                label: const Text('Réglages'),
+                                label: Text(l10n.ctaSettings),
                               ),
                               const SizedBox(height: 14),
                               Row(
@@ -165,7 +167,7 @@ class HomeScreen extends StatelessWidget {
                                   const SizedBox(width: 8),
                                   Flexible(
                                     child: Text(
-                                      'v0.1 · 2 à 6 joueurs',
+                                      l10n.homeVersionBadge,
                                       style: Theme.of(context)
                                           .textTheme
                                           .labelSmall

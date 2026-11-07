@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_palette.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/tavern_background.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// Réglages : the look of the tavern lives here. Picking an atmosphere
 /// repaints every screen through [PaletteStore]; the choice rides in
@@ -14,6 +15,7 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.ink,
       body: TavernBackground(
@@ -28,7 +30,7 @@ class SettingsScreen extends StatelessWidget {
                       height: constraints.maxHeight,
                       child: Column(
                         children: [
-                          _topBar(context),
+                          _topBar(context, l10n.settingsTitle),
                           Expanded(
                             child: SingleChildScrollView(
                               padding: const EdgeInsets.fromLTRB(20, 10, 20, 28),
@@ -36,7 +38,7 @@ class SettingsScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   Text(
-                                    'L\u2019ambiance',
+                                    l10n.settingsAmbienceTitle,
                                     style: AppTypography.inscription(
                                       size: 30,
                                       color: AppColors.parchment,
@@ -45,8 +47,7 @@ class SettingsScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'La table ne change pas. La lumière, si — '
-                                    'choisis l\u2019endroit où tu couches tes dés.',
+                                    l10n.settingsAmbienceHint,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
@@ -79,7 +80,7 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  Widget _topBar(BuildContext context) {
+  Widget _topBar(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
       child: Row(
@@ -91,7 +92,7 @@ class SettingsScreen extends StatelessWidget {
           ),
           Expanded(
             child: Text(
-              'RÉGLAGES',
+              title,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: AppColors.brass,
@@ -114,6 +115,7 @@ class _LookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final border = active
         ? AppColors.brass
         : AppColors.brassDim.withValues(alpha: 0.6);
@@ -150,7 +152,7 @@ class _LookCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 3),
                     Text(
-                      active ? 'Choisi' : 'Toucher pour choisir',
+                      active ? l10n.lookChosen : l10n.lookPick,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: active
                             ? AppColors.brass

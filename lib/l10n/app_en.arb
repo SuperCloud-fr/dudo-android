@@ -1,0 +1,19 @@
+{
+  "@@locale": "en",
+  "appTitle": "Dudo",
+  "homeWordmark": "DUDO",
+  "homeTavernSection": "Tavern of the Last Die",
+  "homeSoloBadge": "SOLO · OFFLINE",
+  "homeTagline": "Five dice. One cup.\nEveryone lies.",
+  "homeSubtitle": "Pirates' Perudo, against a crew that knows how to bluff.",
+  "ctaPlay": "Play",
+  "ctaSalons": "Multiplayer salons",
+  "ctaHowTo": "How to play?",
+  "ctaSettings": "Settings",
+  "homeVersionBadge": "v0.1 · 2 to 6 players",
+  "settingsTitle": "SETTINGS",
+  "settingsAmbienceTitle": "The atmosphere",
+  "settingsAmbienceHint": "The table never changes. The light does — pick where you lay your dice.",
+  "lookChosen": "Chosen",
+  "lookPick": "Tap to choose"
+}

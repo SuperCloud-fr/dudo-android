@@ -24,6 +24,7 @@ dev_dependencies:
   stream_channel: ^2.1.0
 
 flutter:
+  generate: true
   uses-material-design: true
 
   fonts:

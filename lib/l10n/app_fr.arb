@@ -1,0 +1,19 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Dudo",
+  "homeWordmark": "DUDO",
+  "homeTavernSection": "Taverne du dernier dé",
+  "homeSoloBadge": "SOLO · HORS LIGNE",
+  "homeTagline": "Cinq dés. Un gobelet.\nTout le monde ment.",
+  "homeSubtitle": "Le Perudo des pirates, contre un équipage qui sait bluffer.",
+  "ctaPlay": "Jouer",
+  "ctaSalons": "Salons multijoueurs",
+  "ctaHowTo": "Comment jouer ?",
+  "ctaSettings": "Réglages",
+  "homeVersionBadge": "v0.1 · 2 à 6 joueurs",
+  "settingsTitle": "RÉGLAGES",
+  "settingsAmbienceTitle": "L'ambiance",
+  "settingsAmbienceHint": "La table ne change pas. La lumière, si — choisis l'endroit où tu couches tes dés.",
+  "lookChosen": "Choisi",
+  "lookPick": "Toucher pour choisir"
+}

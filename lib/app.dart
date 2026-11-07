@@ -3,15 +3,20 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/theme/app_palette.dart';
 import 'core/theme/app_theme.dart';
+import 'l10n/generated/app_localizations.dart';
 import 'screens/home/home_screen.dart';
 
 class DudoApp extends StatelessWidget {
-  const DudoApp({super.key});
+  const DudoApp({this.locale});
+
+  /// Tests pin the languages; production follows the device.
+  final Locale? locale;
 
   @override
   Widget build(BuildContext context) {
     // The look is hot-swappable (settings page): the whole MaterialApp
-    // rebuilds whenever the palette changes.
+    // rebuilds whenever the palette changes. Language follows the device;
+    // French is the source of truth, English tags along.
     return PaletteView(
       builder: (context, palette) {
         return MaterialApp(
@@ -21,9 +26,10 @@ class DudoApp extends StatelessWidget {
           theme: AppTheme.dark(),
           darkTheme: AppTheme.dark(),
           themeMode: ThemeMode.dark,
-          locale: const Locale('fr'),
-          supportedLocales: const [Locale('fr'), Locale('en')],
+          locale: locale,
+          supportedLocales: const [Locale('en'), Locale('fr')],
           localizationsDelegates: const [
+            AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
