@@ -4,7 +4,15 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/ornaments.dart';
 import '../../../core/widgets/tavern_button.dart';
+import '../../../l10n/generated/app_localizations.dart';
+import '../../../l10n/generated/app_localizations_fr.dart';
 import '../../../game/models/player.dart';
+
+/// Localization may be absent in bare test hosts that pump this widget
+/// without the app's delegates; French is the source of truth
+/// (see lib/app.dart), so fall back to the French book.
+AppLocalizations _l10n(BuildContext context) =>
+    AppLocalizations.of(context) ?? AppLocalizationsFr();
 
 class GameOverOverlay extends StatefulWidget {
   const GameOverOverlay({
@@ -62,6 +70,7 @@ class _GameOverOverlayState extends State<GameOverOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n(context);
     final won = widget.result.humanWon;
     final winner = widget.players[widget.result.winnerSeat];
     final accent = won ? AppColors.brassBright : AppColors.bloodBright;
@@ -112,8 +121,8 @@ class _GameOverOverlayState extends State<GameOverOverlay>
                                   children: [
                                     SectionLabel(
                                       won
-                                          ? 'La taverne est à toi'
-                                          : 'Fin de l\'aventure',
+                                          ? l10n.overWonSection
+                                          : l10n.overLostSection,
                                       trailing: Text(
                                         widget.difficultyLabel.toUpperCase(),
                                         style: Theme.of(context)
@@ -161,7 +170,9 @@ class _GameOverOverlayState extends State<GameOverOverlay>
                                     ),
                                     const SizedBox(height: 20),
                                     Text(
-                                      won ? 'TU RÈGNES' : 'PAR-DESSUS BORD',
+                                      won
+                                          ? l10n.overWonTitle
+                                          : l10n.overLostTitle,
                                       textAlign: TextAlign.center,
                                       maxLines: 2,
                                       style: AppTypography.inscription(
@@ -175,8 +186,10 @@ class _GameOverOverlayState extends State<GameOverOverlay>
                                     const SizedBox(height: 8),
                                     Text(
                                       won
-                                          ? 'L\'équipage a rendu les armes. La dernière chope est pour toi.'
-                                          : 'Les pirates t\'ont eu. ${winner.name} garde la main sur le tonneau.',
+                                          ? l10n.overWonBody
+                                          : l10n.overLostBody(
+                                              winner.name,
+                                            ),
                                       textAlign: TextAlign.center,
                                       style: Theme.of(context)
                                           .textTheme
@@ -193,18 +206,18 @@ class _GameOverOverlayState extends State<GameOverOverlay>
                                       children: [
                                         _Stat(
                                           value: '${widget.result.rounds}',
-                                          label: 'manches',
+                                          label: l10n.overStatRounds,
                                         ),
                                         _Stat(
                                           value:
                                               '${widget.result.humanDiceLeft}',
-                                          label: 'dés restants',
+                                          label: l10n.overStatDiceLeft,
                                         ),
                                       ],
                                     ),
                                     const SizedBox(height: 20),
                                     Text(
-                                      'LE DERNIER MOT',
+                                      l10n.overLastWord,
                                       textAlign: TextAlign.center,
                                       style: Theme.of(context)
                                           .textTheme
@@ -218,14 +231,14 @@ class _GameOverOverlayState extends State<GameOverOverlay>
                                     ..._standings(context, accent),
                                     const SizedBox(height: 22),
                                     TavernButton(
-                                      label: 'Rejouer',
+                                      label: l10n.overRematch,
                                       icon: Icons.replay,
                                       expand: true,
                                       onPressed: widget.onRematch,
                                     ),
                                     const SizedBox(height: 10),
                                     TavernButton(
-                                      label: 'Retour à la taverne',
+                                      label: l10n.overBackToTavern,
                                       icon: Icons.home_outlined,
                                       tone: TavernButtonTone.ghost,
                                       expand: true,
@@ -254,6 +267,7 @@ class _GameOverOverlayState extends State<GameOverOverlay>
       for (var index = 0; index < widget.result.standings.length; index++)
         Builder(
           builder: (context) {
+            final l10n = _l10n(context);
             final seat = widget.result.standings[index];
             final player = widget.players[seat];
             final isWinner = seat == widget.result.winnerSeat;
@@ -326,8 +340,8 @@ class _GameOverOverlayState extends State<GameOverOverlay>
                     ),
                   Text(
                     player.diceCount == 0
-                        ? 'à l\'eau'
-                        : '${player.diceCount} ${player.diceCount == 1 ? 'dé' : 'dés'}',
+                        ? l10n.overStandingOut
+                        : l10n.overStandingDice(player.diceCount),
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: player.isHuman
                           ? AppColors.brass

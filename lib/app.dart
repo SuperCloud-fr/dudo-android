@@ -7,7 +7,7 @@ import 'l10n/generated/app_localizations.dart';
 import 'screens/home/home_screen.dart';
 
 class DudoApp extends StatelessWidget {
-  const DudoApp({this.locale});
+  const DudoApp({super.key, this.locale});
 
   /// Tests pin the languages; production follows the device.
   final Locale? locale;

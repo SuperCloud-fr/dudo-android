@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 
-/// Type roles. Cinema-style inscription for the sign, a warm humanist sans
-/// for everything that has to be read while a pirate is lying to you.
+/// Type roles. Alkatra is the brand's carved display face (see
+/// docs/brand); Alegreya Sans stays the warm humanist sans for
+/// everything that has to be read while a pirate is lying to you.
+/// Cinzel remains bundled as the previous display face.
 abstract final class AppTypography {
-  static const display = 'Cinzel';
+  static const display = 'Alkatra';
   static const body = 'AlegreyaSans';
 
   static const List<FontVariation> _inscription400 = [

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/ornaments.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../game/models/player.dart';
 import '../../../game/models/table_event.dart';
 
@@ -20,6 +21,7 @@ class JournalSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final rounds = <int, List<TableEvent>>{};
     for (final event in events) {
       rounds.putIfAbsent(event.round, () => []).add(event);
@@ -62,10 +64,10 @@ class JournalSheet extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SectionLabel('Journal de la table'),
+                          SectionLabel(l10n.journalTitle),
                           const SizedBox(height: 6),
                           Text(
-                            'Tout ce qui s\'est dit.',
+                            l10n.journalSubtitle,
                             style: AppTypography.inscription(
                               size: 22,
                               color: AppColors.parchment,
@@ -86,7 +88,7 @@ class JournalSheet extends StatelessWidget {
                         border: Border.all(color: AppColors.grain),
                       ),
                       child: Text(
-                        'Manche $currentRound',
+                        l10n.journalRoundBadge(currentRound),
                         style: Theme.of(context).textTheme.labelSmall
                             ?.copyWith(color: AppColors.brass),
                       ),
@@ -97,10 +99,10 @@ class JournalSheet extends StatelessWidget {
               const Divider(),
               Flexible(
                 child: events.isEmpty
-                    ? const Padding(
-                        padding: EdgeInsets.all(32),
+                    ? Padding(
+                        padding: const EdgeInsets.all(32),
                         child: Text(
-                          'Le journal est encore vierge. Les paris vont pleuvoir.',
+                          l10n.journalEmpty,
                           textAlign: TextAlign.center,
                         ),
                       )
@@ -111,9 +113,9 @@ class JournalSheet extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8, top: 4),
                               child: SectionLabel(
-                                'Manche $round',
+                                l10n.journalRoundBadge(round),
                                 trailing: Text(
-                                  '${rounds[round]!.length} parole${rounds[round]!.length > 1 ? 's' : ''}',
+                                  l10n.journalRoundWords(rounds[round]!.length),
                                   style: Theme.of(context).textTheme.labelSmall
                                       ?.copyWith(
                                         color: AppColors.parchmentMuted,
@@ -132,7 +134,7 @@ class JournalSheet extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(20, 6, 20, 12),
                 child: TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Fermer le journal'),
+                  child: Text(l10n.journalClose),
                 ),
               ),
             ],
@@ -151,23 +153,24 @@ class _JournalRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final player = players[event.playerSeat];
     final name = player.isHuman ? 'Toi' : player.name;
     final (icon, color, text) = switch (event.kind) {
       TableEventKind.bid => (
         Icons.casino_outlined,
         AppColors.brass,
-        '$name a annoncé ${event.bid?.label ?? ''}.',
+        l10n.journalSaidBid(name, event.bid?.label ?? ''),
       ),
       TableEventKind.dudo => (
         Icons.front_hand_outlined,
         AppColors.bloodBright,
-        '$name a dit dudo.',
+        l10n.journalSaidDudo(name),
       ),
       TableEventKind.calza => (
         Icons.gps_fixed,
         AppColors.brassBright,
-        '$name a demandé calza.',
+        l10n.journalSaidCalza(name),
       ),
     };
     return Padding(

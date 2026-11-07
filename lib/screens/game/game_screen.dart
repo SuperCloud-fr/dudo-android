@@ -12,6 +12,7 @@ import '../../game/models/bid.dart';
 import '../../game/models/game_config.dart';
 import '../../game/models/table_event.dart';
 import '../../game/state/game_controller.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'widgets/bid_card.dart';
 import 'widgets/bid_sheet.dart';
 import 'widgets/game_over_overlay.dart';
@@ -120,13 +121,14 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildTopBar(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 2),
       child: Row(
         children: [
           RoundIconButton(
             icon: Icons.close,
-            semanticLabel: 'Quitter la partie',
+            semanticLabel: l10n.gameQuitTable,
             onPressed: _confirmQuit,
             size: 48,
           ),
@@ -135,7 +137,7 @@ class _GameScreenState extends State<GameScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'MANCHE ${_controller.round}',
+                  l10n.gameRound(_controller.round),
                   style: Theme.of(context).textTheme.labelMedium
                       ?.copyWith(color: AppColors.brass, letterSpacing: 2.4),
                 ),
@@ -145,7 +147,7 @@ class _GameScreenState extends State<GameScreen> {
                 ],
                 const SizedBox(height: 2),
                 Text(
-                  '${_controller.totalDice} dés en jeu',
+                  l10n.gameDiceInPlay(_controller.totalDice),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: AppColors.parchmentMuted,
                     letterSpacing: 0.5,
@@ -156,7 +158,7 @@ class _GameScreenState extends State<GameScreen> {
           ),
           RoundIconButton(
             icon: Icons.history,
-            semanticLabel: 'Ouvrir le journal de la table',
+            semanticLabel: l10n.gameOpenJournal,
             onPressed: _openJournal,
             size: 48,
           ),
@@ -258,6 +260,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildActionBar(BuildContext context, bool compact) {
+    final l10n = AppLocalizations.of(context)!;
     final phase = _controller.phase;
     final humanTurn = _controller.isHumanTurn;
 
@@ -266,8 +269,8 @@ class _GameScreenState extends State<GameScreen> {
       final canChallenge = _controller.canHumanChallenge;
       final bidPossible = _controller.defaultHumanBid != null;
       final prompt = !canChallenge
-          ? 'Ouvre les hostilités.'
-          : 'À toi de parler.';
+          ? l10n.gameOpenPrompt
+          : l10n.gameYourTurnPrompt;
       content = Column(
         key: const ValueKey('human-actions'),
         mainAxisSize: MainAxisSize.min,
@@ -298,7 +301,7 @@ class _GameScreenState extends State<GameScreen> {
                             letterSpacing: 1.2,
                           ),
                     ),
-                    child: const Text('CALZA ?'),
+                    child: Text(l10n.gameCalzaAsk),
                   ),
               ],
             ),
@@ -308,7 +311,7 @@ class _GameScreenState extends State<GameScreen> {
               Expanded(
                 flex: 5,
                 child: TavernButton(
-                  label: 'Dudo !',
+                  label: l10n.gameDudoCall,
                   icon: Icons.front_hand_outlined,
                   tone: TavernButtonTone.blood,
                   compact: true,
@@ -319,7 +322,9 @@ class _GameScreenState extends State<GameScreen> {
               Expanded(
                 flex: 7,
                 child: TavernButton(
-                  label: canChallenge ? 'Surenchérir' : 'Ouvrir',
+                  label: canChallenge
+                      ? l10n.gameRaise
+                      : l10n.gameOpenBid,
                   icon: Icons.trending_up,
                   compact: true,
                   onPressed: bidPossible ? _showBidSheet : null,
@@ -344,7 +349,7 @@ class _GameScreenState extends State<GameScreen> {
           children: [
             Flexible(
               child: Text(
-                '${player.name} réfléchit',
+                l10n.gameBotThinking(player.name),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.titleSmall
@@ -355,7 +360,7 @@ class _GameScreenState extends State<GameScreen> {
             const ThinkingDots(),
             const Spacer(),
             Text(
-              'la table écoute',
+              l10n.gameTableListens,
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 color: AppColors.parchmentMuted,
                 fontStyle: FontStyle.italic,
@@ -372,8 +377,8 @@ class _GameScreenState extends State<GameScreen> {
         alignment: Alignment.center,
         child: Text(
           phase == GamePhase.peek
-              ? 'Soulève ton gobelet.'
-              : 'La table retient son souffle.',
+              ? l10n.gameLiftCupPrompt
+              : l10n.gameTableHoldsBreath,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
             color: AppColors.parchmentMuted,
             fontStyle: FontStyle.italic,
@@ -481,10 +486,11 @@ class _GameScreenState extends State<GameScreen> {
       },
     );
     if (result == null || !mounted) return;
+    final l10n = AppLocalizations.of(context)!;
     final accepted = _controller.submitHumanBid(result);
     if (!accepted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ce pari n\'est plus valable.')),
+        SnackBar(content: Text(l10n.gameBidInvalid)),
       );
     }
   }
@@ -492,34 +498,36 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> _confirmDudo() async {
     final bid = _controller.currentBid;
     if (bid == null || !_controller.canHumanChallenge) return;
+    final l10n = AppLocalizations.of(context)!;
     final bidder = _controller.players[bid.playerSeat];
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
+        final accused = bidder.isHuman
+            ? l10n.gameAccusedYou
+            : l10n.gameAccusedPlayer(bidder.name);
         return AlertDialog(
           title: Text(
-            'Dudo ?',
+            l10n.gameDudoConfirmTitle,
             style: AppTypography.inscription(
               size: 24,
               color: AppColors.parchment,
             ),
           ),
           content: Text(
-            'Tu penses que ${bidder.isHuman ? 'tu as menti' : '${bidder.name} ment'} '
-            'sur « ${bid.label} ». '
-            'Si le pari tient, tu perds un dé.',
+            l10n.gameDudoConfirmBody(accused, bid.label),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Annuler'),
+              child: Text(l10n.commonCancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.bloodBright,
               ),
-              child: const Text('DUDO !'),
+              child: Text(l10n.gameDudoConfirm),
             ),
           ],
         );
@@ -533,33 +541,35 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> _confirmCalza() async {
     final bid = _controller.currentBid;
     if (bid == null || !_controller.canHumanCalza) return;
+    final l10n = AppLocalizations.of(context)!;
+    final faceWord = bid.face == 1
+        ? l10n.gameFacePaco
+        : l10n.gameWordDiceOfFace(bid.face);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(
-            'Calza ?',
+            l10n.gameCalzaConfirmTitle,
             style: AppTypography.inscription(
               size: 24,
               color: AppColors.parchment,
             ),
           ),
           content: Text(
-            'Tu penses qu\'il y a exactement ${bid.quantity} '
-            '${bid.face == 1 ? 'paco' : 'dés de ${bid.face}'} sur la table. '
-            'Compte exact : tu gagnes un dé. Sinon, tu en perds un.',
+            l10n.gameCalzaConfirmBody(bid.quantity, faceWord),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Annuler'),
+              child: Text(l10n.commonCancel),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.brassBright,
               ),
-              child: const Text('CALZA'),
+              child: Text(l10n.gameCalzaConfirm),
             ),
           ],
         );
@@ -591,31 +601,32 @@ class _GameScreenState extends State<GameScreen> {
 
   Future<void> _confirmQuit() async {
     _controller.pauseBots();
+    final l10n = AppLocalizations.of(context)!;
     final quit = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(
-            'Quitter la table ?',
+            l10n.gameQuitTitle,
             style: AppTypography.inscription(
               size: 22,
               color: AppColors.parchment,
             ),
           ),
-          content: const Text(
-            'La partie en cours sera perdue. Les pirates ne se souviendront pas de toi.',
+          content: Text(
+            l10n.gameQuitBody,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Rester'),
+              child: Text(l10n.gameQuitStay),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.bloodBright,
               ),
-              child: const Text('Quitter'),
+              child: Text(l10n.gameQuitLeave),
             ),
           ],
         );

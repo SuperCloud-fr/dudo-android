@@ -7,8 +7,16 @@ import '../../../core/widgets/dice_face.dart';
 import '../../../core/widgets/ornaments.dart';
 import '../../../core/widgets/tavern_button.dart';
 import '../../../game/logic/perudo_rules.dart';
+import '../../../l10n/generated/app_localizations.dart';
+import '../../../l10n/generated/app_localizations_fr.dart';
 import 'palifico_chip.dart';
 import '../../../game/models/bid.dart';
+
+/// Localization may be absent in bare test hosts that pump this widget
+/// without the app's delegates; French is the source of truth
+/// (see lib/app.dart), so fall back to the French book.
+AppLocalizations _l10n(BuildContext context) =>
+    AppLocalizations.of(context) ?? AppLocalizationsFr();
 
 class BidSheet extends StatefulWidget {
   const BidSheet({
@@ -127,13 +135,14 @@ class _BidSheetState extends State<BidSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n(context);
     final previous = widget.previous;
     final faceWord = _face == 1
-        ? 'paco'
-        : 'dé${_quantity == 1 ? '' : 's'} de $_face';
+        ? l10n.bidUnitPaco
+        : l10n.bidFaceWord(_quantity, _face);
     final summary = _face == 1
-        ? 'Je parie qu\'il y a au moins $_quantity as sur la table.'
-        : 'Je parie qu\'il y a au moins $_quantity $faceWord sur la table.';
+        ? l10n.bidSummaryAces(_quantity)
+        : l10n.bidSummary(_quantity, faceWord);
 
     return ConstrainedBox(
       constraints: BoxConstraints(
@@ -175,9 +184,11 @@ class _BidSheetState extends State<BidSheet> {
                 ],
                 const SizedBox(height: 18),
                 SectionLabel(
-                  previous == null ? 'Ouvrir les hostilités' : 'Ta surenchère',
+                  previous == null
+                      ? l10n.bidOpenHostilities
+                      : l10n.bidRaiseSection,
                   trailing: Text(
-                    '${widget.totalDice} dés en jeu',
+                    l10n.gameDiceInPlay(widget.totalDice),
                     style: Theme.of(context).textTheme.labelSmall
                         ?.copyWith(color: AppColors.parchmentMuted),
                   ),
@@ -185,8 +196,8 @@ class _BidSheetState extends State<BidSheet> {
                 const SizedBox(height: 10),
                 Text(
                   previous == null
-                      ? 'À toi de parler.'
-                      : 'À toi de surenchérir.',
+                      ? l10n.gameYourTurnPrompt
+                      : l10n.bidRaisePrompt,
                   style: AppTypography.inscription(
                     size: 26,
                     color: AppColors.parchment,
@@ -199,7 +210,7 @@ class _BidSheetState extends State<BidSheet> {
                     TextSpan(
                       children: [
                         TextSpan(
-                          text: 'Dernier pari : ',
+                          text: l10n.bidLastBid,
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         TextSpan(
@@ -235,8 +246,8 @@ class _BidSheetState extends State<BidSheet> {
                 const SizedBox(height: 18),
                 Text(
                   widget.palifico && widget.previous != null
-                      ? 'FACE IMPOSÉE'
-                      : 'FACE',
+                      ? l10n.bidPalificoFaceLabel
+                      : l10n.bidFaceLabel,
                   style: Theme.of(context).textTheme.labelSmall
                       ?.copyWith(color: AppColors.brassDim, letterSpacing: 2),
                 ),
@@ -315,11 +326,11 @@ class _BidSheetState extends State<BidSheet> {
                             Text(
                               widget.palifico
                                   ? widget.previous != null
-                                        ? 'Face imposée : manche palifico.'
-                                        : 'Palifico : la face ouverte vaut pour toute la manche.'
+                                        ? l10n.bidPalificoFaceHint
+                                        : l10n.bidPalificoOpenHint
                                   : _face == 1
-                                  ? 'Seuls les paco comptent.'
-                                  : 'Les paco comptent pour cette face.',
+                                  ? l10n.bidAcesOnlyHint
+                                  : l10n.bidPacoWildHint,
                               style: Theme.of(context).textTheme.bodySmall
                                   ?.copyWith(
                                     color: AppColors.parchmentMuted,
@@ -338,7 +349,7 @@ class _BidSheetState extends State<BidSheet> {
                     Expanded(
                       flex: 6,
                       child: TavernButton(
-                        label: 'Annuler',
+                        label: l10n.commonCancel,
                         tone: TavernButtonTone.ghost,
                         compact: true,
                         onPressed: () => Navigator.of(context).pop(),
@@ -349,7 +360,7 @@ class _BidSheetState extends State<BidSheet> {
                     Expanded(
                       flex: 10,
                       child: TavernButton(
-                        label: 'Annoncer',
+                        label: l10n.bidAnnounce,
                         icon: Icons.campaign_outlined,
                         compact: true,
                         onPressed: _isLegal ? _submit : null,
@@ -361,7 +372,7 @@ class _BidSheetState extends State<BidSheet> {
                 if (!_isLegal) ...[
                   const SizedBox(height: 8),
                   Text(
-                    'Ce montant n\'est pas une surenchère valable.',
+                    l10n.bidIllegalRaise,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall
                         ?.copyWith(color: AppColors.bloodBright, fontSize: 11),
@@ -395,6 +406,7 @@ class _QuantityPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       decoration: BoxDecoration(
@@ -410,7 +422,7 @@ class _QuantityPicker extends StatelessWidget {
         children: [
           _StepButton(
             icon: Icons.remove,
-            label: 'Diminuer la quantité',
+            label: l10n.bidDecreaseQty,
             onPressed: onMinus,
           ),
           Expanded(
@@ -427,13 +439,13 @@ class _QuantityPicker extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isAces ? 'paco' : (quantity == 1 ? 'dé' : 'dés'),
+                  isAces ? l10n.bidUnitPaco : l10n.bidUnit(quantity),
                   style: Theme.of(context).textTheme.labelMedium
                       ?.copyWith(color: AppColors.brass, letterSpacing: 2),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '$min à $max',
+                  l10n.bidRange(min, max),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: AppColors.parchmentMuted,
                     letterSpacing: 0.4,
@@ -444,7 +456,7 @@ class _QuantityPicker extends StatelessWidget {
           ),
           _StepButton(
             icon: Icons.add,
-            label: 'Augmenter la quantité',
+            label: l10n.bidIncreaseQty,
             onPressed: onPlus,
           ),
         ],
@@ -518,11 +530,14 @@ class _FaceOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = _l10n(context);
     return Semantics(
       button: true,
       selected: selected,
       enabled: enabled,
-      label: ace ? 'Paco, joker' : 'Valeur $face',
+      label: ace
+          ? l10n.bidAceSemantics
+          : l10n.bidFaceSemantics(face),
       excludeSemantics: true,
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 160),

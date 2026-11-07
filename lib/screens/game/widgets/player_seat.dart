@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../game/models/player.dart';
 
 class PlayerSeat extends StatelessWidget {
@@ -30,12 +31,13 @@ class PlayerSeat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final accent = AppColors.accents[player.accent % AppColors.accents.length];
     final status = player.isOut
-        ? 'À l\'eau'
+        ? l10n.seatOutStatus
         : active
-        ? (player.isHuman ? 'à toi' : 'réfléchit')
-        : 'en jeu';
+        ? (player.isHuman ? l10n.seatYourTurn : l10n.seatThinking)
+        : l10n.seatPlaying;
     final statusColor = player.isOut
         ? AppColors.parchmentMuted.withValues(alpha: 0.7)
         : active
@@ -43,8 +45,11 @@ class PlayerSeat extends StatelessWidget {
         : AppColors.parchmentMuted;
 
     return Semantics(
-      label:
-          '${player.name}, ${player.diceCount} ${player.diceCount == 1 ? 'dé restant' : 'dés restants'}, $status',
+      label: l10n.seatSemantics(
+        player.name,
+        player.diceCount,
+        status,
+      ),
       excludeSemantics: true,
       child: Opacity(
         opacity: player.isOut ? 0.62 : 1,

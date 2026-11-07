@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/dice_face.dart';
 import '../../../core/widgets/ornaments.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 class DiceTray extends StatelessWidget {
   const DiceTray({
@@ -22,10 +23,12 @@ class DiceTray extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final values = dice.isEmpty ? List<int>.filled(diceCount, 1) : dice;
     return Semantics(
-      label:
-          'Ta main : ${values.map((die) => die == 1 ? 'paco' : '$die').join(', ')}',
+      label: l10n.traySemantics(
+        values.map((die) => die == 1 ? 'paco' : '$die').join(', '),
+      ),
       excludeSemantics: true,
       child: Container(
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),

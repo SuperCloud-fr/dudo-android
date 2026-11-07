@@ -4,6 +4,7 @@ import 'palifico_chip.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/dice_face.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../game/models/bid.dart';
 
 class BidCard extends StatelessWidget {
@@ -26,12 +27,17 @@ class BidCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final current = bid;
     return Semantics(
       liveRegion: true,
       label: current == null
-          ? 'Aucun pari. $starterName ouvre les hostilités.'
-          : 'Pari en cours : ${current.spokenLabel}, annoncé par $bidderName. $totalDice dés en jeu.',
+          ? l10n.cardEmptySemantics(starterName)
+          : l10n.cardFilledSemantics(
+              current.spokenLabel,
+              bidderName,
+              totalDice,
+            ),
       excludeSemantics: true,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 320),
@@ -99,13 +105,14 @@ class _FilledBid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return _BidShell(
       palifico: palifico,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'PARI EN COURS',
+            l10n.cardFilledTitle,
             style: Theme.of(context).textTheme.labelMedium
                 ?.copyWith(color: AppColors.brass, letterSpacing: 2.6),
           ),
@@ -130,7 +137,7 @@ class _FilledBid extends StatelessWidget {
                   DiceFace(value: bid.face, size: 38),
                   const SizedBox(height: 4),
                   Text(
-                    bid.isAces ? 'PACO' : 'DÉS',
+                    bid.isAces ? 'PACO' : l10n.cardDiceUnit,
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
                       color: AppColors.brassBright,
                       letterSpacing: 1.4,
@@ -143,10 +150,10 @@ class _FilledBid extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             palifico && !bid.isAces
-                ? 'Manche palifico : les paco ne comptent pas'
+                ? l10n.cardPalificoHint
                 : bid.isAces
-                ? 'Seuls les paco comptent'
-                : 'Les paco comptent pour cette face',
+                ? l10n.cardAcesOnlyHint
+                : l10n.cardPacoWildHint,
             style: Theme.of(context).textTheme.bodySmall
                 ?.copyWith(fontSize: 11.5, color: AppColors.parchmentMuted),
           ),
@@ -183,7 +190,7 @@ class _FilledBid extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                '$totalDice dés',
+                l10n.cardDiceCount(totalDice),
                 style: Theme.of(context).textTheme.labelSmall
                     ?.copyWith(color: AppColors.parchmentMuted),
               ),
@@ -211,6 +218,7 @@ class _EmptyBid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return _BidShell(
       palifico: palifico,
       child: Column(
@@ -219,13 +227,13 @@ class _EmptyBid extends StatelessWidget {
           const DiceFace(value: 1, size: 34, dimmed: true),
           const SizedBox(height: 10),
           Text(
-            'LA TABLE ATTEND',
+            l10n.cardTableWaits,
             style: Theme.of(context).textTheme.labelMedium
                 ?.copyWith(color: AppColors.brass, letterSpacing: 2.6),
           ),
           const SizedBox(height: 6),
           Text(
-            humanOpens ? 'À toi d\'ouvrir' : '$starterName ouvre',
+            humanOpens ? l10n.cardYouOpen : l10n.cardPlayerOpens(starterName),
             textAlign: TextAlign.center,
             style: AppTypography.inscription(
               size: 19,
@@ -236,7 +244,7 @@ class _EmptyBid extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '$totalDice dés sur la table',
+            l10n.cardDiceOnTable(totalDice),
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],

@@ -11,6 +11,7 @@ import '../../../core/widgets/dice_face.dart';
 import '../../../core/widgets/leather_cup.dart';
 import '../../../core/widgets/ornaments.dart';
 import '../../../core/widgets/tavern_button.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 /// The ritual that opens every round: the cup, the dice, the private look.
 class PeekOverlay extends StatefulWidget {
@@ -81,6 +82,7 @@ class _PeekOverlayState extends State<PeekOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final aces = widget.dice.where((die) => die == 1).length;
     return SizedBox.expand(
       child: Material(
@@ -109,10 +111,10 @@ class _PeekOverlayState extends State<PeekOverlay>
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SectionLabel('Manche ${widget.round}'),
+                            SectionLabel(l10n.peekRound(widget.round)),
                             const SizedBox(height: 14),
                             Text(
-                              'Ton gobelet',
+                              l10n.peekCupTitle,
                               textAlign: TextAlign.center,
                               style: AppTypography.inscription(
                                 size: 32,
@@ -123,8 +125,8 @@ class _PeekOverlayState extends State<PeekOverlay>
                             const SizedBox(height: 6),
                             Text(
                               _revealed
-                                  ? 'Garde ce secret. Le reste de la table ne voit rien.'
-                                  : 'Secoue le téléphone comme au vrai comptoir : le cuir se soulève, et toi seul vois tes dés.',
+                                  ? l10n.peekSecretHint
+                                  : l10n.peekShakeHint,
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(color: AppColors.parchmentMuted),
@@ -134,7 +136,7 @@ class _PeekOverlayState extends State<PeekOverlay>
                               const Center(child: PalificoChip(size: 11)),
                               const SizedBox(height: 8),
                               Text(
-                                'Manche palifico : une seule face pour tous les paris.',
+                                l10n.peekPalificoHint,
                                 textAlign: TextAlign.center,
                                 style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(fontStyle: FontStyle.italic),
@@ -185,8 +187,9 @@ class _PeekOverlayState extends State<PeekOverlay>
                                                   const SizedBox(width: 7),
                                                   Flexible(
                                                     child: Text(
-                                                      '${widget.dice.length} '
-                                                      '${widget.dice.length == 1 ? 'dé' : 'dés'} en main',
+                                                      l10n.peekDiceInHand(
+                                                        widget.dice.length,
+                                                      ),
                                                       maxLines: 1,
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -215,10 +218,10 @@ class _PeekOverlayState extends State<PeekOverlay>
                                                   Flexible(
                                                     child: Text(
                                                       aces == 0
-                                                          ? 'pas de paco'
-                                                          : aces == 1
-                                                          ? '1 paco'
-                                                          : '$aces paco',
+                                                          ? l10n.peekPacoNone
+                                                          : l10n.peekPacoCount(
+                                                              aces,
+                                                            ),
                                                       maxLines: 1,
                                                       overflow:
                                                           TextOverflow.ellipsis,
@@ -242,8 +245,8 @@ class _PeekOverlayState extends State<PeekOverlay>
                                         const SizedBox(height: 14),
                                         Text(
                                           widget.palifico
-                                              ? 'Manche palifico : les paco ne comptent que comme paco.'
-                                              : 'Les paco comptent pour toutes les faces.',
+                                              ? l10n.peekPalificoWildHint
+                                              : l10n.peekWildHint,
                                           textAlign: TextAlign.center,
                                           style: Theme.of(context)
                                               .textTheme
@@ -255,8 +258,10 @@ class _PeekOverlayState extends State<PeekOverlay>
                                         const SizedBox(height: 20),
                                         TavernButton(
                                           label: widget.humanStarts
-                                              ? 'Ouvrir les hostilités'
-                                              : 'C’est à ${widget.starterName} d’ouvrir',
+                                              ? l10n.bidOpenHostilities
+                                              : l10n.peekPlayerOpens(
+                                                  widget.starterName,
+                                                ),
                                           icon: Icons.visibility_outlined,
                                           expand: true,
                                           onPressed: widget.onReady,
@@ -284,6 +289,7 @@ class _PeekOverlayState extends State<PeekOverlay>
 
   Widget _buildCupAndDice(BuildContext context) {
     final reduced = MediaQuery.disableAnimationsOf(context);
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: SizedBox(
         height: 236,
@@ -384,7 +390,7 @@ class _PeekOverlayState extends State<PeekOverlay>
                           behavior: HitTestBehavior.opaque,
                           child: Semantics(
                             button: true,
-                            label: 'Soulever le gobelet pour voir tes dés',
+                            label: l10n.peekLiftCupSemantics,
                             child: const LeatherCup(size: 176),
                           ),
                         ),
@@ -408,21 +414,22 @@ class _CupHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         TextButton.icon(
           onPressed: onTap,
           icon: const Icon(Icons.vibration, size: 18),
-          label: const Text('Secoue le téléphone pour brasser tes dés'),
+          label: Text(l10n.peekShakeButton),
         ),
         TextButton(
           onPressed: onTap,
-          child: const Text('… ou touche le gobelet pour le soulever'),
+          child: Text(l10n.peekTapCupHint),
         ),
         const SizedBox(height: 2),
         Text(
-          'Prends ton temps. Les autres pirates attendent.',
+          l10n.peekTakeTimeHint,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodySmall,
         ),

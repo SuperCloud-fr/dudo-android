@@ -34,6 +34,12 @@ flutter:
           weight: 400
         - asset: assets/fonts/Cinzel-Variable.ttf
           weight: 700
+    - family: Alkatra
+      fonts:
+        - asset: assets/fonts/Alkatra-Variable.ttf
+          weight: 400
+        - asset: assets/fonts/Alkatra-Variable.ttf
+          weight: 700
     - family: AlegreyaSans
       fonts:
         - asset: assets/fonts/AlegreyaSans-Regular.ttf

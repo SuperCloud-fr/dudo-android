@@ -5,6 +5,7 @@ import 'palifico_chip.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/dice_face.dart';
 import '../../../core/widgets/tavern_button.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../game/logic/perudo_rules.dart';
 import '../../../game/models/player.dart';
 import '../../../game/models/table_event.dart';
@@ -60,12 +61,13 @@ class _RevealOverlayState extends State<RevealOverlay>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final outcome = widget.outcome;
     final isDudo = outcome.kind == ChallengeKind.dudo;
     final bidder = widget.players[outcome.bidderSeat];
     final caller = widget.players[outcome.callerSeat];
     final face = outcome.bid.face;
-    final verdict = _verdict();
+    final verdict = _verdict(l10n);
     final accent = isDudo ? AppColors.bloodBright : AppColors.brassBright;
 
     return SizedBox.expand(
@@ -112,8 +114,11 @@ class _RevealOverlayState extends State<RevealOverlay>
                                 const SizedBox(height: 6),
                                 Text(
                                   isDudo
-                                      ? '${caller.name} a douté de ${bidder.name}.'
-                                      : '${caller.name} a annoncé le compte exact.',
+                                      ? l10n.revealDudoLine(
+                                          caller.name,
+                                          bidder.name,
+                                        )
+                                      : l10n.revealCalzaLine(caller.name),
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context).textTheme.bodyMedium
                                       ?.copyWith(
@@ -135,8 +140,8 @@ class _RevealOverlayState extends State<RevealOverlay>
                                 const SizedBox(height: 18),
                                 TavernButton(
                                   label: widget.applied
-                                      ? 'Manche suivante'
-                                      : 'Voir la suite',
+                                      ? l10n.revealNextRound
+                                      : l10n.revealSeeMore,
                                   icon: widget.applied
                                       ? Icons.arrow_forward
                                       : Icons.remove_red_eye_outlined,
@@ -221,6 +226,7 @@ class _RevealOverlayState extends State<RevealOverlay>
     ChallengeOutcome outcome,
     Color accent,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -243,7 +249,9 @@ class _RevealOverlayState extends State<RevealOverlay>
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Annoncé par ${widget.players[outcome.bidderSeat].name}',
+              l10n.revealAnnouncedBy(
+                widget.players[outcome.bidderSeat].name,
+              ),
               style: Theme.of(context).textTheme.bodySmall
                   ?.copyWith(color: AppColors.parchmentDim),
             ),
@@ -258,9 +266,10 @@ class _RevealOverlayState extends State<RevealOverlay>
     ChallengeOutcome outcome,
     Color accent,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final faceLabel = outcome.bid.face == 1
-        ? 'paco'
-        : 'dés de ${outcome.bid.face}';
+        ? l10n.revealFacePaco
+        : l10n.revealWordDiceOfFace(outcome.bid.face);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -290,7 +299,7 @@ class _RevealOverlayState extends State<RevealOverlay>
                       ?.copyWith(color: AppColors.parchment),
                 ),
                 Text(
-                  'sur la table · ${outcome.bid.quantity} annoncés',
+                  l10n.revealOnTable(outcome.bid.quantity),
                   style: Theme.of(context).textTheme.bodySmall
                       ?.copyWith(color: AppColors.parchmentMuted),
                 ),
@@ -334,11 +343,12 @@ class _RevealOverlayState extends State<RevealOverlay>
   }
 
   Widget _consequence(BuildContext context, ChallengeOutcome outcome) {
+    final l10n = AppLocalizations.of(context)!;
     if (!widget.applied) {
       return Text(
         outcome.kind == ChallengeKind.dudo
-            ? 'La table retient son souffle…'
-            : 'Le compte est sous les yeux de tous…',
+            ? l10n.revealTableHoldsBreath
+            : l10n.revealCountInOpen,
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
           color: AppColors.parchmentMuted,
@@ -359,24 +369,28 @@ class _RevealOverlayState extends State<RevealOverlay>
     if (gainer != null) {
       if (outcome.gainCapped) {
         text = gainer.isHuman
-            ? 'Tu avais déjà cinq dés. Le compte exact est noté, mais rien à reprendre.'
-            : '${gainer.name} avait déjà cinq dés. Le compte exact est noté, mais rien à reprendre.';
+            ? l10n.revealCapYou
+            : l10n.revealCapPlayer(gainer.name);
       } else {
         text = gainer.isHuman
-            ? 'Compte exact : tu reprends un dé.'
-            : '${gainer.name} reprend un dé.';
+            ? l10n.revealWinYou
+            : l10n.revealWinPlayer(gainer.name);
       }
     } else if (loser != null) {
       final rest = loser.isAlive
           ? (loser.isHuman
-                ? ' Il te reste ${loser.diceCount} ${loser.diceCount == 1 ? 'dé' : 'dés'}.'
-                : ' Il lui reste ${loser.diceCount} ${loser.diceCount == 1 ? 'dé' : 'dés'}.')
-          : (loser.isHuman ? ' Tu es à l\'eau.' : ' Il est à l\'eau.');
-      text = loser.isHuman
-          ? 'Tu perds un dé.$rest'
-          : '${loser.name} perd un dé.$rest';
+                ? l10n.revealYouRemaining(loser.diceCount)
+                : l10n.revealPlayerRemaining(loser.diceCount))
+          : (loser.isHuman
+                ? l10n.revealYouSunk
+                : l10n.revealPlayerSunk);
+      text =
+          (loser.isHuman
+              ? l10n.revealYouLoseDie
+              : l10n.revealPlayerLoseDie(loser.name)) +
+          rest;
     } else {
-      text = 'La manche se termine sans perdant.';
+      text = l10n.revealNoLoser;
     }
 
     return Container(
@@ -400,12 +414,12 @@ class _RevealOverlayState extends State<RevealOverlay>
     );
   }
 
-  String _verdict() {
+  String _verdict(AppLocalizations l10n) {
     final outcome = widget.outcome;
     if (outcome.kind == ChallengeKind.dudo) {
-      return outcome.bidHeld ? 'Le pari tenait.' : 'Mensonge !';
+      return outcome.bidHeld ? l10n.revealBidHeld : l10n.revealLiar;
     }
-    return outcome.callerWon ? 'Compte exact.' : 'Raté.';
+    return outcome.callerWon ? l10n.revealExactCount : l10n.revealMissed;
   }
 }
 
@@ -430,11 +444,12 @@ class _DiceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final role = isBidder
-        ? 'a parié'
+        ? l10n.revealRoleBidder
         : isCaller
-        ? 'a douté'
-        : 'a attendu';
+        ? l10n.revealRoleCaller
+        : l10n.revealRoleWaiter;
     return AnimatedBuilder(
       animation: animation,
       builder: (context, child) {

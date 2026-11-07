@@ -8,6 +8,7 @@ import '../../core/widgets/ornaments.dart';
 import '../../core/widgets/tavern_background.dart';
 import '../../core/widgets/tavern_button.dart';
 import '../../game/models/game_config.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../game/game_screen.dart';
 import '../rules/rules_screen.dart';
 
@@ -45,6 +46,7 @@ class _SetupScreenState extends State<SetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final crewNames = crew
         .take(_opponents)
         .map((profile) => profile.name)
@@ -69,7 +71,7 @@ class _SetupScreenState extends State<SetupScreen> {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                'L\'équipage',
+                                l10n.setupCrewTitle,
                                 style: AppTypography.inscription(
                                   size: 30,
                                   color: AppColors.parchment,
@@ -78,7 +80,7 @@ class _SetupScreenState extends State<SetupScreen> {
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                'Choisis combien de pirates vont te mentir ce soir.',
+                                l10n.setupCrewHint,
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(color: AppColors.parchmentMuted),
                               ),
@@ -90,7 +92,7 @@ class _SetupScreenState extends State<SetupScreen> {
                                 crewNames: crewNames,
                               ),
                               const SizedBox(height: 22),
-                              const SectionLabel('Le tempérament des bots'),
+                              SectionLabel(l10n.setupBotTemperTitle),
                               const SizedBox(height: 10),
                               for (final difficulty in BotDifficulty.values)
                                 Padding(
@@ -112,7 +114,7 @@ class _SetupScreenState extends State<SetupScreen> {
                               ),
                               const SizedBox(height: 24),
                               TavernButton(
-                                label: 'Larguer les amarres',
+                                label: l10n.setupStart,
                                 icon: Icons.anchor,
                                 expand: true,
                                 onPressed: _start,
@@ -130,7 +132,7 @@ class _SetupScreenState extends State<SetupScreen> {
                                   Icons.menu_book_outlined,
                                   size: 17,
                                 ),
-                                label: const Text('Relire les règles'),
+                                label: Text(l10n.setupRulesLink),
                               ),
                             ],
                           ),
@@ -148,19 +150,20 @@ class _SetupScreenState extends State<SetupScreen> {
   }
 
   Widget _buildTopBar(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
       child: Row(
         children: [
           RoundIconButton(
             icon: Icons.arrow_back,
-            semanticLabel: 'Retour',
+            semanticLabel: l10n.setupBack,
             onPressed: () => Navigator.of(context).pop(),
             size: 48,
           ),
           Expanded(
             child: Text(
-              'NOUVELLE PARTIE',
+              l10n.setupTitle,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.labelMedium
                   ?.copyWith(color: AppColors.brass, letterSpacing: 2.2),
@@ -188,6 +191,7 @@ class _CrewSizeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final players = opponents + 1;
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 14),
@@ -209,7 +213,7 @@ class _CrewSizeCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'PIRATES À TA TABLE',
+                      l10n.setupTableLabel,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: AppColors.brassDim,
                         letterSpacing: 1.6,
@@ -217,7 +221,7 @@ class _CrewSizeCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      '$players joueurs',
+                      l10n.setupPlayersCount(players),
                       style: AppTypography.inscription(
                         size: 20,
                         color: AppColors.parchment,
@@ -229,13 +233,13 @@ class _CrewSizeCard extends StatelessWidget {
               ),
               _CountButton(
                 icon: Icons.remove,
-                label: 'Retirer un pirate',
+                label: l10n.setupRemovePirate,
                 onPressed: opponents > 1 ? onMinus : null,
               ),
               const SizedBox(width: 8),
               _CountButton(
                 icon: Icons.add,
-                label: 'Ajouter un pirate',
+                label: l10n.setupAddPirate,
                 onPressed: opponents < 5 ? onPlus : null,
               ),
             ],
@@ -264,7 +268,7 @@ class _CrewSizeCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Toi + $opponents ${opponents == 1 ? 'pirate' : 'pirates'} : $crewNames',
+            l10n.setupCrewSummary(opponents, crewNames),
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -302,8 +306,10 @@ class _CrewAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = AppColors.accents[accent % AppColors.accents.length];
+    final l10n = AppLocalizations.of(context)!;
     return Semantics(
-      label: '$name, ${selected ? 'à table' : 'absent'}',
+      label:
+          '$name, ${selected ? l10n.setupSeatAtTable : l10n.setupSeatAbsent}',
       excludeSemantics: true,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 3),
@@ -517,6 +523,7 @@ class _CalzaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 8, 10, 8),
       decoration: BoxDecoration(
@@ -533,13 +540,13 @@ class _CalzaCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Calza autorisée',
+                  l10n.setupCalzaTitle,
                   style: Theme.of(context).textTheme.titleSmall
                       ?.copyWith(color: AppColors.parchment, fontSize: 14),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Annoncer le compte exact rapporte un dé. Optionnel, mais féroce.',
+                  l10n.setupCalzaHint,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.parchmentMuted,
                     fontSize: 11.5,
