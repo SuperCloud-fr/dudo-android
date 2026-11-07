@@ -1,10 +1,19 @@
-# Dudo 0.2.0 — bêta 1 : la taverne s'ouvre
+# Dudo 0.2.0 — bêta 2 : la table respire
 
 Merci de faire partie des premiers testeurs. Dudo est un **Perudo de taverne**, pour Android. Cinq dés, un gobelet, tout le monde ment.
 
-Cette bêta ouvre le **multijoueur en ligne** : jusqu'à 6 pirates, chacun sur son téléphone, avec un code de salon à six caractères.
+Cette bêta couvre le **multijoueur en ligne** : jusqu'à 6 pirates, chacun sur son téléphone, avec un code de salon à six caractères.
 
-## Nouveau dans cette bêta
+## Nouveau dans cette bêta 2
+
+- **Les IA jouent dans les salons en ligne** : plus de table gelée qui attend le premier bot — les IA du salon jouent sur le téléphone de l'hôte, leurs coups sont relayés à tous.
+- **Timeout de tour à 60 secondes** : un pirate trop lent à parler (hôte, invité, ou solo) laisse la table avancer — plus de partie bloquée derrière un joueur silencieux.
+- **Fil de salon propre** : quitter un salon puis en créer un autre ne réaffiche plus l'ancien fil de discussion.
+- **Nouvelle ambiance « Pavillon Debout »** : marine & or, à choisir dans la page Réglages (le choix est conservé au redémarrage ; la taverne reste disponible).
+- **Perroquet du dé « paco » redessiné** : tête ronde, bec crochu or, anneau d'œil — lisible même en tout petit.
+- **Palifico recentré** : le tour verrouillé ne dure que la manche qui suit la chute à un dé ; le joueur qui remonte puis rechute le redéclenche.
+
+## En plus depuis la bêta 1
 
 - **Salons en ligne** : « Créer un salon » génère un code à partager par SMS, WhatsApp, Signal ou mail ; « Rejoindre un salon » demande seulement le code et le nom.
 - **L'hôte mène la table** : il ajuste le nombre d'IA, lance la manche, et son téléphone arbitre les règles ; les autres téléphones rejouent ses décisions en direct.
