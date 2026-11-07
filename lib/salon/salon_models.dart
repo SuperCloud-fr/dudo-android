@@ -107,6 +107,14 @@ abstract class SalonSession extends ChangeNotifier {
 
   static const String alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
+  /// A new table starts a clean thread: the previous salon's chat must not
+  /// haunt the next one (create/join entry points call this). Auto
+  /// recovery deliberately bypasses it — that thread is still alive.
+  void resetThread() {
+    messages.clear();
+    notifyListeners();
+  }
+
   List<SalonPlayer> get bots =>
       players.where((player) => player.isBot).toList(growable: false);
 
@@ -208,6 +216,7 @@ class LocalSalonSession extends SalonSession implements SalonBackend {
     hostName = host;
     myName = host;
     code = _newCode();
+    resetThread();
     _repopulate();
     pushSystemMessage('Salon créé. Code : $code');
     notifyListeners();
@@ -218,6 +227,7 @@ class LocalSalonSession extends SalonSession implements SalonBackend {
     role = SalonRole.guest;
     code = joinCode.toUpperCase();
     myName = guest;
+    resetThread();
     _repopulate();
     pushSystemMessage('Connecté au salon $code');
     notifyListeners();

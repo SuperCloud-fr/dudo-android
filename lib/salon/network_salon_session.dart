@@ -105,6 +105,8 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
     code = '';
     players.clear();
     isStarting = false;
+    // A fresh table starts a clean thread, even when no server answers.
+    resetThread();
     notifyListeners();
 
     String? lastFailure;
@@ -182,6 +184,8 @@ class NetworkSalonSession extends SalonSession implements SalonBackend {
     code = cleaned;
     players.clear();
     isStarting = false;
+    // A new table starts a clean thread (recovery never goes through here).
+    resetThread();
     notifyListeners();
 
     String? refusal;

@@ -300,6 +300,41 @@ void main() {
     expect(harness.channels, isEmpty);
   });
 
+  test('un nouveau salon efface le fil du précédent (réseau)', () async {
+    final session = NetworkSalonSession(
+      handshakeTimeout: const Duration(milliseconds: 40),
+      channelFactory: (uri) => FakeWebSocketChannel.unreachable(uri),
+    );
+    session.pushSystemMessage('Ligne de l\u2019ancien salon');
+    expect(session.messages, isNotEmpty);
+
+    await session.createSalon('Cap Hôte', 1);
+
+    expect(
+      session.messages,
+      hasLength(1),
+      reason: 'le thread repart à neuf, ancien salon non retenu',
+    );
+    expect(
+      session.messages.first.body,
+      contains('Impossible de créer un salon'),
+      reason: 'seule la ligne de la nouvelle tentative subsiste',
+    );
+  });
+
+  test('un nouveau salon efface le fil du précédent (local)', () async {
+    final session = LocalSalonSession();
+    await session.createSalon('Cap Hôte', 0);
+    await session.sendChat('Hola la table !');
+    expect(session.messages, hasLength(2));
+
+    await session.createSalon('Cap Hôte', 0);
+
+    expect(session.messages, hasLength(1));
+    expect(session.messages.first.kind, SalonMessageKind.system);
+    expect(session.messages.first.body, contains('Salon créé'));
+  });
+
   test(
     'salon introuvable sur l\u2019hôte unique → échec sans message ferme',
     () async {
