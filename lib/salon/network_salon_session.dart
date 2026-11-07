@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'salon_models.dart';
@@ -554,8 +555,16 @@ class NetworkSalonSession extends SalonSession
       notifyListeners();
       return;
     }
-    // The relay dropped us unexpectedly: try one automatic recovery.
-    pushSystemMessage('Connexion perdue — tentative de reconnexion…');
+    // The relay dropped us unexpectedly: try one automatic recovery. The
+    // close code travels in the message so a phone-side mystery shows up
+    // in the thread instead of staying silent (e.g. 1006 = transport lost
+    // without a proper close frame).
+    final closeCode = _channel?.closeCode;
+    final closeReason = _channel?.closeReason;
+    final detail = closeCode == null
+        ? ''
+        : ' (fermeture $closeCode${closeReason == null || closeReason.isEmpty ? '' : ' — $closeReason'})';
+    pushSystemMessage('Connexion perdue$detail — tentative de reconnexion…');
     _scheduleRecovery();
   }
 
@@ -581,8 +590,18 @@ class NetworkSalonSession extends SalonSession
           result.message ?? 'Salon injoignable — vérifie le code et réessaie.',
         );
       }
-    } catch (_) {
-      pushSystemMessage('Salon injoignable — vérifie le code et réessaie.');
+    } catch (error) {
+      // On a phone, "why" is everything: DNS, proxy, captive portal. The
+      // terse edition goes to the thread; the raw error stays in adb.
+      final brief = switch (error) {
+        SocketException(:final message, :final osError) when osError != null =>
+          '$message (${osError.message})',
+        _ => '$error',
+      };
+      debugPrint('salon: reconnexion a échoué : $brief');
+      pushSystemMessage(
+        'Salon injoignable — $brief. Vérifie le réseau et réessaie.',
+      );
     } finally {
       _recovering = false;
       notifyListeners();
