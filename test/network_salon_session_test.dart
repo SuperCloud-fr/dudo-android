@@ -22,7 +22,7 @@ void main() {
     final done = harness.session.createSalon('Cap Hôte', 3);
     await settle();
     final channel = harness.channel(
-      'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
     );
     await untilOneSent(channel);
     expect(framesOf(channel.sent, 'join'), hasLength(1));
@@ -45,7 +45,7 @@ void main() {
     expect(harness.session.connected, isTrue);
     expect(harness.session.role, SalonRole.host);
     expect(harness.session.code, 'S99FTH');
-    expect(harness.session.activeBaseUrl, 'https://api.dudo.supercloud.fr');
+    expect(harness.session.activeBaseUrl, 'https://dudo.supercloud.fr');
     expect(harness.session.you, 0);
     expect(addBotFrames(channel.sent), hasLength(3));
     expect(
@@ -61,7 +61,7 @@ void main() {
     final done = harness.session.createSalon('Cap Hôte', 1);
     await settle();
     final channel = harness.channel(
-      'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
     );
     await untilOneSent(channel);
     channel.serverSends(
@@ -106,7 +106,7 @@ void main() {
     final done = harness.session.createSalon('Cap Hôte', 0);
     await settle();
     final channel = harness.channel(
-      'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
     );
     await untilOneSent(channel);
     channel.serverSends(
@@ -151,7 +151,7 @@ void main() {
     final creation = harness.session.createSalon('Cap Hôte', 0);
     await settle();
     final channel = harness.channel(
-      'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
     );
     await untilOneSent(channel);
     channel.serverSends(
@@ -188,7 +188,7 @@ void main() {
     final creation = harness.session.createSalon('Cap Hôte', 0);
     await settle();
     final channel = harness.channel(
-      'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
     );
     await untilOneSent(channel);
     channel.serverSends(
@@ -220,7 +220,7 @@ void main() {
       final creation = harness.session.createSalon('Cap Hôte', 0);
       await settle();
       final channel = harness.channel(
-        'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+        'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
       );
       await untilOneSent(channel);
       channel.serverSends(
@@ -247,7 +247,7 @@ void main() {
     final joining = harness.session.joinSalon('S99FTH', 'Anne');
     await settle();
     final channel = harness.channel(
-      'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
     );
     await untilOneSent(channel);
     channel.serverSends(
@@ -274,7 +274,7 @@ void main() {
     final joining = harness.session.joinSalon('S99FTH', 'Anne');
     await settle();
     final channel = harness.channel(
-      'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
     );
     await untilOneSent(channel);
     channel.serverSends(<String, dynamic>{
@@ -358,7 +358,7 @@ void main() {
     final creation = harness.session.createSalon('Cap Hôte', 0);
     await settle();
     final channel = harness.channel(
-      'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
     );
     await untilOneSent(channel);
     channel.serverSends(
@@ -391,7 +391,7 @@ void main() {
     final creation = harness.session.createSalon('Cap Hôte', 0);
     await settle();
     final channel = harness.channel(
-      'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
     );
     await untilOneSent(channel);
     channel.serverSends(
@@ -491,7 +491,7 @@ void main() {
   test('une création en 429 informe du délai sans marteler les autres hôtes', () async {
     final session = NetworkSalonSession(
       baseUrls: const [
-        'https://api.dudo.supercloud.fr',
+        'https://dudo.supercloud.fr',
         'https://workers.dev',
       ],
       createSalonCode: (_, _) async => throw SalonRequestThrottled(3),
@@ -513,7 +513,7 @@ void main() {
     final done = harness.session.createSalon('Cap Hôte', 0);
     await settle();
     final channel = harness.channel(
-      'wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
     );
     await untilOneSent(channel);
     channel.serverSends(

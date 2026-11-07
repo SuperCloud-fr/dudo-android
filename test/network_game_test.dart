@@ -28,7 +28,7 @@ class TwoPhones {
   FakeWebSocketChannel guestChannel() => harness(guestHarness);
 
   FakeWebSocketChannel harness(Harness value) =>
-      value.channel('wss://api.dudo.supercloud.fr/api/v1/salons/S99FTH/ws');
+      value.channel('wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws');
 
   /// Mirrors the Worker: what the host broadcasts lands on the guest socket.
   Future<void> forwardHostToGuest() async {

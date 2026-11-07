@@ -60,7 +60,9 @@ class RelayedTableMessage {
 ///
 /// Candidate hosts ([baseUrls]) are tried in order; the first one whose
 /// handshake completes wins and is remembered in [activeBaseUrl], so the
-/// app keeps working while api.dudo.supercloud.fr is being wired up.
+/// app keeps working while a candidate is offline. Since 2026-11 the
+/// Worker serves the site and the API on dudo.supercloud.fr and the old
+/// api.* host no longer resolves.
 class NetworkSalonSession extends SalonSession
     with _ChatBucket
     implements SalonBackend {
@@ -73,7 +75,7 @@ class NetworkSalonSession extends SalonSession
   }) : baseUrls = List<String>.unmodifiable(baseUrls ?? defaultBaseUrls);
 
   static const List<String> defaultBaseUrls = [
-    'https://api.dudo.supercloud.fr',
+    'https://dudo.supercloud.fr',
   ];
 
   final List<String> baseUrls;
