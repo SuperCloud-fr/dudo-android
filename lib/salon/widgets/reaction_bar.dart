@@ -30,7 +30,7 @@ class _ReactionBarState extends State<ReactionBar> {
     ('Tu n\u2019es pas obligé de me croire, mais j\u2019ai {n} dés.', 'dés'),
     ('Alors non, {player}, c\u2019est pas possible.', 'nonnull'),
     ('Le paco, c\u2019est ta fin, {player}.', 'paco'),
-    ('Je te promets : au plus {n} dés sur la table,ils mentent.', 'table'),
+    ('Je te promets : au plus {n} dés sur la table, ils mentent.', 'table'),
     (
       'Regarde mes {n} dés, {player}, tu es à l\u2019eau d\u2019ici ce soir.',
       'next',
@@ -95,7 +95,7 @@ class _ReactionBarState extends State<ReactionBar> {
           Row(
             children: [
               Text(
-                'REAGIR',
+                'RÉAGIR',
                 style: Theme.of(context).textTheme.labelMedium
                     ?.copyWith(color: AppColors.brass, letterSpacing: 1.4),
               ),
@@ -138,7 +138,7 @@ class _ReactionBarState extends State<ReactionBar> {
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  '${_targetPlayer?.name ?? '-'} · mes déés : $_diceCount',
+                  '${_targetPlayer?.name ?? '-'} · mes dés : $_diceCount',
                   style: Theme.of(context).textTheme.labelSmall
                       ?.copyWith(color: AppColors.parchmentMuted),
                 ),
@@ -194,7 +194,7 @@ class _ReactionBarState extends State<ReactionBar> {
                       size: 18,
                     ),
                     prefixIconColor: AppColors.brassDim,
-                    hintText: 'Ecrire un message libre…',
+                    hintText: 'Écrire un message libre…',
                     hintStyle: Theme.of(context).textTheme.bodySmall
                         ?.copyWith(),
                   ),
