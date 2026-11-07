@@ -255,4 +255,53 @@ void main() {
       controller.dispose();
     });
   });
+
+  group('timeout de tour humain (issue #7)', () {
+    test('un pirate AFK annonce l\u2019enchère minimale', () {
+      final controller = createGame(
+        seed: 7,
+        config: const GameConfig(opponentCount: 3),
+      );
+      controller.beginBidding();
+      expect(controller.currentBid, isNull);
+
+      // 60 s plus tard (hook de test) : l'enchère par défaut tombe.
+      controller.enforceTurnTimeoutNow();
+      expect(controller.currentBid, isNotNull);
+      expect(controller.currentBid!.playerSeat, 0);
+      expect(controller.currentPlayer, 1, reason: 'au PNJ suivant');
+      controller.dispose();
+    });
+
+    test('aucun timeout pendant une modale (pause bots)', () {
+      final controller = createGame(
+        seed: 7,
+        config: const GameConfig(opponentCount: 3),
+      );
+      controller.beginBidding();
+      controller.pauseBots();
+
+      controller.enforceTurnTimeoutNow();
+      expect(controller.currentBid, isNull, reason: 'table en pause');
+
+      controller.resumeBots();
+      controller.enforceTurnTimeoutNow();
+      expect(controller.currentBid, isNotNull);
+      controller.dispose();
+    });
+
+    test('les PNJ ne sont pas actés par le garde-fou humain', () {
+      final controller = createGame(
+        seed: 7,
+        config: const GameConfig(opponentCount: 3),
+      );
+      controller.beginBidding();
+      controller.enforceTurnTimeoutNow(); // siège 0 (humain) parle.
+      // Le siège 1 est un PNJ : son timer de réflexion reste maître.
+      expect(controller.players[1].isHuman, isFalse);
+      controller.enforceTurnTimeoutNow();
+      expect(controller.currentBid!.playerSeat, isNot(1));
+      controller.dispose();
+    });
+  });
 }

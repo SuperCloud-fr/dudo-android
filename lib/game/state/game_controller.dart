@@ -22,6 +22,8 @@ class GameController extends ChangeNotifier {
     this.roundSeeds,
     this.autoStartRound = true,
     this.botSeats = const <int>{},
+    this.turnTimeout = const Duration(seconds: 60),
+    this.enforceTurnTimeout = true,
   }) : random = random ?? Random() {
     _buildPlayers();
     if (autoStartRound) {
@@ -52,6 +54,15 @@ class GameController extends ChangeNotifier {
   /// A listed seat is driven by this controller's bot loop.
   final Set<int> botSeats;
 
+  /// How long a human turn may sit untouched before the table moves
+  /// without its player (issue #7: an AFK pirate must not stall the sea,
+  /// solo table or online salon). Zero disables it entirely.
+  final Duration turnTimeout;
+
+  /// False for guest mirrors: the host engine is the one guarding time;
+  /// a mirror would fight it with its own fallback.
+  final bool enforceTurnTimeout;
+
   final List<Player> players = <Player>[];
   final List<TableEvent> journal = <TableEvent>[];
 
@@ -73,6 +84,7 @@ class GameController extends ChangeNotifier {
   int? lastRoundSeed;
 
   Timer? _botTimer;
+  Timer? _turnTimer;
   bool _disposed = false;
   bool _paused = false;
   int _nextStarter = 0;
@@ -501,6 +513,7 @@ class GameController extends ChangeNotifier {
   void resumeBots() {
     _paused = false;
     _scheduleBot();
+    _scheduleTurnTimeout();
   }
 
   void _scheduleBot() {
@@ -517,15 +530,46 @@ class GameController extends ChangeNotifier {
     });
   }
 
+  /// Arms the AFK guard when a human seat owns the turn (issue #7). Every
+  /// table change re-arms it, so the clock really measures "nothing moved
+  /// for [turnTimeout]", not "your turn lasted [turnTimeout]". Paused while
+  /// a modal keeps the table open (rules, journal, leave-game check).
+  void _scheduleTurnTimeout() {
+    _turnTimer?.cancel();
+    _turnTimer = null;
+    if (!enforceTurnTimeout || _disposed || _paused) return;
+    if (turnTimeout <= Duration.zero) return;
+    if (phase != GamePhase.bidding) return;
+    if (!players[currentPlayer].isHuman) return;
+    _turnTimer = Timer(turnTimeout, _enforceTurnTimeout);
+  }
+
+  /// The turn's owner stayed silent for [turnTimeout]: the table moves on
+  /// with the cheapest legal raise, exactly like a bot's safety net. If no
+  /// raise fits, dudo; if even that is impossible, the turn simply passes.
+  void _enforceTurnTimeout() {
+    _turnTimer = null;
+    if (_disposed || _paused) return;
+    if (phase != GamePhase.bidding || !players[currentPlayer].isHuman) return;
+    _fallbackBotMove(currentPlayer);
+  }
+
+  /// Test hook: fires the AFK guard now instead of after [turnTimeout].
+  @visibleForTesting
+  void enforceTurnTimeoutNow() => _enforceTurnTimeout();
+
   void _notify() {
     if (_disposed) return;
     notifyListeners();
     _scheduleBot();
+    _scheduleTurnTimeout();
   }
 
   void _cancelBot() {
     _botTimer?.cancel();
     _botTimer = null;
+    _turnTimer?.cancel();
+    _turnTimer = null;
   }
 
   @override

@@ -290,16 +290,16 @@ void main() {
       reason: 'l\u2019hôte ouvre',
     );
     expect(host.currentBid!.playerSeat, 0);
+    expect(host.currentPlayer, 1, reason: 'au tour d\u2019Anne');
 
-    // The guest Anne raises through the relay.
-    relay.handleTable(
-      RelayedTableMessage(
-        kind: 'game',
-        fromSeat: 1,
-        payload: const <String, dynamic>{'kind': 'bid', 'quantity': 3, 'face': 2},
-      ),
+    // Anne never answers (issue #7): the host's AFK guard bids for her
+    // with the cheapest legal raise, and the table keeps moving.
+    host.enforceTurnTimeoutNow();
+    expect(
+      host.currentBid!.playerSeat,
+      1,
+      reason: 'l\u2019hôte remplace le pirate silencieux',
     );
-    expect(host.currentBid!.playerSeat, 1);
     expect(host.currentPlayer, 2, reason: 'au tour du PNJ');
 
     // Online bots play when told to (same code path as the solo timer).
@@ -309,7 +309,7 @@ void main() {
     expect(
       botEvent.kind == TableEventKind.bid || botEvent.kind == TableEventKind.dudo,
       isTrue,
-      reason: 'le PNJ enchérit ou annonce dudo',
+      reason: 'le PNJ enchИrit ou annonce dudo',
     );
 
     // The bot's move is broadcast; the guest sees it re-based.

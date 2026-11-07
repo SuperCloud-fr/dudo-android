@@ -207,6 +207,7 @@ class GuestGameController extends GameController {
          tableNames: List<String>.from(names),
          autoPlayBots: false,
          autoStartRound: false,
+         enforceTurnTimeout: false,
        ) {
     _subscription = session.tableEvents.listen(handleTable);
   }
