@@ -176,7 +176,7 @@ class _PeekOverlayState extends State<PeekOverlay>
                                               child: Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
-                                                  const Icon(
+                                                  Icon(
                                                     Icons.casino_outlined,
                                                     size: 15,
                                                     color:
@@ -204,7 +204,7 @@ class _PeekOverlayState extends State<PeekOverlay>
                                                     width: 3,
                                                     height: 3,
                                                     decoration:
-                                                        const BoxDecoration(
+                                                        BoxDecoration(
                                                           color: AppColors
                                                               .brassDim,
                                                           shape:

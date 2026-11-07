@@ -316,8 +316,8 @@ class _GameOverOverlayState extends State<GameOverOverlay>
                     ),
                   ),
                   if (isWinner)
-                    const Padding(
-                      padding: EdgeInsets.only(right: 6),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 6),
                       child: Icon(
                         Icons.workspace_premium_outlined,
                         size: 15,

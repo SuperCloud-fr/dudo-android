@@ -154,7 +154,7 @@ class _FilledBid extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.person_outline,
                 size: 13,
                 color: AppColors.parchmentMuted,
@@ -176,7 +176,7 @@ class _FilledBid extends StatelessWidget {
               Container(
                 width: 3,
                 height: 3,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: AppColors.brassDim,
                   shape: BoxShape.circle,
                 ),

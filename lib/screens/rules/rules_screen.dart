@@ -228,7 +228,7 @@ class RulesScreen extends StatelessWidget {
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Icon(
+                                    Icon(
                                       Icons.lightbulb_outline,
                                       size: 20,
                                       color: AppColors.brassBright,
@@ -429,7 +429,7 @@ class _Bullet extends StatelessWidget {
             child: Container(
               width: 4,
               height: 4,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.brass,
                 shape: BoxShape.circle,
               ),
@@ -580,8 +580,8 @@ class _Conversion extends StatelessWidget {
             style: Theme.of(context).textTheme.labelSmall
                 ?.copyWith(color: AppColors.parchmentMuted),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 6),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Icon(
               Icons.arrow_forward,
               size: 11,

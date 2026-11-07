@@ -134,7 +134,7 @@ class SalonTextField extends StatelessWidget {
         fillColor: AppColors.leatherDeep.withValues(alpha: 0.7),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.brassDim),
+          borderSide: BorderSide(color: AppColors.brassDim),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -142,7 +142,7 @@ class SalonTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.brass, width: 1.4),
+          borderSide: BorderSide(color: AppColors.brass, width: 1.4),
         ),
         counter: const SizedBox.shrink(),
       ),

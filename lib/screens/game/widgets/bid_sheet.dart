@@ -140,14 +140,16 @@ class _BidSheetState extends State<BidSheet> {
         maxHeight: MediaQuery.sizeOf(context).height * 0.92,
       ),
       child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [Color(0xFF2C1D14), Color(0xFF150E09)],
           ),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-          border: Border(top: BorderSide(color: AppColors.brassDim, width: 1)),
+          border: Border(
+            top: BorderSide(color: AppColors.brassDim, width: 1),
+          ),
         ),
         child: SafeArea(
           top: false,
@@ -291,7 +293,7 @@ class _BidSheetState extends State<BidSheet> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.record_voice_over_outlined,
                         size: 18,
                         color: AppColors.brass,

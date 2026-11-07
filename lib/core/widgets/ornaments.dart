@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 
 class OrnamentDivider extends StatelessWidget {
-  const OrnamentDivider({super.key, this.color = AppColors.brassDim});
+  const OrnamentDivider({super.key, this.color});
 
-  final Color color;
+  /// Falls back to the live brass-dim when unset, so the divider swaps
+  /// palette with the app.
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final effective = color ?? AppColors.brassDim;
     return ExcludeSemantics(
       child: Row(
         children: [
@@ -17,7 +20,10 @@ class OrnamentDivider extends StatelessWidget {
               height: 1,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.transparent, color.withValues(alpha: 0.55)],
+                  colors: [
+                    Colors.transparent,
+                    effective.withValues(alpha: 0.55),
+                  ],
                 ),
               ),
             ),
@@ -30,7 +36,7 @@ class OrnamentDivider extends StatelessWidget {
                 width: 5,
                 height: 5,
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.8),
+                  color: effective.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(1),
                 ),
               ),
@@ -41,7 +47,10 @@ class OrnamentDivider extends StatelessWidget {
               height: 1,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [color.withValues(alpha: 0.55), Colors.transparent],
+                  colors: [
+                    effective.withValues(alpha: 0.55),
+                    Colors.transparent,
+                  ],
                 ),
               ),
             ),

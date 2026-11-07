@@ -443,7 +443,7 @@ class _DifficultyOption extends StatelessWidget {
                       ),
                     ),
                     child: selected
-                        ? const Icon(
+                        ? Icon(
                             Icons.circle,
                             size: 10,
                             color: AppColors.brassBright,
@@ -526,7 +526,7 @@ class _CalzaCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.gps_fixed, size: 20, color: AppColors.brass),
+          Icon(Icons.gps_fixed, size: 20, color: AppColors.brass),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

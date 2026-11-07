@@ -87,7 +87,7 @@ class _CupPainter extends CustomPainter {
     canvas.drawPath(
       body,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
@@ -235,7 +235,7 @@ class _TablePainter extends CustomPainter {
     canvas.drawOval(
       outer,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [AppColors.leatherLight, AppColors.leatherDeep],
@@ -255,7 +255,7 @@ class _TablePainter extends CustomPainter {
         ..shader = RadialGradient(
           center: const Alignment(-0.15, -0.3),
           radius: 0.95,
-          colors: const [
+          colors: [
             AppColors.feltLight,
             AppColors.felt,
             AppColors.feltDeep,

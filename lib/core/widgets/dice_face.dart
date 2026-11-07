@@ -120,8 +120,8 @@ class _DicePainter extends CustomPainter {
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: hidden
-            ? const [AppColors.leatherLight, AppColors.leatherDeep]
-            : const [AppColors.ivory, AppColors.ivoryShade],
+            ? [AppColors.leatherLight, AppColors.leatherDeep]
+            : [AppColors.ivory, AppColors.ivoryShade],
       ).createShader(rect);
     canvas.drawRRect(body, bodyPaint);
 

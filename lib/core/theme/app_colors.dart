@@ -1,53 +1,55 @@
 import 'package:flutter/material.dart';
 
-/// The tavern at night. Every colour in the app comes from this file.
+import 'app_palette.dart';
+
+/// Every colour in the app comes from this file. The named constants
+/// forward to the palette the [PaletteStore] currently holds, so a look
+/// swap repaints the whole tavern while call sites keep their API
+/// (issues #5/#6). Never use these names inside `const` expressions
+/// freely: the values are live, not compile-time.
 abstract final class AppColors {
+  static AppPalette get palette => PaletteStore.current;
+
   // Ground & wood
-  static const ink = Color(0xFF0B0806);
-  static const wood = Color(0xFF1A120C);
-  static const woodDeep = Color(0xFF120C08);
-  static const woodLight = Color(0xFF2A1B11);
-  static const grain = Color(0xFF3B2718);
+  static Color get ink => palette.ink;
+  static Color get wood => palette.wood;
+  static Color get woodDeep => palette.woodDeep;
+  static Color get woodLight => palette.woodLight;
+  static Color get grain => palette.grain;
 
   // Leather
-  static const leather = Color(0xFF38241A);
-  static const leatherLight = Color(0xFF4E3324);
-  static const leatherDeep = Color(0xFF241610);
+  static Color get leather => palette.leather;
+  static Color get leatherLight => palette.leatherLight;
+  static Color get leatherDeep => palette.leatherDeep;
 
   // Brass & candle
-  static const brass = Color(0xFFD2A254);
-  static const brassBright = Color(0xFFF2CE86);
-  static const brassDim = Color(0xFF8A6934);
-  static const candle = Color(0xFFFFD98A);
+  static Color get brass => palette.brass;
+  static Color get brassBright => palette.brassBright;
+  static Color get brassDim => palette.brassDim;
+  static Color get candle => palette.candle;
 
   // Felt
-  static const felt = Color(0xFF143A2D);
-  static const feltLight = Color(0xFF1D4E3B);
-  static const feltDeep = Color(0xFF0D2A20);
+  static Color get felt => palette.felt;
+  static Color get feltLight => palette.feltLight;
+  static Color get feltDeep => palette.feltDeep;
 
   // Parchment
-  static const parchment = Color(0xFFEADABA);
-  static const parchmentDim = Color(0xFFC6B08A);
-  static const parchmentMuted = Color(0xFF9A8667);
+  static Color get parchment => palette.parchment;
+  static Color get parchmentDim => palette.parchmentDim;
+  static Color get parchmentMuted => palette.parchmentMuted;
 
   // Blood & wax
-  static const blood = Color(0xFF9C3A31);
-  static const bloodBright = Color(0xFFC9584B);
-  static const bloodDeep = Color(0xFF5E211D);
+  static Color get blood => palette.blood;
+  static Color get bloodBright => palette.bloodBright;
+  static Color get bloodDeep => palette.bloodDeep;
 
   // Dice
-  static const ivory = Color(0xFFF4E8CF);
-  static const ivoryShade = Color(0xFFD8C4A1);
-  static const dieEdge = Color(0xFF7A6345);
-  static const pip = Color(0xFF241A12);
-  static const ace = Color(0xFFA3342C);
+  static Color get ivory => palette.ivory;
+  static Color get ivoryShade => palette.ivoryShade;
+  static Color get dieEdge => palette.dieEdge;
+  static Color get pip => palette.pip;
+  static Color get ace => palette.ace;
 
   // Crew accents (rings & sigils)
-  static const accents = <Color>[
-    Color(0xFFC9584B), // rust
-    Color(0xFF5E9C8A), // sea
-    Color(0xFFA577B8), // plum
-    Color(0xFFC99A4B), // ochre
-    Color(0xFF6E8FB8), // slate
-  ];
+  static List<Color> get accents => palette.accents;
 }

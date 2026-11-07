@@ -188,9 +188,11 @@ class TableEventView {
 }
 
 class ThinkingDots extends StatefulWidget {
-  const ThinkingDots({super.key, this.color = AppColors.brassBright});
+  const ThinkingDots({super.key, this.color});
 
-  final Color color;
+  /// Falls back to the live brass-bright when unset, so the dots swap
+  /// palette with the app.
+  final Color? color;
 
   @override
   State<ThinkingDots> createState() => _ThinkingDotsState();
@@ -253,7 +255,7 @@ class _ThinkingDotsState extends State<ThinkingDots>
                       width: 4,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: widget.color,
+                        color: widget.color ?? AppColors.brassBright,
                         shape: BoxShape.circle,
                       ),
                     ),

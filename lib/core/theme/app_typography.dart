@@ -18,7 +18,7 @@ abstract final class AppTypography {
   static TextStyle inscription({
     double size = 32,
     FontWeight weight = FontWeight.w700,
-    Color color = AppColors.parchment,
+    Color? color,
     double letterSpacing = 2,
     double height = 1.05,
   }) {
@@ -26,12 +26,31 @@ abstract final class AppTypography {
       fontFamily: display,
       fontSize: size,
       fontWeight: weight,
-      color: color,
+      color: color ?? AppColors.parchment,
       letterSpacing: letterSpacing,
       height: height,
       fontVariations: weight.value >= FontWeight.w600.value
           ? _inscription700
           : _inscription400,
+    );
+  }
+
+  /// A body-face style; built fresh each call so the palette stays live
+  /// when the look changes.
+  static TextStyle _text({
+    required double fontSize,
+    FontWeight fontWeight = FontWeight.w700,
+    Color? color,
+    double letterSpacing = 0,
+    double height = 1,
+  }) {
+    return TextStyle(
+      fontFamily: body,
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: color ?? AppColors.parchment,
+      letterSpacing: letterSpacing,
+      height: height,
     );
   }
 
@@ -43,66 +62,51 @@ abstract final class AppTypography {
       headlineLarge: inscription(size: 25, letterSpacing: 2),
       headlineMedium: inscription(size: 21, letterSpacing: 1.6),
       headlineSmall: inscription(size: 18, letterSpacing: 1.2),
-      titleLarge: const TextStyle(
-        fontFamily: body,
+      titleLarge: _text(
         fontSize: 20,
-        fontWeight: FontWeight.w700,
         color: AppColors.parchment,
         height: 1.2,
       ),
-      titleMedium: const TextStyle(
-        fontFamily: body,
+      titleMedium: _text(
         fontSize: 17,
-        fontWeight: FontWeight.w700,
         color: AppColors.parchment,
         height: 1.25,
       ),
-      titleSmall: const TextStyle(
-        fontFamily: body,
+      titleSmall: _text(
         fontSize: 14,
-        fontWeight: FontWeight.w700,
         color: AppColors.parchment,
         letterSpacing: 0.3,
       ),
-      bodyLarge: const TextStyle(
-        fontFamily: body,
+      bodyLarge: _text(
         fontSize: 17,
         fontWeight: FontWeight.w400,
         color: AppColors.parchment,
         height: 1.45,
       ),
-      bodyMedium: const TextStyle(
-        fontFamily: body,
+      bodyMedium: _text(
         fontSize: 15,
         fontWeight: FontWeight.w400,
         color: AppColors.parchmentDim,
         height: 1.45,
       ),
-      bodySmall: const TextStyle(
-        fontFamily: body,
+      bodySmall: _text(
         fontSize: 13,
         fontWeight: FontWeight.w400,
         color: AppColors.parchmentMuted,
         height: 1.4,
       ),
-      labelLarge: const TextStyle(
-        fontFamily: body,
+      labelLarge: _text(
         fontSize: 13,
-        fontWeight: FontWeight.w700,
         color: AppColors.parchment,
         letterSpacing: 1.5,
       ),
-      labelMedium: const TextStyle(
-        fontFamily: body,
+      labelMedium: _text(
         fontSize: 11,
-        fontWeight: FontWeight.w700,
         color: AppColors.parchmentDim,
         letterSpacing: 1.2,
       ),
-      labelSmall: const TextStyle(
-        fontFamily: body,
+      labelSmall: _text(
         fontSize: 10,
-        fontWeight: FontWeight.w700,
         color: AppColors.parchmentMuted,
         letterSpacing: 0.8,
       ),

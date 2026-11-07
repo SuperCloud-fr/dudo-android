@@ -31,8 +31,8 @@ class JournalSheet extends StatelessWidget {
         maxHeight: MediaQuery.sizeOf(context).height * 0.82,
       ),
       child: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [Color(0xFF2C1D14), Color(0xFF130D08)],

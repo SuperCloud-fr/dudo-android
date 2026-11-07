@@ -11,6 +11,7 @@ import '../../core/widgets/tavern_button.dart';
 import '../../salon/network_salon_session.dart';
 import '../../salon/screens/salon_screens.dart';
 import '../rules/rules_screen.dart';
+import '../settings/settings_screen.dart';
 import '../setup/setup_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -130,6 +131,20 @@ class HomeScreen extends StatelessWidget {
                                   size: 17,
                                 ),
                                 label: const Text('Comment jouer ?'),
+                              ),
+                              TextButton.icon(
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => const SettingsScreen(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.tune_outlined,
+                                  size: 17,
+                                ),
+                                label: const Text('Réglages'),
                               ),
                               const SizedBox(height: 14),
                               Row(
@@ -337,11 +352,11 @@ class _SignPainter extends CustomPainter {
     canvas.drawPath(
       boardPath,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [AppColors.woodLight, AppColors.wood, AppColors.woodDeep],
-          stops: [0.0, 0.55, 1.0],
+          stops: const [0.0, 0.55, 1.0],
         ).createShader(board),
     );
     canvas.drawPath(
@@ -464,10 +479,10 @@ class _TableEdgePainter extends CustomPainter {
     canvas.drawPath(
       edge,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF24513F), AppColors.feltDeep, Color(0xFF081A13)],
+          colors: [AppColors.feltLight, AppColors.feltDeep, Colors.black],
         ).createShader(Rect.fromLTWH(0, 0, w, h)),
     );
     final rim = Path()

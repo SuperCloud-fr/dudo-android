@@ -6,7 +6,7 @@ import 'app_typography.dart';
 
 abstract final class AppTheme {
   static ThemeData dark() {
-    const scheme = ColorScheme(
+    final scheme = ColorScheme(
       brightness: Brightness.dark,
       primary: AppColors.brass,
       onPrimary: AppColors.ink,
@@ -62,10 +62,10 @@ abstract final class AppTheme {
           color: AppColors.parchment,
           letterSpacing: 2,
         ),
-        iconTheme: const IconThemeData(color: AppColors.parchment, size: 22),
+        iconTheme: IconThemeData(color: AppColors.parchment, size: 22),
       ),
-      iconTheme: const IconThemeData(color: AppColors.parchmentDim, size: 22),
-      dividerTheme: const DividerThemeData(
+      iconTheme: IconThemeData(color: AppColors.parchmentDim, size: 22),
+      dividerTheme: DividerThemeData(
         color: AppColors.grain,
         thickness: 1,
         space: 1,
@@ -75,7 +75,7 @@ abstract final class AppTheme {
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpace.radiusLg),
-          side: const BorderSide(color: AppColors.brassDim, width: 1),
+          side: BorderSide(color: AppColors.brassDim, width: 1),
         ),
         titleTextStyle: textTheme.headlineSmall,
         contentTextStyle: textTheme.bodyMedium?.copyWith(
@@ -97,7 +97,7 @@ abstract final class AppTheme {
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSpace.radiusMd),
-          side: const BorderSide(color: AppColors.brassDim),
+          side: BorderSide(color: AppColors.brassDim),
         ),
       ),
       switchTheme: SwitchThemeData(
@@ -131,7 +131,7 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.parchment,
           minimumSize: const Size(AppSpace.minTouch, AppSpace.minTouch),
-          side: const BorderSide(color: AppColors.brassDim),
+          side: BorderSide(color: AppColors.brassDim),
           shape: const StadiumBorder(),
           textStyle: textTheme.labelLarge,
         ),

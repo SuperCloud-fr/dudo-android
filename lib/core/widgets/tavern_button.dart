@@ -46,7 +46,7 @@ class _TavernButtonState extends State<TavernButton> {
     final (foreground, gradient, border, glow) = switch (tone) {
       TavernButtonTone.gold => (
         AppColors.ink,
-        const LinearGradient(
+        LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [AppColors.brassBright, AppColors.brass],
@@ -56,7 +56,7 @@ class _TavernButtonState extends State<TavernButton> {
       ),
       TavernButtonTone.blood => (
         AppColors.ivory,
-        const LinearGradient(
+        LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [AppColors.bloodBright, AppColors.blood],
@@ -197,7 +197,7 @@ class RoundIconButton extends StatelessWidget {
           height: size,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [AppColors.leatherLight, AppColors.leatherDeep],

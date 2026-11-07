@@ -99,11 +99,11 @@ class PlayerSeat extends StatelessWidget {
                     child: Container(
                       width: 12,
                       height: 12,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: AppColors.brass,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.circle,
                         size: 5,
                         color: AppColors.ink,
