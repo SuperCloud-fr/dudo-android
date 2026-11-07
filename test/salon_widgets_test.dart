@@ -18,7 +18,7 @@ void main() {
       ),
     );
     expect(tester.takeException(), isNull);
-    expect(find.text('REAGIR'), findsOneWidget);
+    expect(find.text('RÉAGIR'), findsOneWidget);
   });
 
   testWidgets('le lobby tient debout avec un salon encore vide', (

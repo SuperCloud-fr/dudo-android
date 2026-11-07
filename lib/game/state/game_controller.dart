@@ -52,6 +52,10 @@ class GameController extends ChangeNotifier {
   GamePhase phase = GamePhase.peek;
   int round = 0;
   bool palifico = false;
+  /// Set when a live seat reaches one die this round; the next round is
+  /// palifico, and only that one (a seat sitting at one die after its
+  /// palifico round plays with normal rules again).
+  bool _palificoPending = false;
   int starter = 0;
   int currentPlayer = 0;
   Bid? currentBid;
@@ -157,9 +161,8 @@ class GameController extends ChangeNotifier {
     outcome = null;
     outcomeApplied = false;
     phase = GamePhase.peek;
-    palifico = players
-        .where((player) => player.isAlive)
-        .any((player) => player.diceCount == 1);
+    palifico = _palificoPending;
+    _palificoPending = false;
     for (final player in players) {
       if (player.isAlive) {
         player.roll(nextDie);
@@ -384,6 +387,13 @@ class GameController extends ChangeNotifier {
     final current = outcome;
     if (phase != GamePhase.reveal || current == null) return;
 
+    // A live seat that ends this challenge on exactly one die — and was not
+    // already palifico — locks the next round into palifico.
+    final alreadyAtOne = players
+        .where((player) => player.isAlive && player.diceCount == 1)
+        .map((player) => player.seat)
+        .toSet();
+
     if (current.loserSeat != null) {
       players[current.loserSeat!].loseDie();
     }
@@ -391,6 +401,12 @@ class GameController extends ChangeNotifier {
       players[current.gainSeat!].gainDie();
     }
     outcomeApplied = true;
+    _palificoPending = players.any(
+      (player) =>
+          player.isAlive &&
+          player.diceCount == 1 &&
+          !alreadyAtOne.contains(player.seat),
+    );
 
     if (current.kind == ChallengeKind.calza && current.callerWon) {
       _nextStarter = current.callerSeat;

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 
 import 'package:dudo/game/logic/bot_brain.dart';
+import 'package:dudo/game/models/bid.dart';
 import 'package:dudo/game/models/game_config.dart';
 import 'package:dudo/game/models/table_event.dart';
 import 'package:dudo/game/state/game_controller.dart';
@@ -174,5 +175,84 @@ void main() {
     expect(controller.players.every((player) => player.diceCount == 5), isTrue);
     expect(previousRounds, greaterThan(0));
     controller.dispose();
+  });
+
+  group('palifico (issue #2)', () {
+    /// Simulates a dudo challenge whose loser loses one die, without playing
+    /// a full round: the phase bookkeeping is set by hand.
+    void winChallengeAgainst(GameController controller, int loserSeat) {
+      final target = controller.players[loserSeat];
+      expect(target.diceCount, inInclusiveRange(1, 5));
+      controller
+        ..phase = GamePhase.reveal
+        ..outcome = ChallengeOutcome(
+          bid: Bid(
+            quantity: target.diceCount,
+            face: 5,
+            playerSeat: loserSeat,
+          ),
+          callerSeat: 0,
+          kind: ChallengeKind.dudo,
+          actualCount: 0,
+          exact: false,
+          callerWon: true,
+          loserSeat: loserSeat,
+          gainSeat: null,
+          gainedDie: false,
+          gainCapped: false,
+        )
+        ..applyOutcome();
+    }
+
+    test('la manche qui suit la chute à un dé est palifico, puis plus', () {
+      final controller = createGame(
+        seed: 7,
+        config: const GameConfig(opponentCount: 3),
+      );
+      expect(controller.palifico, isFalse);
+
+      controller.players[1].diceCount = 2;
+      winChallengeAgainst(controller, 1);
+      expect(controller.players[1].diceCount, 1);
+      controller.nextRound();
+      expect(
+        controller.palifico,
+        isTrue,
+        reason: 'le tour qui suit la chute à un dé est palifico',
+      );
+
+      // The palifico seat survives its round on one die; another seat loses
+      // a die without reaching one. Nobody *new* sits at one die, so the
+      // next round plays with normal rules.
+      winChallengeAgainst(controller, 2);
+      controller.nextRound();
+      expect(
+        controller.palifico,
+        isFalse,
+        reason: 'le palifico ne dure qu\'une manche',
+      );
+      controller.dispose();
+    });
+
+    test('remonter à deux dés puis rechuter redéclenche le palifico', () {
+      final controller = createGame(
+        seed: 7,
+        config: const GameConfig(opponentCount: 3),
+      );
+      controller.players[1].diceCount = 2;
+      winChallengeAgainst(controller, 1);
+      controller.nextRound();
+      expect(controller.palifico, isTrue);
+
+      controller.players[1].diceCount = 2;
+      winChallengeAgainst(controller, 1);
+      controller.nextRound();
+      expect(
+        controller.palifico,
+        isTrue,
+        reason: 'une rechute à un dé re-déclenche le palifico',
+      );
+      controller.dispose();
+    });
   });
 }
