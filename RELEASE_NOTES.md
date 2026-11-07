@@ -1,7 +1,9 @@
-# Dudo 0.2.0 — bêta 5 : le salon parle de ses coupures
+# Dudo 0.2.0 — bêta 6 : le sommeil du téléphone respecté
 
-- Les messages système expliquent **pourquoi** la connexion a lâché (code de fermeture WebSocket, erreur réseau du téléphone) — utile pour croiser les blocages VPN/DNS opérateur/box.
-- L'accueil garde son pied de page hors du bandeau feutre (le chevauchement « v0.1 · … » est corrigé).
+- **Verrouiller son téléphone ne casse plus le salon** : l'app respecte la mise en sommeil (plus de rafale d'erreurs au réveil), vous dit en une phrase que le salon dort, et se reconnecte en une tentative propre à l'écran rallumé.
+- **Vos messages s'affichent instantanément** dans le fil (l'écho serveur est dédoublonné).
+- Le débit du salon est enfin honnête : rafale de 3 puis 1 message/s, et le refus annonce le délai (« attends 2s »). Un socket lâché dit « la connexion au salon est lâchée » au lieu de « trop de messages ».
+- Pied de page de l'accueil dégagé du bandeau feutre.
 
 Rappel bêta 4 : l'app parle au serveur **`https://dudo.supercloud.fr`** — la beta 3 ne voit pas les salons.
 
