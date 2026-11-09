@@ -488,6 +488,43 @@ void main() {
     },
   );
 
+  test(
+    'le client répond pong au ping du serveur (liveness partagé)',
+    () async {
+      final created = <FakeWebSocketChannel>[];
+      final session = NetworkSalonSession(
+        handshakeTimeout: const Duration(milliseconds: 80),
+        reconnectDelay: const Duration(milliseconds: 20),
+        createSalonCode: (_, _) async => 'S99FTH',
+        channelFactory: (uri) {
+          final channel = FakeWebSocketChannel.confirmed(uri);
+          created.add(channel);
+          return channel;
+        },
+      );
+
+      final creating = session.createSalon('Cap Hôte', 0);
+      await settle();
+      await untilOneSent(created.first);
+      created.first.serverSends(
+        salonFrame(
+          you: 0,
+          players: <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+          ],
+        ),
+      );
+      await creating;
+
+      // The server probes liveness; the client must answer a pong frame.
+      created.first.serverSends(const <String, dynamic>{'type': 'ping'});
+      await settle(6);
+      final pongs = framesOf(created.first.sent, 'pong');
+      expect(pongs, hasLength(greaterThanOrEqualTo(1)));
+      session.dispose();
+    },
+  );
+
   test('une création en 429 informe du délai sans marteler les autres hôtes', () async {
     final session = NetworkSalonSession(
       baseUrls: const [

@@ -1,11 +1,12 @@
-# Dudo 0.2.0 — bêta 6 : le sommeil du téléphone respecté
+# Dudo 0.2.0 — bêta 7 : la table a un battement de cœur
 
-- **Verrouiller son téléphone ne casse plus le salon** : l'app respecte la mise en sommeil (plus de rafale d'erreurs au réveil), vous dit en une phrase que le salon dort, et se reconnecte en une tentative propre à l'écran rallumé.
-- **Vos messages s'affichent instantanément** dans le fil (l'écho serveur est dédoublonné).
-- Le débit du salon est enfin honnête : rafale de 3 puis 1 message/s, et le refus annonce le délai (« attends 2s »). Un socket lâché dit « la connexion au salon est lâchée » au lieu de « trop de messages ».
-- Pied de page de l'accueil dégagé du bandeau feutre.
+- **Les parties ne meurent plus en silence** : le serveur et l'app se font signe toutes les 20 secondes. Laisser un téléphone réfléchir, lire ses dés ou prendre l'air n'assomme plus la connexion — donc plus de « paris parti dans le vide », de joueurs décrétés AFK alors qu'ils jouaient, de mains figées ou d'écrans qui se regardent mutuellement réfléchir.
+- **Les « salons injoignables » ne bouclent plus** : la reconnexion respire (délai doublé à chaque échec, jusqu'à 15 s) et le fil ne répète plus la même phrase à chaque tentative. Un vrai refus du serveur (partie déjà commencée…) est maintenant affiché tel quel.
+- Un écran qui ne reçoit plus RIEN pendant 75 s coupe lui-même sa connexion desséchée et revient proprement (au lieu de miroiter un état périmé).
+- Règle palifico réécrite dans l'écran Règles (ouverture à 2 dés, une seule manche).
+- Le bouton **Calza** est désormais un vrai bouton à côté de « Dudo ! » quand l'option est activée.
 
-Rappel bêta 4 : l'app parle au serveur **`https://dudo.supercloud.fr`** — la beta 3 ne voit pas les salons.
+Rappel bêta 4 : l'app parle au serveur **`https://dudo.supercloud.fr`**.
 
 ## bêta 3
 

@@ -89,6 +89,12 @@ class NetworkSalonSession extends SalonSession
     // suspends the recovery machinery and an unlock reconnects ONCE with
     // a plain sentence instead of a failure loop.
     WidgetsBinding.instance.addObserver(this);
+    // The server pings every 20s; we answer pong (outbound keepalive) and
+    // watch inbound silence: a dead flow gets closed and recovered instead
+    // of letting bids travel into the void.
+    _watchdog = Timer.periodic(const Duration(seconds: 5), (_) {
+      _checkLiveness();
+    });
   }
 
   static const List<String> defaultBaseUrls = [
@@ -125,6 +131,23 @@ class NetworkSalonSession extends SalonSession
   /// resume, so socket losses during the doze stay silent here and the
   /// resume tells the story once, in one sentence.
   bool _appSuspended = false;
+
+  /// Last frame the server sent us, any kind included. The watchdog reads
+  /// it: a silent socket (no pong, no chat, no table) for a minute means
+  /// the flow died without a close frame - close it and recover properly.
+  DateTime _lastServerFrame = DateTime.now();
+
+  /// Periodic liveness check; also the client half of the keepalive: our
+  /// pongs back to the server's pings keep the flow alive through NATs.
+  Timer? _watchdog;
+
+  /// Grows between failed recovery attempts so an unreachable salon stops
+  /// hammering the network; reset on each success.
+  int _recoveryFailures = 0;
+
+  /// One retry at a time: both the close event and the failed handshake
+  /// can race to schedule the next one, the flag keeps exactly one.
+  bool _recoveryScheduled = false;
   bool _disposed = false;
   bool _recovering = false;
   Timer? _recoveryTimer;
@@ -473,7 +496,15 @@ class NetworkSalonSession extends SalonSession
   }
 
   void _handleServerFrame(Map<String, dynamic> frame) {
+    // Every frame, whatever its kind, proves the flow is alive.
+    _lastServerFrame = DateTime.now();
     switch (frame['type'] as String? ?? '') {
+      case 'ping':
+        // Answer the server's liveness probe; this pong is also OUR
+        // outbound keepalive keeping the NAT entry alive.
+        _sendJson(const <String, dynamic>{'type': 'pong'});
+      case 'pong':
+        break;
       case 'salon':
         _applySalonState((frame['salon'] as Map<String, dynamic>?) ?? {});
       case 'started':
@@ -613,7 +644,6 @@ class NetworkSalonSession extends SalonSession
     // While the phone dozes, the socket dies quietly: no failure loop in
     // the thread, the resume message tells the whole story.
     if (_appSuspended) {
-      _scheduleRecovery();
       return;
     }
     // The relay dropped us unexpectedly: try one automatic recovery. The
@@ -626,7 +656,7 @@ class NetworkSalonSession extends SalonSession
         ? ''
         : ' (fermeture $closeCode${closeReason == null || closeReason.isEmpty ? '' : ' — $closeReason'})';
     pushSystemMessage('Connexion perdue$detail — tentative de reconnexion…');
-    _scheduleRecovery();
+    _scheduleRecovery(_nextRecoveryDelay());
   }
 
   @override
@@ -653,11 +683,43 @@ class NetworkSalonSession extends SalonSession
     }
   }
 
-  void _scheduleRecovery() {
+  /// A silent socket (nothing inbound for 75s while the app is awake) is a
+  /// dead flow: the server pings every 20s, so true silence means the
+  /// transport dropped without a close frame. Close it ourselves and run
+  /// the recovery - this is what kept mirrors frozen and made bets vanish.
+  void _checkLiveness() {
+    if (_disposed || _appSuspended || _channel == null) return;
+    final silence = DateTime.now().difference(_lastServerFrame);
+    if (silence < const Duration(seconds: 75)) return;
+    debugPrint('salon: silence de ${silence.inSeconds}s, je coupe et je reprends');
+    pushSystemMessage(
+      'Le salon ne répond plus — je coupe la connexion desséchée et je reprends…',
+    );
+    final socket = _channel;
+    _channel = null;
+    if (socket != null) {
+      unawaited(_closeChannel(socket));
+    }
+    _scheduleRecovery();
+  }
+
+  void _scheduleRecovery([Duration? when]) {
+    if (_recoveryScheduled) return; // one retry at a time, by design
+    _recoveryScheduled = true;
     _recoveryTimer?.cancel();
-    _recoveryTimer = Timer(reconnectDelay, () {
+    _recoveryTimer = Timer(when ?? reconnectDelay, () {
+      _recoveryScheduled = false;
       unawaited(_recover());
     });
+  }
+
+  /// Exploding backoff after repeated failures: 1.2s, 2.4s, 4.8s… capped
+  /// at 15s so an unreachable salon breathes instead of hammering.
+  Duration _nextRecoveryDelay() {
+    final delayMs = (reconnectDelay.inMilliseconds *
+            (1 << _recoveryFailures.clamp(0, 4)))
+        .clamp(reconnectDelay.inMilliseconds, 15000);
+    return Duration(milliseconds: delayMs);
   }
 
   Future<void> _recover() async {
@@ -667,14 +729,15 @@ class NetworkSalonSession extends SalonSession
     try {
       final result = await _attemptHandshake(base, myName);
       if (result.ok) {
+        _recoveryFailures = 0;
         pushSystemMessage('Reconnecté au salon $code.');
         // Ask the host for a fresh table snapshot (mid-game recovery).
         sendGame(const <String, dynamic>{'kind': 'resync'});
-      } else {
-        pushSystemMessage(
-          result.message ?? 'Salon injoignable — vérifie le code et réessaie.',
-        );
+        return;
       }
+      _recoveryFailures++;
+      final reason = result.message ?? 'Aucune réponse du serveur en 8s.';
+      _threadOnce('Salon injoignable — $reason Je continue d\u2019essayer.');
     } catch (error) {
       // On a phone, "why" is everything: DNS, proxy, captive portal. The
       // terse edition goes to the thread; the raw error stays in adb.
@@ -684,13 +747,33 @@ class NetworkSalonSession extends SalonSession
         _ => '$error',
       };
       debugPrint('salon: reconnexion a échoué : $brief');
-      pushSystemMessage(
-        'Salon injoignable — $brief. Vérifie le réseau et réessaie.',
+      _recoveryFailures++;
+      _threadOnce(
+        'Salon injoignable — $brief. Je continue d\u2019essayer en doublant le délai.',
       );
     } finally {
       _recovering = false;
       notifyListeners();
+      if (!_disposed && _channel == null && !_closedByServer && !_appSuspended) {
+        // The socket is still down: chase it. One scheduler at a time.
+        _scheduleRecovery(_nextRecoveryDelay());
+      }
     }
+  }
+
+  /// Same sentence twice in a minute reads like spam in the thread; the
+  /// recovery machinery says it once, the reader knows we're still trying.
+  void _threadOnce(String body) {
+    final messages = this.messages;
+    final lastSystem = messages.isEmpty ? null : messages.last;
+    final repeated =
+        lastSystem != null &&
+        lastSystem.isMine == false &&
+        lastSystem.body == body &&
+        lastSystem.authorSeat == -1 &&
+        DateTime.now().difference(lastSystem.at) < const Duration(seconds: 60);
+    if (repeated) return;
+    pushSystemMessage(body);
   }
 
   // -------------------------------------------------------------- cleanup
@@ -700,6 +783,8 @@ class NetworkSalonSession extends SalonSession
     if (_disposed) return;
     _disposed = true;
     WidgetsBinding.instance.removeObserver(this);
+    _watchdog?.cancel();
+    _watchdog = null;
     _recoveryTimer?.cancel();
     _recoveryTimer = null;
     _frames?.cancel();
