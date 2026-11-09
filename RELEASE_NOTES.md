@@ -1,4 +1,8 @@
-# Dudo 0.2.0 — bêta 7 : la table a un battement de cœur
+# Dudo 0.2.0 — bêta 8 : les boutons respirent
+
+- **« Calza » et « Surenchérir » ne sont plus tronqués** : les libellés des boutons de taverne rétrécissent proprement quand la place manque, au lieu d'être coupés net. L'espacement des lettres se relâche aussi en mode compact.
+
+## Bêta 7 : la table a un battement de cœur
 
 - **Les parties ne meurent plus en silence** : le serveur et l'app se font signe toutes les 20 secondes. Laisser un téléphone réfléchir, lire ses dés ou prendre l'air n'assomme plus la connexion — donc plus de « paris parti dans le vide », de joueurs décrétés AFK alors qu'ils jouaient, de mains figées ou d'écrans qui se regardent mutuellement réfléchir.
 - **Les « salons injoignables » ne bouclent plus** : la reconnexion respire (délai doublé à chaque échec, jusqu'à 15 s) et le fil ne répète plus la même phrase à chaque tentative. Un vrai refus du serveur (partie déjà commencée…) est maintenant affiché tel quel.

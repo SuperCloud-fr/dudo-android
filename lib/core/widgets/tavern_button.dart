@@ -127,7 +127,7 @@ class _TavernButtonState extends State<TavernButton> {
                   onTapCancel: () => _setPressed(false),
                   child: Padding(
                     padding: EdgeInsets.symmetric(
-                      horizontal: widget.compact ? 14 : 20,
+                      horizontal: widget.compact ? 10 : 20,
                     ),
                     child: Row(
                       mainAxisSize: widget.expand
@@ -137,18 +137,24 @@ class _TavernButtonState extends State<TavernButton> {
                       children: [
                         if (widget.icon != null) ...[
                           Icon(widget.icon, size: 19, color: foreground),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 8),
                         ],
                         Flexible(
-                          child: Text(
-                            widget.label.toUpperCase(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: TextAlign.center,
-                            style: AppTypography.inscription(
-                              size: widget.compact ? 12 : 13,
-                              color: foreground,
-                              letterSpacing: 1.6,
+                          // Shrink the caption instead of truncating it:
+                          // SURENCHÉRIR fits a narrow phone by scaling down,
+                          // short words keep their full size.
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              widget.label.toUpperCase(),
+                              maxLines: 1,
+                              softWrap: false,
+                              textAlign: TextAlign.center,
+                              style: AppTypography.inscription(
+                                size: widget.compact ? 12 : 13,
+                                color: foreground,
+                                letterSpacing: widget.compact ? 1.1 : 1.6,
+                              ),
                             ),
                           ),
                         ),
