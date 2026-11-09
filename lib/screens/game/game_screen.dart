@@ -289,27 +289,26 @@ class _GameScreenState extends State<GameScreen> {
                     ),
                   ),
                 ),
-                if (canChallenge && widget.config.calzaEnabled)
-                  TextButton(
-                    onPressed: _controller.canHumanCalza ? _confirmCalza : null,
-                    style: TextButton.styleFrom(
-                      minimumSize: const Size(72, 48),
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      textStyle: Theme.of(context).textTheme.labelMedium
-                          ?.copyWith(
-                            color: AppColors.brassBright,
-                            letterSpacing: 1.2,
-                          ),
-                    ),
-                    child: Text(l10n.gameCalzaAsk),
-                  ),
               ],
             ),
           ),
           Row(
             children: [
+              if (widget.config.calzaEnabled) ...[
+                Expanded(
+                  flex: 3,
+                  child: TavernButton(
+                    label: l10n.gameCalzaAsk,
+                    icon: Icons.verified_outlined,
+                    tone: TavernButtonTone.ghost,
+                    compact: true,
+                    onPressed: canChallenge ? _confirmCalza : null,
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
               Expanded(
-                flex: 5,
+                flex: 4,
                 child: TavernButton(
                   label: l10n.gameDudoCall,
                   icon: Icons.front_hand_outlined,
@@ -320,11 +319,9 @@ class _GameScreenState extends State<GameScreen> {
               ),
               const SizedBox(width: 8),
               Expanded(
-                flex: 7,
+                flex: 5,
                 child: TavernButton(
-                  label: canChallenge
-                      ? l10n.gameRaise
-                      : l10n.gameOpenBid,
+                  label: canChallenge ? l10n.gameRaise : l10n.gameOpenBid,
                   icon: Icons.trending_up,
                   compact: true,
                   onPressed: bidPossible ? _showBidSheet : null,
