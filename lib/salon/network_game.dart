@@ -106,6 +106,7 @@ class HostGameRelay {
     bool calzaEnabled = true,
     int Function()? seedFactory,
     Set<int> botSeats = const <int>{},
+    this.turnTimeout = const Duration(seconds: 60),
   }) {
     controller = GameController(
       config:
@@ -120,6 +121,7 @@ class HostGameRelay {
       // usual snapshot broadcast; guests stay pure mirrors.
       autoPlayBots: botSeats.isNotEmpty,
       roundSeeds: seedFactory ?? _defaultRollSeed,
+      turnTimeout: turnTimeout,
     );
     controller.addListener(_broadcasting);
     _tableSubscription = session.tableEvents.listen(handleTable);
@@ -138,6 +140,10 @@ class HostGameRelay {
   final NetworkSalonSession session;
   late final GameController controller;
   StreamSubscription<RelayedTableMessage>? _tableSubscription;
+
+  /// The AFK guard for a human seat: configurable so faster rehearsals
+  /// can script tight va-et-vient sessions.
+  final Duration turnTimeout;
 
   int _seedCounter = 0;
   int _seedBase = 0;
@@ -222,6 +228,10 @@ class GuestGameController extends GameController {
          enforceTurnTimeout: false,
        ) {
     _subscription = session.tableEvents.listen(handleTable);
+    // A table that was mid-round when we arrived (rejoin, reconnect):
+    // ask the host for the full picture right away instead of waiting
+    // for the next engine mutation to re-broadcast.
+    _session.sendGame(const <String, dynamic>{'kind': 'resync'});
   }
 
   final NetworkSalonSession _session;

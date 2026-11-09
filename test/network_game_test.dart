@@ -211,14 +211,21 @@ void main() {
       expect(guest.currentBid?.quantity, 2);
 
       // Her bid travels as a command; the host validates and broadcasts.
+      // (The opening resync also stands in the guest channel; we look at
+      // bids only.)
       expect(
         guest.submitHumanBid(const Bid(quantity: 4, face: 1, playerSeat: 0)),
         isTrue,
       );
-      final commands = phones.guestSends();
+      final commands =
+          phones.guestSends().where((command) => command['kind'] == 'bid').toList();
       expect(commands, hasLength(1));
-      expect(commands.first['kind'], 'bid');
       expect(commands.first['quantity'], 4);
+      expect(
+        phones.guestSends().any((command) => command['kind'] == 'resync'),
+        isTrue,
+        reason: 'le miroir demande la table dès son ouverture',
+      );
 
       relay.handleTable(
         RelayedTableMessage(kind: 'game', fromSeat: 1, payload: commands.first),
@@ -258,9 +265,9 @@ void main() {
       expect(guest.currentBid?.quantity, 1);
       // Salon seat 1 → local seat 0 : her turn.
       expect(guest.callHumanDudo(), isTrue);
-      final commands = phones.guestSends();
+      final commands =
+          phones.guestSends().where((command) => command['kind'] == 'dudo').toList();
       expect(commands, hasLength(1));
-      expect(commands.first['kind'], 'dudo');
 
       relay.handleTable(
         RelayedTableMessage(kind: 'game', fromSeat: 1, payload: commands.first),

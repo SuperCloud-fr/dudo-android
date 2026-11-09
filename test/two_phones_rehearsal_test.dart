@@ -32,11 +32,181 @@ void main() {
       await HttpOverrides.runWithHttpOverrides(_rehearsal, _RealHttp());
     },
   );
+
+  test(
+    'répétition : va-et-vient de l\u2019invité (quitte, rejoint, repart)',
+    timeout: Timeout(Duration(minutes: 10)),
+    () async {
+      final live = Platform.environment['LIVE'] ?? '';
+      if (live != '1') {
+        // Jamais de réseau dans la suite ordinaire ; sous LIVE=1 seulement.
+        return;
+      }
+      await HttpOverrides.runWithHttpOverrides(_vaEtVient, _RealHttp());
+    },
+  );
 }
 
 /// Un override neutre : la base dart:io rend un vrai HttpClient, sans
 /// réserve ni jouet.
 class _RealHttp extends HttpOverrides {}
+
+/// Répétition 2 : l'invité va et vient sans casser la table.
+Future<void> _vaEtVient() async {
+  final log = <String>[];
+  void say(String line) {
+    final stamp = DateTime.now().toIso8601String().substring(11, 19);
+    final entry = '$stamp $line';
+    log.add(entry);
+    // ignore: avoid_print
+    print(entry);
+  }
+
+  final host = NetworkSalonSession();
+  final first = NetworkSalonSession();
+  try {
+    await host.createSalon('Simul Hote', 1);
+    final code = host.code;
+    await first.joinSalon(code, 'Simul Anne');
+    await host.startGame();
+    await _awaitTableOpen(host, say);
+    await _awaitTableOpen(first, say);
+
+    // Timeout de tour court : le fauteuil d'un invité parti est joué tout
+    // seul vite, la manche ne fige pas pendant les va-et-vient.
+    final relay = HostGameRelay(
+      session: host,
+      names: [for (final player in host.players) player.name],
+      botSeats: {
+        for (final player in host.players)
+          if (player.isBot) player.seat,
+      },
+      turnTimeout: const Duration(seconds: 4),
+    );
+    relay.start();
+
+    var mirror = GuestGameController(
+      config: GameConfig(opponentCount: host.players.length - 1),
+      session: first,
+      names: [for (final player in host.players) player.name],
+    );
+
+    // Une manche entière se déroule avant les aller-retours.
+    while (relay.controller.round == 1) {
+      _driveHost(relay.controller);
+      _driveGuest(mirror);
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      expect(_threadFailures(host.messages), isEmpty,
+          reason: 'fil hôte propre avant va-et-vient');
+    }
+
+    // ---------- 1) L'invité QUITTE LA PARTIE EN COURS ----------
+    mirror.dispose();
+    first.dispose();
+    for (var tick = 0; tick < 40; tick++) {
+      if (host.messages.any(
+        (m) => (m as dynamic).body.contains('a quitté la table'),
+      )) {
+        break;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    }
+    expect(
+      host.messages.any((m) => (m as dynamic).body.contains('a quitté la table')),
+      isTrue,
+      reason: 'l\u2019hôte annonce le départ',
+    );
+    say('invité parti en pleine manche — le moteur continue seul');
+
+    // Le moteur joue le siège vide (garde-fou AFK 4 s) : les manches passent.
+    for (var tick = 0; tick < 30; tick++) {
+      _driveHost(relay.controller);
+      if (relay.controller.round >= 2) break;
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    }
+    expect(
+      relay.controller.round,
+      greaterThan(1),
+      reason: 'la table tourne sans l\u2019invité',
+    );
+
+    // ---------- 2) L'invité REJOINT LA PARTIE EN COURS ----------
+    final second = NetworkSalonSession();
+    try {
+      await second.joinSalon(code, 'Simul Anne');
+      expect(second.you, inInclusiveRange(1, 5), reason: 'siège récupéré');
+      mirror = GuestGameController(
+        config: GameConfig(opponentCount: host.players.length - 1),
+        session: second,
+        names: [for (final player in host.players) player.name],
+      );
+      // Le resync à l'ouverture porte la table : near-parité en qq ticks.
+      var synced = false;
+      for (var tick = 0; tick < 40; tick++) {
+        _driveHost(relay.controller);
+        _driveGuest(mirror);
+        if (mirror.round == relay.controller.round &&
+            mirror.players.length == relay.controller.players.length) {
+          synced = true;
+          break;
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      }
+      expect(synced, isTrue, reason: 'le nouveau téléphone a rattrapé la table');
+      say('invité a récupéré son siège en pleine partie ✓');
+    } finally {
+      mirror.dispose();
+      second.dispose();
+    }
+
+    // ---------- 3) REPART… ET REVIENT ENCORE ----------
+    for (var tick = 0; tick < 20; tick++) {
+      _driveHost(relay.controller);
+      if (host.messages.any(
+        (m) => (m as dynamic).body.contains('a quitté la table'),
+      )) {
+        break;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    }
+    expect(
+      relay.controller.round,
+      greaterThan(1),
+      reason: 'la table continue encore, sans personne',
+    );
+
+    final thirdSeatSession = NetworkSalonSession();
+    try {
+      await thirdSeatSession.joinSalon(code, 'Simul Anne');
+      mirror = GuestGameController(
+        config: GameConfig(opponentCount: host.players.length - 1),
+        session: thirdSeatSession,
+        names: [for (final player in host.players) player.name],
+      );
+      var reconnected = false;
+      for (var tick = 0; tick < 40; tick++) {
+        _driveHost(relay.controller);
+        _driveGuest(mirror);
+        if (mirror.round == relay.controller.round) {
+          reconnected = true;
+          break;
+        }
+        await Future<void>.delayed(const Duration(milliseconds: 300));
+      }
+      expect(reconnected, isTrue, reason: 'deuxième reprise réussie');
+      say('deuxième reprise réussie ✓');
+    } finally {
+      mirror.dispose();
+      thirdSeatSession.dispose();
+    }
+  } catch (error) {
+    say('échec : $error');
+    rethrow;
+  } finally {
+    first.dispose();
+    host.dispose();
+  }
+}
 
 Future<void> _rehearsal() async {
   final log = <String>[];
