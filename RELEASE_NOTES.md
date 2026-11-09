@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 8 : les boutons respirent
+# Dudo 0.2.0 — bêta 9 : les fantômes sont chassés
+
+- **La main « 5 pacos » fantôme est morte** : un invité qui ratait la toute première image de la manche (frame perdue, reprise en cours, petit retard) gardait un plateau vide, et le plateau vide se dessine en pacos par défaut. Les dés se recalculent maintenant dès la première image reçue, quelle que soit la phase.
+- **La fin de partie rouvre le salon** : quand le dernier pari est réglé et le podium affiché, la taverne redevient un lobby — un nouveau téléphone peut rejoindre (avant : « La partie a déjà commencée » à jamais). Et tout le monde est ramené du plateau au salon automatiquement.
+
+## Bêta 8 : les boutons respirent
 
 - **« Calza » et « Surenchérir » ne sont plus tronqués** : les libellés des boutons de taverne rétrécissent proprement quand la place manque, au lieu d'être coupés net. L'espacement des lettres se relâche aussi en mode compact.
 
@@ -41,7 +46,7 @@ Cette bêta couvre le **multijoueur en ligne** : jusqu'à 6 pirates, chacun sur 
 
 ## Installation (Android 7.0+)
 
-1. Télécharge **`dudo-v0.2.0-beta.1.apk`** ci-dessous (ou l'artefact du run CI).
+1. Télécharge **`dudo-v0.2.0-beta.9.apk`** ci-dessous (ou l'artefact du run CI).
 2. Ouvre le fichier sur le téléphone.
 3. Si Android le demande, autorise l'installation depuis cette source, puis installe.
 4. Lance **Dudo**.

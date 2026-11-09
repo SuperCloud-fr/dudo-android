@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:dudo/game/models/bid.dart';
 import 'package:dudo/game/models/game_config.dart';
@@ -128,6 +129,51 @@ void main() {
     }
     guest.dispose();
     relay.dispose();
+  });
+
+  test('un snapshot arrivé en pleine enchère dérive quand même les dés', () async {
+    final phones = await openTable();
+
+    // No relay: the mirror receives a hand-crafted snapshot whose bidding
+    // phase has already started (mirrors a lost first frame or a late
+    // join). The dice must still be seeded locally — otherwise the tray
+    // renders its empty-dice placeholder, five pacos.
+    final guest = GuestGameController(
+      config: const GameConfig(opponentCount: 2),
+      session: phones.guestHarness.session,
+      names: ['Cap Hôte', 'Anne', 'Bob'],
+    );
+    guest.applySnapshot(const <String, dynamic>{
+      'v': networkSnapshotVersion,
+      'round': 1,
+      'phase': 'bidding',
+      'palifico': false,
+      'starter': 0,
+      'currentPlayer': 1,
+      'seed': 424242,
+      'players': [
+        {'seat': 0, 'name': 'Cap Hôte', 'diceCount': 5},
+        {'seat': 1, 'name': 'Anne', 'diceCount': 5},
+        {'seat': 2, 'name': 'Bob', 'diceCount': 5},
+      ],
+      'bid': {'q': 3, 'f': 4, 's': 1},
+      'journal': [],
+      'outcome': null,
+      'result': null,
+    });
+
+    // Reference roll: the host engine starts `Random(seed)` and walks the
+    // salon seats in ascending order, five dice each.
+    final rolling = Random(424242);
+    final salonDice = [
+      for (var seat = 0; seat < 3; seat++)
+        [for (var die = 0; die < 5; die++) 1 + rolling.nextInt(6)],
+    ];
+    for (var local = 0; local < 3; local++) {
+      final salonSeat = (local + phones.guestHarness.session.you) % 3;
+      expect(guest.players[local].dice, salonDice[salonSeat]);
+    }
+    guest.dispose();
   });
 
   test(

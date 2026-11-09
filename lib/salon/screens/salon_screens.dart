@@ -405,15 +405,27 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   void _refresh() {
     if (!mounted) return;
     setState(() {});
+    final isNetwork = widget.session is NetworkSalonSession;
     // Guests (and any late host) hop to the table as soon as the Worker
     // confirms the round started.
-    if (widget.session is NetworkSalonSession &&
-        widget.session.isStarting &&
-        !_tableOpened) {
+    if (isNetwork && widget.session.isStarting && !_tableOpened) {
       _tableOpened = true;
       _pushTable(context);
     }
+    // The game reached its standings: the Worker reopened the salon, the
+    // table folds back to the tavern lobby so a new phone can join or the
+    // table can replay.
+    if (isNetwork && _tableOpened && !widget.session.isStarting) {
+      _tableOpened = false;
+      final current = _tableRoute;
+      if (current != null && current.isCurrent) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      _tableRoute = null;
+    }
   }
+
+  Route<void>? _tableRoute;
 
   bool get isHost => widget.session.role == SalonRole.host;
 

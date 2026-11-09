@@ -125,6 +125,16 @@ class HostGameRelay {
     _tableSubscription = session.tableEvents.listen(handleTable);
   }
 
+  bool _gameOverSent = false;
+
+  /// Tells the relay the salon is open again the moment the final standings
+  /// exist (and still at dispose, belt against braces).
+  void _announceGameOverIfNeeded() {
+    if (_gameOverSent || controller.result == null) return;
+    _gameOverSent = true;
+    session.sendGameOver();
+  }
+
   final NetworkSalonSession session;
   late final GameController controller;
   StreamSubscription<RelayedTableMessage>? _tableSubscription;
@@ -148,6 +158,7 @@ class HostGameRelay {
     _tableSubscription?.cancel();
     _tableSubscription = null;
     controller.removeListener(_broadcasting);
+    _announceGameOverIfNeeded();
   }
 
   void _broadcasting() {
@@ -156,6 +167,7 @@ class HostGameRelay {
     if (text == _lastPayload) return;
     _lastPayload = text;
     session.sendSnapshot(payload);
+    _announceGameOverIfNeeded();
   }
 
   /// Feeds every guest command into the engine; mutations re-broadcast.
@@ -214,7 +226,7 @@ class GuestGameController extends GameController {
 
   final NetworkSalonSession _session;
   StreamSubscription<RelayedTableMessage>? _subscription;
-  int _diceRound = -1;
+  int _derivedSeed = -1;
 
   int get mySalonSeat => _session.you;
 
@@ -281,12 +293,15 @@ class GuestGameController extends GameController {
     starter = reb((snapshot['starter'] as num?)?.toInt() ?? 0);
     currentPlayer = reb((snapshot['currentPlayer'] as num?)?.toInt() ?? 0);
 
-    // --- deterministic dice for the NEW round only.
+    // --- deterministic dice for every newly announced seed. The gate is
+    // the SEED, not the phase: a snapshot arriving mid-round (first frames
+    // lost, late join, reconnect during bidding) must still roll, or the
+    // tray falls on the empty-dice placeholder — which renders five pacos.
     final seedRaw = snapshot['seed'];
     final roundSeed = seedRaw is num ? seedRaw.toInt() : null;
-    if (roundSeed != null && round != _diceRound && phase == GamePhase.peek) {
+    if (roundSeed != null && roundSeed != _derivedSeed) {
       _deriveDice(roundSeed, salonDiceCounts: diceCounts, salonStart: mySeat);
-      _diceRound = round;
+      _derivedSeed = roundSeed;
     }
 
     // --- bid, journal, outcome, result.

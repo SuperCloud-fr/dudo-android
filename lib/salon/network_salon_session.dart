@@ -172,6 +172,13 @@ class NetworkSalonSession extends SalonSession
     _sendJson(<String, dynamic>{'type': 'snapshot', 'payload': payload});
   }
 
+  /// Host only: announces the game is over so the Worker reopens the salon
+  /// (lobby) — otherwise its `started` flag stays true forever and any new
+  /// phone gets refused with "La partie a d\u00e9j\u00e0 commenc\u00e9e".
+  void sendGameOver() {
+    _sendJson(const <String, dynamic>{'type': 'gameOver'});
+  }
+
   // -------------------------------------------------------------- creation
 
   @override
