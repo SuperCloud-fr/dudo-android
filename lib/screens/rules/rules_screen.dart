@@ -194,19 +194,39 @@ class RulesScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Quand un pirate tombe à un seul dé, la manche suivante devient palifico : le ton monte, et les paris se verrouillent.',
+                                      'Le pirate qui perd son avant-dernier dé '
+                                      'déclenche le palifico : la manche '
+                                      'suivante se joue entièrement sur une '
+                                      'seule face, imposée par l\u2019ouverture.',
                                     ),
                                     const SizedBox(height: 10),
                                     _Callout(
                                       icon: Icons.lock_outline,
                                       title: 'Face imposée',
-                                      text: 'Le premier pari choisit la face. Tous les suivants doivent monter la quantité de cette même face ; impossible de changer de valeur.',
+                                      text: 'Le premier pari choisit la face '
+                                          'et ouvre à deux dés minimum. '
+                                          'Tous les suivants montent la '
+                                          'quantité de cette même face ; '
+                                          'impossible de changer de valeur.',
                                     ),
                                     const SizedBox(height: 10),
                                     _Callout(
                                       icon: Icons.push_pin_outlined,
                                       title: 'Paco sans joker',
-                                      text: 'Les paco ne comptent que comme paco. L\'ouverture se fait avec au moins deux dés.',
+                                      text: 'Pendant le palifico, les paco ne '
+                                          'comptent que comme paco : plus '
+                                          'de joker.',
+                                    ),
+                                    const SizedBox(height: 10),
+                                    _Callout(
+                                      icon: Icons.history,
+                                      title: 'Une seule manche',
+                                      text: 'À la manche d\u2019après, les '
+                                          'enchères reprennent la forme '
+                                          'normale, même si le pirate reste '
+                                          'à un dé. Et si quelqu\u2019un '
+                                          'rechute à un dé plus tard, le '
+                                          'palifico se déclenche à nouveau.',
                                     ),
                                   ],
                                 ),
