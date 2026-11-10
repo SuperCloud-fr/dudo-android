@@ -1,5 +1,8 @@
 # Dudo — le Perudo de taverne
 
+[![Android CI](https://github.com/SuperCloud-fr/dudo-android/actions/workflows/android.yml/badge.svg)](https://github.com/SuperCloud-fr/dudo-android/actions/workflows/android.yml)
+[![Dernière APK](https://img.shields.io/badge/APK-derni%C3%A8re%20release-E8A33B)](https://github.com/SuperCloud-fr/dudo-android/releases/latest)
+
 Dudo est un jeu de dés de **Perudo pour Android**, écrit en Flutter : on y joue **solo contre une équipe de pirates IA**, ou **en salon multijoueur en ligne** (jusqu'à 6 téléphones). Cinq dés, un gobelet, une table de taverne, et un équipage qui ment très bien. Le code est gardé côté plateforme aussi neutre que possible : ce dépôt livre Android, et le même `lib/` pourra servir de base à un dépôt iOS séparé.
 
 | Accueil | La table |
