@@ -525,6 +525,43 @@ void main() {
     },
   );
 
+  test('un flux totalement muet est coupé puis remplacé (watchdog)', () async {
+    final created = <FakeWebSocketChannel>[];
+    final session = NetworkSalonSession(
+      handshakeTimeout: const Duration(milliseconds: 80),
+      reconnectDelay: const Duration(milliseconds: 20),
+      livenessStroke: const Duration(milliseconds: 1200),
+      livenessTick: const Duration(milliseconds: 300),
+      createSalonCode: (_, _) async => 'S99FTH',
+      channelFactory: (uri) {
+        final channel = FakeWebSocketChannel.confirmed(uri);
+        created.add(channel);
+        return channel;
+      },
+    );
+
+    final creating = session.createSalon('Cap Hôte', 0);
+    await settle();
+    await untilOneSent(created.first);
+    created.first.serverSends(
+      salonFrame(
+        you: 0,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+        ],
+      ),
+    );
+    await creating;
+
+    // The server never speaks again (no pings, no traffic): the watchdog
+    // must cut the dessicated flow and run the recovery machinery.
+    for (var tick = 0; tick < 50 && created.length < 2; tick++) {
+      await Future<void>.delayed(const Duration(milliseconds: 200));
+    }
+    expect(created, hasLength(2), reason: 'le flux muet est remplacé');
+    session.dispose();
+  }, timeout: const Timeout(Duration(seconds: 30)));
+
   test('une création en 429 informe du délai sans marteler les autres hôtes', () async {
     final session = NetworkSalonSession(
       baseUrls: const [

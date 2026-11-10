@@ -84,6 +84,8 @@ class NetworkSalonSession extends SalonSession
     this.channelFactory,
     this.handshakeTimeout = const Duration(seconds: 8),
     this.reconnectDelay = const Duration(milliseconds: 1200),
+    this.livenessStroke = const Duration(seconds: 75),
+    this.livenessTick = const Duration(seconds: 5),
   }) : baseUrls = List<String>.unmodifiable(baseUrls ?? defaultBaseUrls) {
     // Phone sleep cuts the WS; observe the lifecycle so a locked screen
     // suspends the recovery machinery and an unlock reconnects ONCE with
@@ -92,7 +94,7 @@ class NetworkSalonSession extends SalonSession
     // The server pings every 20s; we answer pong (outbound keepalive) and
     // watch inbound silence: a dead flow gets closed and recovered instead
     // of letting bids travel into the void.
-    _watchdog = Timer.periodic(const Duration(seconds: 5), (_) {
+    _watchdog = Timer.periodic(livenessTick, (_) {
       _checkLiveness();
     });
   }
@@ -136,6 +138,11 @@ class NetworkSalonSession extends SalonSession
   /// it: a silent socket (no pong, no chat, no table) for a minute means
   /// the flow died without a close frame - close it and recover properly.
   DateTime _lastServerFrame = DateTime.now();
+
+  /// Silence threshold and cadence of the watchdog; overridable so tests
+  /// do not need 75 real seconds to prove a dead flow gets recovered.
+  final Duration livenessStroke;
+  final Duration livenessTick;
 
   /// Periodic liveness check; also the client half of the keepalive: our
   /// pongs back to the server's pings keep the flow alive through NATs.
@@ -697,8 +704,10 @@ class NetworkSalonSession extends SalonSession
   void _checkLiveness() {
     if (_disposed || _appSuspended || _channel == null) return;
     final silence = DateTime.now().difference(_lastServerFrame);
-    if (silence < const Duration(seconds: 75)) return;
-    debugPrint('salon: silence de ${silence.inSeconds}s, je coupe et je reprends');
+    if (silence < livenessStroke) return;
+    debugPrint(
+      'salon: silence de ${silence.inSeconds}s, je coupe et je reprends',
+    );
     pushSystemMessage(
       'Le salon ne répond plus — je coupe la connexion desséchée et je reprends…',
     );
