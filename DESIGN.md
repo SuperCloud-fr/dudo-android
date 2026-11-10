@@ -39,6 +39,8 @@ The visual world is deliberately small and physical: one table, one cup, one pri
 | `pip` | `#241A12` | normal pips |
 | `ace` | `#A3342C` | ace pip |
 
+These tokens describe the default **Taverne** look. The ambience system (`app_palette.dart`) swaps whole palettes from the settings page — Pavillon Debout (marine & or) is live today; a corporate skin (#6) is planned. Roles (ink/wood/brass/blood/…) stay constant across looks.
+
 Crew accents (rings and sigils), in order: rust `#C9584B`, sea `#5E9C8A`, plum `#A577B8`, ochre `#C99A4B`, slate `#6E8FB8`.
 
 Rules:
@@ -50,10 +52,11 @@ Rules:
 
 ### Type
 
-- **Cinzel** (variable, OFL) — display, signage, numbers, section titles. Uppercase for system labels; mixed case for headlines. Letter spacing is generous (1–8) and is part of the inscription voice.
+- **Alkatra** (variable, OFL) — display, signage, numbers, section titles. Hand-carved, carries the brief's rowdy voice. Uppercase for system labels; mixed case for headlines. Letter spacing is generous (1–8) and is part of the inscription voice.
 - **Alegreya Sans** (OFL, regular/medium/bold/italic) — body, descriptions, status, buttons, journal. 15–17 for body; 11–13 for labels. Line height 1.4–1.5.
-- **Alegreya Sans** is the body face; never use Cinzel for a paragraph.
+- **Cinzel** (variable, OFL) stays bundled in reserve for long inscriptions; never use either display face for a paragraph.
 - Number sizes: quantity in a bid 58–64; section numbers 13; game-over title 40; screen title 30–32.
+- Type roles come from `app_typography.dart`; the interface copy ships in French and English via ARB (fr is the source of truth).
 
 ### Spacing and shape
 
@@ -73,12 +76,12 @@ Rules:
 
 ## Components
 
-- **`TavernButton`** — gold primary (`gold`), blood destructive (`blood`), ghost secondary (`ghost`). 54 dp tall, 48 dp compact; uppercase Cinzel 12–13 with 1.6 tracking; bevel highlight; soft shadow; press scale 0.975; haptic click. An icon is optional.
+- **`TavernButton`** - gold primary (`gold`), blood destructive (`blood`), ghost secondary (`ghost`). 48-54 dp tall; uppercase display face 12-13 with 1.1-1.6 tracking (auto-shrinks to fit, never truncates); bevel highlight; soft shadow; press scale 0.975; haptic click. An icon is optional.
 - **`RoundIconButton`** — 42–44 dp leather medallion with a brass border; used for close, back, journal. Semantic label is mandatory.
 - **`DiceFace`** — custom-painted ivory die; 5-pip face with a red centre pip is the app mark. Hidden dice carry a brass compass rose. Highlighted dice get a gold glow; irrelevant dice dim to 34%. Rotation is small (±0.05 rad) and deterministic per position.
 - **`LeatherCup`** — one cup, one handle, two brass bands, a stamped "D". It lifts straight up and fades to zero; it never lingers as a ghost.
 - **`TableSurface`** — a green felt ellipse with a leather rim, dashed brass stitching and ten studs. It fills the play area but stays below the bid card.
-- **`BidCard`** — "PARI EN COURS", quantity in Cinzel, face die, note about aces, bidder and total dice. It is the loudest card on the table, but still smaller than the felt.
+- **`BidCard`** - the current bid, quantity in the display face, face die, note about pacos, bidder and total dice. It is the loudest card on the table, but still smaller than the felt.
 - **`PlayerSeat`** — circular sigil, name, five remaining-dice pips, status ("en jeu", "réfléchit", "à toi", "À l'eau"). Active seats get a gold ring and a breathing halo. The current bidder gets a small brass dot.
 - **`BidSheet`** — bottom sheet with a quantity stepper, six face choices, a plain-language summary, and a two-button footer. It is prefilled with the most natural raise. Illegal combinations are impossible to announce.
 - **`PeekOverlay`** — the private ritual. The cup hides the dice; tapping lifts it. The revealed state summarises "N dés en main · X as". The CTA names who opens.

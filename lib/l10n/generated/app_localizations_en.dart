@@ -60,6 +60,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lookPick => 'Tap to choose';
 
   @override
+  String get settingsPrivacyPolicy => 'Privacy policy';
+
+  @override
   String get commonCancel => 'Cancel';
 
   @override

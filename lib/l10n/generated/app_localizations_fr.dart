@@ -60,6 +60,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get lookPick => 'Toucher pour choisir';
 
   @override
+  String get settingsPrivacyPolicy => 'Politique de confidentialité';
+
+  @override
   String get commonCancel => 'Annuler';
 
   @override

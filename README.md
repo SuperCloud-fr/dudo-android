@@ -1,6 +1,6 @@
 # Dudo — le Perudo de taverne
 
-Dudo est un jeu de dés **solo contre des pirates** pour Android, écrit en Flutter. Cinq dés, un gobelet, une table de taverne, et un équipage qui ment très bien. Le code est gardé côté plateforme aussi neutre que possible : ce dépôt livre Android, et le même `lib/` pourra servir de base à un dépôt iOS séparé.
+Dudo est un jeu de dés de **Perudo pour Android**, écrit en Flutter : on y joue **solo contre une équipe de pirates IA**, ou **en salon multijoueur en ligne** (jusqu'à 6 téléphones). Cinq dés, un gobelet, une table de taverne, et un équipage qui ment très bien. Le code est gardé côté plateforme aussi neutre que possible : ce dépôt livre Android, et le même `lib/` pourra servir de base à un dépôt iOS séparé.
 
 | Accueil | La table |
 |---|---|
@@ -11,12 +11,14 @@ Dudo est un jeu de dés **solo contre des pirates** pour Android, écrit en Flut
 ## Ce qui est jouable
 
 - **1 joueur + 1 à 5 pirates IA**, 5 dés par joueur, dernière personne avec un dé gagne.
-- **Règles Perudo complètes** : as joker, surenchères légales, dudo, calza optionnelle, palifico quand un pirate reste à un seul dé, perte de dé, élimination, manche suivante ouverte par le perdant.
+- **Règles Perudo complètes** : as joker (paco), surenchères légales, dudo, calza optionnelle, palifico quand un pirate reste à un seul dé, perte de dé, élimination, manche suivante ouverte par le perdant.
+- **Salons multijoueurs en ligne** : jusqu'à 6 pirates, chacun sur son téléphone, code à six caractères partagé par SMS/WhatsApp/mail. L'hôte arbitre les règles (relais `HostGameRelay`), les invités rejouent ses décisions en miroir ; les dés ne transitent jamais sur le réseau (chaque table en tire les mêmes depuis une graine partagée). Serveur : `https://dudo.supercloud.fr` (Worker API v1, voir `../worker`).
+- **Solidité du salon** : battement de cœur (ping/pong toutes les 20 s), reprise de siège à la reconnexion (rejoin en pleine partie), timeout de tour 60 s, fil de salon (chat libre, phrases prêtes à l'emploi, réactions), messages système qui expliquent les coupures.
 - **Trois difficultés** : Mousse (prudent), Flibustier (équilibré), Capitaine (probabiliste et féroce).
 - **IA sans triche** : chaque bot ne connaît que ses propres dés, le nombre de dés en jeu et le pari courant. Il estime les probabilités par loi binomiale, avec du bluff et du caractère.
 - **Une vraie table** : gobelet privé, pari courant, historique des trois derniers coups, journal complet, confirmation avant un dudo ou une calza, résultats expliqués dé par dé.
-- **Interface française, portrait, une main** : cibles de 48 dp, respect de la taille de police (testée à 1,3×), animations réduites si le système le demande, retour Android fonctionnel.
-- **Aucun réseau, aucun compte, aucune pub, aucun analytics.** Le jeu tient entièrement dans l'APK.
+- **Interface française et anglaise** (suit la langue du téléphone), portrait, une main : cibles de 48 dp, respect de la taille de police (testée à 1,3×), animations réduites si le système le demande, retour Android fonctionnel.
+- **Pas de compte, pas de pub, pas d'analytics.** Seuls les messages du salon (pseudos, paris, chat) transitent par le Worker ; la [politique de confidentialité](https://dudo.supercloud.fr/politique-de-confidentialite) est liée depuis les Réglages.
 
 ## Lancer le projet
 
@@ -113,25 +115,33 @@ Rapports envoyés en artefacts **`dudo-security-reports`** et **`dudo-android-li
 
 ```
 lib/
-  app.dart, main.dart
+  app.dart, main.dart          MaterialApp + système de palettes ambiantes
   core/
-    theme/       couleurs, typographie, ThemeData
-    widgets/     fond de taverne, dés, gobelet, table, boutons, ornements
+    theme/        couleurs, palettes interchangeables, typographie, ThemeData
+    widgets/      fond de taverne, dés, gobelet, boutons, ornements
+  l10n/           sources ARB (fr = référence) ; généré dans l10n/generated/
   game/
-    models/      Bid, Player, GameConfig, événements, résultat
-    logic/       PerudoRules (pur), BotBrain + probabilités (pur)
-    state/       GameController (ChangeNotifier, timers des bots)
+    models/       Bid, Player, GameConfig, événements, résultat
+    logic/        PerudoRules (pur), BotBrain + probabilités (pur)
+    state/        GameController (ChangeNotifier, timers des bots)
+  salon/          salon réseau : session WS, relais hôte, miroir invité,
+                  battement de cœur, fil de chat, écrans de lobby
   screens/
-    home/        signe suspendu, CTA, bord de table
-    setup/       équipage, difficulté, calza
-    game/        table, sièges, feuille de pari, peek, révélation, fin, journal
-    rules/       règles illustrées
+    home/         signe suspendu, CTA, bord de table
+    settings/     choix d'ambiance, politique de confidentialité
+    setup/        équipage, difficulté, calza
+    game/         table, sièges, feuille de pari, peek, révélation, fin, journal
+    rules/        règles illustrées
 test/
-  perudo_rules_test.dart
-  bot_brain_test.dart
-  game_flow_test.dart
-  widget_test.dart
-  overlays_test.dart
+  perudo_rules_test.dart     règles (pur)
+  bot_brain_test.dart        décisions et probabilités des bots
+  game_flow_test.dart        parties complètes simulées
+  network_salon_session_test.dart   session WS : join, reprise, seau de chat,
+                             watchdog, ping/pong
+  network_game_test.dart     relais/miroir des deux téléphones (fake Worker)
+  salon_/widgets_/overlays/… tests widget des écrans
+  two_phones_rehearsal_test.dart    répétition LIVE contre le vrai Worker
+                             (aucun réseau en CI ; $env:LIVE='1' pour lancer)
 ```
 
 Principes :
@@ -139,18 +149,21 @@ Principes :
 - `PerudoRules` et `BotBrain` ne dépendent pas de l'UI et sont testables en isolation.
 - `GameController` est la seule source de vérité : phases `peek → bidding → reveal → roundOver → gameOver`, validation des coups, timers des bots, pause des bots quand un modal est ouvert.
 - Les écrans écoutent le contrôleur et ne décident jamais de la légalité d'un coup.
-- Aucun package runtime en dehors de Flutter et `flutter_localizations`. Les polices sont embarquées (OFL).
+- En salon, l'**hôte arbitre** : `HostGameRelay` diffuse des instantanés ; les invités (`GuestGameController`) sont des miroirs qui envoient des commandes — jamais la légalité.
+- Interface entièrement instrumentée par `AppLocalizations` (fr référence, en idiome) ; les messages système du salon passent par un instantané ambient (`SalonSystem`).
+- Les polices sont embarquées (OFL) : Alkatra (titres), Alegreya Sans (corps), Cinzel gardé pour l'inscription.
 
 ## Direction artistique
 
-Taverne sombre et chaleureuse : bois, cuir, feutre vert, laiton, ivoire. Cinzel pour l'inscription, Alegreya Sans pour tout ce qui doit se lire pendant qu'un pirate vous ment. Le détail complet (palette, rôles, composants, motion, accessibilité) est dans [DESIGN.md](DESIGN.md) ; le cadre produit est dans [PRODUCT.md](PRODUCT.md), et les tokens sont aussi dans `.impeccable/design.json`.
+Taverne sombre et chaleureuse : bois, cuir, feutre vert, laiton, ivoire. **Alkatra** pour les titres (gravé à la main, brief d'identité), Alegreya Sans pour tout ce qui doit se lire pendant qu'un pirate vous ment ; Cinzel reste en réserve pour l'inscription. Le fait de main sur les palettes interchangeables (Taverne, Pavillon Debout — et demain corporate, voir #6) est dans [`lib/core/theme/app_palette.dart`](lib/core/theme/app_palette.dart). Le détail complet (palette, rôles, composants, motion, accessibilité) est dans [DESIGN.md](DESIGN.md) ; le cadre produit est dans [PRODUCT.md](PRODUCT.md), et les tokens sont aussi dans `.impeccable/design.json`.
 
 ## Suite possible
 
 - **Dépôt iOS** : réutiliser `lib/`, ajouter la cible iOS, vérifier safe areas, back-swipe et Reduce Motion.
-- **API Cloudflare Worker** : salons temps réel, état autoritatif, reconnexion ; le moteur de règles est déjà isolé et portable.
+- **Troisième palette « corporate »** (#6) : la machine à ambiances est prête, la couleur cible est là.
+- **Variante « Salsa »** (#12) : moteur de règles extensible, la variante est du travail de `PerudoRules`.
 - **Pass-and-play** sur un seul téléphone.
-- statistiques persistantes, sons de dés, thèmes de table.
+- statistiques persistantes, sons de dés, keystore de release pour le Play Store, `privacyVersion` (#13, bonus).
 
 ## Crédits
 

@@ -194,6 +194,12 @@ abstract class AppLocalizations {
   /// **'Toucher pour choisir'**
   String get lookPick;
 
+  /// No description provided for @settingsPrivacyPolicy.
+  ///
+  /// In fr, this message translates to:
+  /// **'Politique de confidentialité'**
+  String get settingsPrivacyPolicy;
+
   /// No description provided for @commonCancel.
   ///
   /// In fr, this message translates to:

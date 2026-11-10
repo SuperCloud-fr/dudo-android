@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_palette.dart';
@@ -63,6 +64,9 @@ class SettingsScreen extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 14),
                                   ],
+                                  const SizedBox(height: 4),
+                                  const _PrivacyPolicyLink(),
+                                  const SizedBox(height: 10),
                                 ],
                               ),
                             ),
@@ -107,8 +111,38 @@ class SettingsScreen extends StatelessWidget {
   }
 }
 
-class _LookCard extends StatelessWidget {
-  const _LookCard({required this.look, required this.active});
+/// The Play-store-housekeeping row: the privacy policy page lives on our
+/// own site and must be reachable from the app (Google Play data-safety
+/// form requirement).
+class _PrivacyPolicyLink extends StatelessWidget {
+  const _PrivacyPolicyLink();
+
+  static const policyUrl = 'https://dudo.supercloud.fr/politique-de-confidentialite';
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Center(
+      child: TextButton.icon(
+        onPressed: () async {
+          final uri = Uri.parse(policyUrl);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        },
+        icon: const Icon(Icons.privacy_tip_outlined, size: 16),
+        label: Text(
+          l10n.settingsPrivacyPolicy,
+          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+            color: AppColors.parchmentMuted,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LookCard extends StatelessWidget {  const _LookCard({required this.look, required this.active});
 
   final AppPalette look;
   final bool active;

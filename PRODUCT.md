@@ -12,32 +12,37 @@ Flutter / Dart, shipping Android from this repository. The game code is kept pla
 
 ## Users
 
-One player on an Android phone, alone, with a few minutes to spare. They know Perudo (or are curious about it) and want a complete, fair-feeling game against opponents without creating an account, waiting for a lobby, or reading a tutorial first. Sessions are portrait, one-handed, and often played in low light.
+Solo: one player on an Android phone who knows Perudo (or is curious) and wants a complete, fair-feeling game against opponents without creating an account, waiting for a lobby, or reading a tutorial first.
+
+In the salons: small groups of friends (2 to 6 phones), each pirate on their own device, sharing a six-character code instead of accounts.
+
+Sessions are portrait, one-handed, and often played in low light.
 
 ## Product Purpose
 
-Dudo is a solo Perudo game: the player faces a crew of AI pirates around a tavern table, bidding on dice they cannot see and calling lies. Success means the player can finish a whole game in one sitting, understand every call, and want to start another round. It is a game, not a gambling product: no money, no ads, no online accounts.
+Dudo is a Perudo game: the player can face a crew of AI pirates around a tavern table solo, or open a multiplayer salon and let friends lie across the table from their own phones. Success means a whole game fits in one sitting, every call is explainable, and the table wants another round. It is a game, not a gambling product: no money, no ads, no accounts.
 
 ## Positioning
 
-A self-contained Perudo table with a readable, characterful crew of opponents. The rules engine is exact (aces wild, dudo, calza, die loss, elimination) and the bots reason from real probabilities, so the game feels like a table of players rather than a random number generator.
+A self-contained Perudo table with a readable, characterful crew of opponents — solo or live. The rules engine is exact (pacos wild, dudo, calza, die loss, elimination, palifico) and the bots reason from real probabilities; in a salon the host's phone arbitrates the rules and every guest mirrors the table live, so friends on different phones play the same rolls.
 
 ## Operating Context
 
-Played on a personal Android phone in portrait orientation, with touch and haptics, usually offline. The player peeks at their own five dice, makes or challenges bids, and watches each round resolve. There is no account, matchmaking, chat, or real-time network dependency.
+Played on Android phones in portrait orientation, touch and haptics. Solo play is fully offline. Multiplayer salons run over the internet against a Worker relay (`dudo.supercloud.fr`, API v1) with a shared six-character code; the phones exchange bets and salon chat only, never the dice themselves — each table re-rolls deterministically from a shared seed. No ads, no analytics; the privacy policy is linked from the app.
 
 ## Capabilities and Constraints
 
 - Solo game: one human plus 1–5 AI pirates; 5 dice per player; last player with dice wins.
-- Standard Perudo bidding with aces (1s) wild; legal raises enforced by the engine; dudo challenges, optional calza, and palifico rounds when a pirate is reduced to one die.
+- Standard Perudo bidding with pacos (1s) wild; legal raises enforced by the engine; dudo challenges, optional calza, and palifico rounds when a pirate is reduced to one die.
+- Online salons: up to 6 seats (1 human host + guests + AI pirates), six-character codes, host-authoritative relay with guest mirrors, seat reclaim on reconnect, 60 s turn timeout, live salon thread (chat, canned reactions).
 - Three bot difficulties that differ in risk tolerance and bluffing, using only information a player would have.
-- French-language interface. No online play, no monetisation, no analytics in this MVP.
-- Android-first. An iOS repository and a Cloudflare Worker API are possible follow-ups, deliberately out of scope here.
-- Open product decision: player display name and persistent stats are not part of the MVP unless added later.
+- Interface in French and English, chosen by the device language; copy in both is first-class, ARB-driven.
+- Android-first. An iOS repository can reuse the game code later.
+- Open product decisions: persistent stats and a signed release keystore are not part of the MVP unless added later.
 
 ## Brand Commitments
 
-The product name is **Dudo**. The visual world is a warm, dark pirate tavern: wood, leather, candlelight and brass, with a green felt table. The tone is playful and slightly theatrical, never grim or gambling-oriented. Interface copy is French.
+The product name is **Dudo**. The visual world is a warm, dark pirate tavern: wood, leather, candlelight and brass, with a green felt table; a swappable ambience system offers alternatives (today: Pavillon Debout) from the settings page. The tone is playful and slightly theatrical, never grim or gambling-oriented. Interface copy ships in French and English.
 
 ## Evidence on Hand
 
