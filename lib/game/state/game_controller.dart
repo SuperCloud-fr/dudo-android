@@ -69,6 +69,7 @@ class GameController extends ChangeNotifier {
   GamePhase phase = GamePhase.peek;
   int round = 0;
   bool palifico = false;
+
   /// Set when a live seat reaches one die this round; the next round is
   /// palifico, and only that one (a seat sitting at one die after its
   /// palifico round plays with normal rules again).
@@ -90,7 +91,9 @@ class GameController extends ChangeNotifier {
   int _nextStarter = 0;
 
   Player get human => players.first;
+  BotDifficulty get displayedDifficulty => config.difficulty;
   bool get isHumanTurn => phase == GamePhase.bidding && currentPlayer == 0;
+
   /// Whether this device may advance the private-peek screen into bidding.
   /// In solo play and on the authoritative host this is true; salon guests
   /// wait for the host to start the shared bidding phase.

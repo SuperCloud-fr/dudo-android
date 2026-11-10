@@ -133,83 +133,116 @@ void main() {
     relay.dispose();
   });
 
-  test('un snapshot arrivé en pleine enchère dérive quand même les dés', () async {    final phones = await openTable();
-
-    // No relay: the mirror receives a hand-crafted snapshot whose bidding
-    // phase has already started (mirrors a lost first frame or a late
-    // join). The dice must still be seeded locally — otherwise the tray
-    // renders its empty-dice placeholder, five pacos.
-    final guest = GuestGameController(
-      config: const GameConfig(opponentCount: 2),
-      session: phones.guestHarness.session,
-      names: ['Cap Hôte', 'Anne', 'Bob'],
-    );
-    guest.applySnapshot(const <String, dynamic>{
-      'v': networkSnapshotVersion,
-      'round': 1,
-      'phase': 'bidding',
-      'palifico': false,
-      'starter': 0,
-      'currentPlayer': 1,
-      'seed': 424242,
-      'players': [
-        {'seat': 0, 'name': 'Cap Hôte', 'diceCount': 5},
-        {'seat': 1, 'name': 'Anne', 'diceCount': 5},
-        {'seat': 2, 'name': 'Bob', 'diceCount': 5},
-      ],
-      'bid': {'q': 3, 'f': 4, 's': 1},
-      'journal': [],
-      'outcome': null,
-      'result': null,
-    });
-
-    // Reference roll: the host engine starts `Random(seed)` and walks the
-    // salon seats in ascending order, five dice each.
-    final rolling = Random(424242);
-    final salonDice = [
-      for (var seat = 0; seat < 3; seat++)
-        [for (var die = 0; die < 5; die++) 1 + rolling.nextInt(6)],
-    ];
-    for (var local = 0; local < 3; local++) {
-      final salonSeat = (local + phones.guestHarness.session.you) % 3;
-      expect(guest.players[local].dice, salonDice[salonSeat]);
-    }
-    guest.dispose();
-  });
-
-  test('le deuxième snapshot à la même graine ne retombe pas en pacos', () async {
+  test('la difficulté choisie par l’hôte arrive au miroir invité', () async {
     final phones = await openTable();
-
-    final relay = phones.startHostRelay();
-    final host = relay.controller;
+    final relay = HostGameRelay(
+      session: phones.hostHarness.session,
+      names: ['Cap Hôte', 'Anne', 'Bob'],
+      config: const GameConfig(
+        opponentCount: 2,
+        difficulty: BotDifficulty.capitaine,
+      ),
+      seedFactory: () => 424242,
+      botSeats: const <int>{1, 2},
+    );
+    relay.start();
     final guest = GuestGameController(
       config: const GameConfig(opponentCount: 2),
       session: phones.guestHarness.session,
       names: ['Cap Hôte', 'Anne', 'Bob'],
     );
-    await phones.forwardHostToGuest();
-    final reference = [for (final player in guest.players) player.dice];
-    expect(
-      reference.every((dice) => dice.isNotEmpty),
-      isTrue,
-      reason: 'la première image dérive les dés',
-    );
 
-    // A mutation re-broadcasts the SAME seed (bots, phase move): the
-    // players list is rebuilt, and without the idempotent re-derivation
-    // every later snapshot blanked the dice — the pacos bug on phones.
-    host.beginBidding();
     await phones.forwardHostToGuest();
-    for (var local = 0; local < 3; local++) {
-      expect(
-        guest.players[local].dice,
-        reference[local],
-        reason: 'les dés survivent aux snapshots suivants',
-      );
-    }
+    expect(relay.controller.config.difficulty, BotDifficulty.capitaine);
+    expect(guest.displayedDifficulty, BotDifficulty.capitaine);
     guest.dispose();
     relay.dispose();
   });
+
+  test(
+    'un snapshot arrivé en pleine enchère dérive quand même les dés',
+    () async {
+      final phones = await openTable();
+
+      // No relay: the mirror receives a hand-crafted snapshot whose bidding
+      // phase has already started (mirrors a lost first frame or a late
+      // join). The dice must still be seeded locally — otherwise the tray
+      // renders its empty-dice placeholder, five pacos.
+      final guest = GuestGameController(
+        config: const GameConfig(opponentCount: 2),
+        session: phones.guestHarness.session,
+        names: ['Cap Hôte', 'Anne', 'Bob'],
+      );
+      guest.applySnapshot(const <String, dynamic>{
+        'v': networkSnapshotVersion,
+        'round': 1,
+        'phase': 'bidding',
+        'palifico': false,
+        'starter': 0,
+        'currentPlayer': 1,
+        'seed': 424242,
+        'players': [
+          {'seat': 0, 'name': 'Cap Hôte', 'diceCount': 5},
+          {'seat': 1, 'name': 'Anne', 'diceCount': 5},
+          {'seat': 2, 'name': 'Bob', 'diceCount': 5},
+        ],
+        'bid': {'q': 3, 'f': 4, 's': 1},
+        'journal': [],
+        'outcome': null,
+        'result': null,
+      });
+
+      // Reference roll: the host engine starts `Random(seed)` and walks the
+      // salon seats in ascending order, five dice each.
+      final rolling = Random(424242);
+      final salonDice = [
+        for (var seat = 0; seat < 3; seat++)
+          [for (var die = 0; die < 5; die++) 1 + rolling.nextInt(6)],
+      ];
+      for (var local = 0; local < 3; local++) {
+        final salonSeat = (local + phones.guestHarness.session.you) % 3;
+        expect(guest.players[local].dice, salonDice[salonSeat]);
+      }
+      guest.dispose();
+    },
+  );
+
+  test(
+    'le deuxième snapshot à la même graine ne retombe pas en pacos',
+    () async {
+      final phones = await openTable();
+
+      final relay = phones.startHostRelay();
+      final host = relay.controller;
+      final guest = GuestGameController(
+        config: const GameConfig(opponentCount: 2),
+        session: phones.guestHarness.session,
+        names: ['Cap Hôte', 'Anne', 'Bob'],
+      );
+      await phones.forwardHostToGuest();
+      final reference = [for (final player in guest.players) player.dice];
+      expect(
+        reference.every((dice) => dice.isNotEmpty),
+        isTrue,
+        reason: 'la première image dérive les dés',
+      );
+
+      // A mutation re-broadcasts the SAME seed (bots, phase move): the
+      // players list is rebuilt, and without the idempotent re-derivation
+      // every later snapshot blanked the dice — the pacos bug on phones.
+      host.beginBidding();
+      await phones.forwardHostToGuest();
+      for (var local = 0; local < 3; local++) {
+        expect(
+          guest.players[local].dice,
+          reference[local],
+          reason: 'les dés survivent aux snapshots suivants',
+        );
+      }
+      guest.dispose();
+      relay.dispose();
+    },
+  );
 
   test(
     'une enchère d\u2019invité passe par un hôte puis revient en miroir',
@@ -252,8 +285,10 @@ void main() {
         guest.submitHumanBid(const Bid(quantity: 4, face: 1, playerSeat: 0)),
         isTrue,
       );
-      final commands =
-          phones.guestSends().where((command) => command['kind'] == 'bid').toList();
+      final commands = phones
+          .guestSends()
+          .where((command) => command['kind'] == 'bid')
+          .toList();
       expect(commands, hasLength(1));
       expect(commands.first['quantity'], 4);
       expect(
@@ -300,8 +335,10 @@ void main() {
       expect(guest.currentBid?.quantity, 1);
       // Salon seat 1 → local seat 0 : her turn.
       expect(guest.callHumanDudo(), isTrue);
-      final commands =
-          phones.guestSends().where((command) => command['kind'] == 'dudo').toList();
+      final commands = phones
+          .guestSends()
+          .where((command) => command['kind'] == 'dudo')
+          .toList();
       expect(commands, hasLength(1));
 
       relay.handleTable(
@@ -395,7 +432,8 @@ void main() {
     final botEvent = host.journal.last;
     expect(botEvent.playerSeat, 2);
     expect(
-      botEvent.kind == TableEventKind.bid || botEvent.kind == TableEventKind.dudo,
+      botEvent.kind == TableEventKind.bid ||
+          botEvent.kind == TableEventKind.dudo,
       isTrue,
       reason: 'le PNJ enchИrit ou annonce dudo',
     );

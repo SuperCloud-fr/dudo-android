@@ -277,6 +277,7 @@
   "salonBotBadge": "IA",
   "salonRemoveBotSemantic": "Retirer un pirate IA",
   "salonAddBotSemantic": "Ajouter un pirate IA",
+  "salonBotDifficultyTitle": "Difficulté des bots IA",
   "salonYouSuffix": "(toi)",
   "salonHostBadge": "HÔTE",
   "salonLeaveTitle": "Quitter le salon ?",

@@ -31,6 +31,7 @@ const String networkSnapshotVersion = '1';
 Map<String, dynamic> snapshotOf(GameController controller) {
   return <String, dynamic>{
     'v': networkSnapshotVersion,
+    'difficulty': controller.config.difficulty.name,
     'round': controller.round,
     'phase': controller.phase.name,
     'palifico': controller.palifico,
@@ -236,6 +237,11 @@ class GuestGameController extends GameController {
 
   final NetworkSalonSession _session;
   StreamSubscription<RelayedTableMessage>? _subscription;
+  BotDifficulty? _hostDifficulty;
+
+  @override
+  BotDifficulty get displayedDifficulty =>
+      _hostDifficulty ?? super.displayedDifficulty;
 
   @override
   bool get canBeginBiddingFromPeek => false;
@@ -351,6 +357,13 @@ class GuestGameController extends GameController {
         phase == GamePhase.roundOver || phase == GamePhase.gameOver;
 
     final resultRaw = snapshot['result'];
+    final difficultyName = snapshot['difficulty'];
+    if (difficultyName is String) {
+      _hostDifficulty = BotDifficulty.values.firstWhere(
+        (difficulty) => difficulty.name == difficultyName,
+        orElse: () => config.difficulty,
+      );
+    }
     if (resultRaw is Map<String, dynamic>) {
       final winnerLocal = reb((resultRaw['winnerSeat'] as num?)?.toInt() ?? 0);
       result = GameResult(

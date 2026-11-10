@@ -840,6 +840,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get salonAddBotSemantic => 'Ajouter un pirate IA';
 
   @override
+  String get salonBotDifficultyTitle => 'Difficulté des bots IA';
+
+  @override
   String get salonYouSuffix => '(toi)';
 
   @override

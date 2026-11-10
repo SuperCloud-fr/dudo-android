@@ -836,6 +836,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salonAddBotSemantic => 'Add an AI pirate';
 
   @override
+  String get salonBotDifficultyTitle => 'AI bot difficulty';
+
+  @override
   String get salonYouSuffix => '(you)';
 
   @override

@@ -7,6 +7,7 @@ import '../../core/widgets/ornaments.dart';
 import '../../core/widgets/tavern_background.dart';
 import '../../core/widgets/tavern_button.dart';
 import '../../game/models/game_config.dart';
+import '../../game/widgets/bot_difficulty_option.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../screens/game/game_screen.dart';
 import '../network_game.dart';
@@ -383,6 +384,7 @@ class SalonLobbyScreen extends StatefulWidget {
 class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   bool _tableOpened = false;
   bool _starting = false;
+  BotDifficulty _botDifficulty = BotDifficulty.flibustier;
 
   @override
   void initState() {
@@ -457,9 +459,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                             ),
                           ),
                           Text(
-                            isHost
-                                ? l10n.salonHostRole
-                                : l10n.salonGuestRole,
+                            isHost ? l10n.salonHostRole : l10n.salonGuestRole,
                             style: Theme.of(context).textTheme.labelSmall,
                           ),
                         ],
@@ -472,9 +472,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                         await session.copyCode();
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(l10n.salonCopied),
-                            ),
+                            SnackBar(content: Text(l10n.salonCopied)),
                           );
                         }
                       },
@@ -502,6 +500,22 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                             ],
                             _PlayersCard(session: session, isHost: isHost),
                             const SizedBox(height: 16),
+                            if (isHost) ...[
+                              SalonSectionLabel(l10n.salonBotDifficultyTitle),
+                              const SizedBox(height: 8),
+                              for (final difficulty in BotDifficulty.values)
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: BotDifficultyOption(
+                                    difficulty: difficulty,
+                                    selected: _botDifficulty == difficulty,
+                                    onTap: () => setState(
+                                      () => _botDifficulty = difficulty,
+                                    ),
+                                  ),
+                                ),
+                              const SizedBox(height: 8),
+                            ],
                             if (isHost)
                               TavernButton(
                                 label: _starting
@@ -592,9 +606,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
     if (!widget.session.isStarting) {
       if (mounted) setState(() => _starting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.salonStartFailed),
-        ),
+        SnackBar(content: Text(AppLocalizations.of(context)!.salonStartFailed)),
       );
       return;
     }
@@ -635,6 +647,10 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       final relay = HostGameRelay(
         session: network,
         names: names,
+        config: GameConfig(
+          opponentCount: names.length - 1,
+          difficulty: _botDifficulty,
+        ),
         botSeats: botSeats,
       );
       relay.start();
@@ -806,9 +822,8 @@ class _PlayersCard extends StatelessWidget {
                   else if (player.isBot)
                     Text(
                       l10n.salonBotBadge,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppColors.parchmentDim,
-                      ),
+                      style: Theme.of(context).textTheme.labelSmall
+                          ?.copyWith(color: AppColors.parchmentDim),
                     ),
                 ],
               ),

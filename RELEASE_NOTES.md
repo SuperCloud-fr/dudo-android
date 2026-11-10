@@ -1,4 +1,8 @@
-# Dudo 0.2.0 — bêta 18 : qui lance les enchères ?
+# Dudo 0.2.0 — bêta 19 : les bots ont leur tempérament
+
+- **L’hôte choisit la difficulté des pirates IA directement dans le lobby** : Mousse, Flibustier ou Capitaine. Le choix règle les bots côté hôte et est transmis aux miroirs pour l’écran de résultat.
+
+## Bêta 18 : qui lance les enchères ?
 
 - **Avant les enchères, un guest voit clairement que seul l’hôte peut les lancer.** Après avoir regardé ses dés, il voit « Seul le maître de la partie peut lancer les enchères. Tu peux déjà regarder tes dés. » au lieu du bouton identique à celui de l’hôte qui ne faisait rien.
 

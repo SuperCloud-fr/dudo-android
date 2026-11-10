@@ -406,7 +406,8 @@ class _GameScreenState extends State<GameScreen> {
           };
           final label = switch (event.kind) {
             TableEventKind.bid =>
-              event.bid?.shortLabelLocalized(AppLocalizations.of(context)!) ?? '',
+              event.bid?.shortLabelLocalized(AppLocalizations.of(context)!) ??
+                  '',
             TableEventKind.dudo => 'DUDO',
             TableEventKind.calza => 'CALZA',
           };
@@ -455,7 +456,7 @@ class _GameScreenState extends State<GameScreen> {
           key: ValueKey('over-${result.rounds}-${result.humanWon}'),
           result: result,
           players: _controller.players,
-          difficultyLabel: widget.config.difficulty.labelLocalized(l10n),
+          difficultyLabel: _controller.displayedDifficulty.labelLocalized(l10n),
           onRematch: _controller.rematch,
           onMenu: _leaveGame,
         );
@@ -491,9 +492,8 @@ class _GameScreenState extends State<GameScreen> {
     final l10n = AppLocalizations.of(context)!;
     final accepted = _controller.submitHumanBid(result);
     if (!accepted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.gameBidInvalid)),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(l10n.gameBidInvalid)));
     }
   }
 
@@ -558,9 +558,7 @@ class _GameScreenState extends State<GameScreen> {
               color: AppColors.parchment,
             ),
           ),
-          content: Text(
-            l10n.gameCalzaConfirmBody(bid.quantity, faceWord),
-          ),
+          content: Text(l10n.gameCalzaConfirmBody(bid.quantity, faceWord)),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -615,9 +613,7 @@ class _GameScreenState extends State<GameScreen> {
               color: AppColors.parchment,
             ),
           ),
-          content: Text(
-            l10n.gameQuitBody,
-          ),
+          content: Text(l10n.gameQuitBody),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),

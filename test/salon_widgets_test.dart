@@ -1,4 +1,6 @@
 import 'package:dudo/l10n/generated/app_localizations.dart';
+import 'package:dudo/game/models/game_config.dart';
+import 'package:dudo/game/widgets/bot_difficulty_option.dart';
 import 'package:dudo/salon/salon_models.dart';
 import 'package:dudo/salon/screens/salon_screens.dart';
 import 'package:dudo/salon/widgets/reaction_bar.dart';
@@ -38,5 +40,35 @@ void main() {
       ),
     );
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('l’hôte peut choisir la difficulté des bots dans le lobby', (
+    tester,
+  ) async {
+    final session = LocalSalonSession();
+    await session.createSalon('Cap Hôte', 3);
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SalonLobbyScreen(session: session),
+      ),
+    );
+
+    Finder selected(BotDifficulty difficulty) => find.byWidgetPredicate(
+      (widget) =>
+          widget is BotDifficultyOption &&
+          widget.difficulty == difficulty &&
+          widget.selected,
+    );
+
+    expect(selected(BotDifficulty.flibustier), findsOneWidget);
+    final captain = find.text('Capitaine');
+    await tester.ensureVisible(captain);
+    await tester.tap(captain);
+    await tester.pump(const Duration(milliseconds: 250));
+    expect(selected(BotDifficulty.capitaine), findsOneWidget);
+    expect(selected(BotDifficulty.flibustier), findsNothing);
   });
 }

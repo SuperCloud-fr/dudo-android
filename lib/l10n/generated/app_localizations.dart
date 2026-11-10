@@ -1400,6 +1400,12 @@ abstract class AppLocalizations {
   /// **'Ajouter un pirate IA'**
   String get salonAddBotSemantic;
 
+  /// No description provided for @salonBotDifficultyTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Difficulté des bots IA'**
+  String get salonBotDifficultyTitle;
+
   /// No description provided for @salonYouSuffix.
   ///
   /// In fr, this message translates to:
