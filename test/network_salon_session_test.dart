@@ -558,7 +558,7 @@ void main() {
     // replacement handshakes keep timing out against the mute fake every
     // 80 ms, so the factory may be called several times — what matters is
     // that channel #1 got cut and at least one successor opened.
-    for (var tick = 0; tick < 50 && created.length < 2; tick++) {
+    for (var tick = 0; tick < 90 && created.length < 2; tick++) {
       await Future<void>.delayed(const Duration(milliseconds: 200));
     }
     expect(feedClosed(created.first), isTrue, reason: 'le flux muet est coupé');

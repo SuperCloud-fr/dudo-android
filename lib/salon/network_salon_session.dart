@@ -87,6 +87,7 @@ class NetworkSalonSession extends SalonSession
     this.reconnectDelay = const Duration(milliseconds: 1200),
     this.livenessStroke = const Duration(seconds: 75),
     this.livenessTick = const Duration(seconds: 5),
+    this.outboundPingInterval = const Duration(seconds: 15),
   }) : baseUrls = List<String>.unmodifiable(baseUrls ?? defaultBaseUrls) {
     // Phone sleep cuts the WS; observe the lifecycle so a locked screen
     // suspends the recovery machinery and an unlock reconnects ONCE with
@@ -97,6 +98,13 @@ class NetworkSalonSession extends SalonSession
     // of letting bids travel into the void.
     _watchdog = Timer.periodic(livenessTick, (_) {
       _checkLiveness();
+    });
+    // Outbound pings: the server answers (auto-pong, hibernation-safe).
+    // Answered pongs are just frames to _lastServerFrame, so the watchdog
+    // reads them as proof of life — the client proves the flow each beat.
+    _outboundPing = Timer.periodic(outboundPingInterval, (_) {
+      if (_disposed || _appSuspended || _channel == null) return;
+      _sendJson(const <String, dynamic>{'type': 'ping'});
     });
   }
 
@@ -145,9 +153,17 @@ class NetworkSalonSession extends SalonSession
   final Duration livenessStroke;
   final Duration livenessTick;
 
+  /// Outbound keepalive cadence. The server also pings, but with the
+  /// hibernation-safe auto-pong the INBOUND proof of life is our own
+  /// outbound ping answered; this keeps both sides honest.
+  final Duration outboundPingInterval;
+
   /// Periodic liveness check; also the client half of the keepalive: our
   /// pongs back to the server's pings keep the flow alive through NATs.
   Timer? _watchdog;
+
+  /// Outbound keepalive pings (server answers with the auto-pong pair).
+  Timer? _outboundPing;
 
   /// Grows between failed recovery attempts so an unreachable salon stops
   /// hammering the network; reset on each success.
@@ -757,8 +773,16 @@ class NetworkSalonSession extends SalonSession
         _ => '$error',
       };
       debugPrint('salon: reconnexion a échoué : $brief');
+      // WebSocketChannelException "not upgraded" = the server answered an
+      // HTTP code instead of 101: ghosted sockets (429) on our side, or a
+      // phone-side captor (captive portal, VPN). The /healthz probe tells
+      // which one — the status lands in the thread.
+      var probe = '';
+      if ('$error'.contains('not upgraded')) {
+        probe = await _healthProbe(base);
+      }
       _recoveryFailures++;
-      _threadOnce(SalonSystem.unreachableBackoff(brief));
+      _threadOnce(SalonSystem.unreachableBackoff('$brief$probe'));
     } finally {
       _recovering = false;
       notifyListeners();
@@ -766,6 +790,30 @@ class NetworkSalonSession extends SalonSession
         // The socket is still down: chase it. One scheduler at a time.
         _scheduleRecovery(_nextRecoveryDelay());
       }
+    }
+  }
+
+  /// A non-101 answer to a WS upgrade needs a witness. The site serves
+  /// `/healthz` with `{"ok":true}`: if the probe reads it, the phone's
+  /// network reaches the Worker fine and the refusal came FROM the server
+  /// (ghosted sockets, 429) — otherwise the flow is hijacked phone-side.
+  Future<String> _healthProbe(String base) async {
+    final client = HttpClient()
+      ..connectionTimeout = const Duration(seconds: 6);
+    try {
+      final request = await client
+          .getUrl(Uri.parse('$base/healthz'))
+          .timeout(const Duration(seconds: 6));
+      final response = await request.close().timeout(
+        const Duration(seconds: 6),
+      );
+      final body = (await response.transform(utf8.decoder).join()).trim();
+      final short = body.length > 22 ? '${body.substring(0, 22)}…' : body;
+      return 'réseau: ${response.statusCode} «$short»';
+    } catch (error) {
+      return 'réseau: la sonde a échoué ($error)';
+    } finally {
+      client.close();
     }
   }
 
@@ -793,6 +841,8 @@ class NetworkSalonSession extends SalonSession
     WidgetsBinding.instance.removeObserver(this);
     _watchdog?.cancel();
     _watchdog = null;
+    _outboundPing?.cancel();
+    _outboundPing = null;
     _recoveryTimer?.cancel();
     _recoveryTimer = null;
     _frames?.cancel();
