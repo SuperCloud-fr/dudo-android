@@ -955,6 +955,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Here the pirate claims at least four dice of value 5 across the whole table. The pacos count too.';
 
   @override
+  String get rulesBidOpeningNote =>
+      'A round never opens on pacos: they are wild, so the opening bid can\'t use them. Palifico rounds are the exception.';
+
+  @override
   String get rulesRaiseTitle => 'Raising';
 
   @override

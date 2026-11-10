@@ -11,7 +11,7 @@ Dudo est un jeu de dés de **Perudo pour Android**, écrit en Flutter : on y jou
 ## Ce qui est jouable
 
 - **1 joueur + 1 à 5 pirates IA**, 5 dés par joueur, dernière personne avec un dé gagne.
-- **Règles Perudo complètes** : as joker (paco), surenchères légales, dudo, calza optionnelle, palifico quand un pirate reste à un seul dé, perte de dé, élimination, manche suivante ouverte par le perdant.
+- **Règles Perudo complètes** : as joker (paco), surenchères légales, aucune ouverture aux paco, dudo, calza optionnelle, palifico quand un pirate reste à un seul dé, perte de dé, élimination, manche suivante ouverte par le perdant.
 - **Salons multijoueurs en ligne** : jusqu'à 6 pirates, chacun sur son téléphone, code à six caractères partagé par SMS/WhatsApp/mail. L'hôte choisit le nombre **et la difficulté** des bots, puis arbitre les règles (relais `HostGameRelay`) ; les invités rejouent ses décisions en miroir. Les dés ne transitent jamais sur le réseau (chaque table en tire les mêmes depuis une graine partagée). Serveur : `https://dudo.supercloud.fr` (Worker API v1, voir `../worker`).
 - **Solidité du salon** : battement de cœur (ping/pong toutes les 20 s), reprise de siège à la reconnexion (rejoin en pleine partie), timeout de tour 60 s, fil de salon (chat libre, phrases prêtes à l'emploi, réactions), messages système qui expliquent les coupures.
 - **Trois difficultés** : Mousse (prudent), Flibustier (équilibré), Capitaine (probabiliste et féroce).

@@ -267,9 +267,9 @@ void main() {
       expect(guest.currentPlayer, 2);
       expect(guest.isHumanTurn, isFalse);
 
-      // Host opens the bidding: 2 paco.
+      // Host opens the bidding: 2 de 2 (openings on aces are forbidden).
       expect(
-        host.submitHumanBid(const Bid(quantity: 2, face: 1, playerSeat: 0)),
+        host.submitHumanBid(const Bid(quantity: 2, face: 2, playerSeat: 0)),
         isTrue,
       );
       await phones.forwardHostToGuest();
@@ -324,7 +324,7 @@ void main() {
       final relay = phones.startHostRelay();
       final host = relay.controller;
       host.beginBidding();
-      host.submitHumanBid(const Bid(quantity: 1, face: 1, playerSeat: 0));
+      host.submitHumanBid(const Bid(quantity: 1, face: 2, playerSeat: 0));
 
       final guest = GuestGameController(
         config: const GameConfig(opponentCount: 2),

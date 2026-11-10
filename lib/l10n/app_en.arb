@@ -319,6 +319,7 @@
   "rulesBidBody": "A bid is two numbers: a quantity and a face.",
   "rulesBidQuote": "\"There are at least 4 fives on the table.\"",
   "rulesBidExplain": "Here the pirate claims at least four dice of value 5 across the whole table. The pacos count too.",
+  "rulesBidOpeningNote": "A round never opens on pacos: they are wild, so the opening bid can't use them. Palifico rounds are the exception.",
   "rulesRaiseTitle": "Raising",
   "rulesRaiseIntro": "The next bid must always be stronger:",
   "rulesRaiseSameFace": "More dice on the same face: 4 fives → 5 fives.",

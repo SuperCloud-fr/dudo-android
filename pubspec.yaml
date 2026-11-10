@@ -1,7 +1,7 @@
 name: dudo
 description: "Dudo — le jeu de dés du mensonge"
 publish_to: "none"
-version: 0.2.0+24
+version: 0.2.0+25
 
 environment:
   sdk: ^3.13.7

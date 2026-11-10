@@ -19,6 +19,46 @@ void main() {
       );
     });
 
+    test("l'ouverture normale est interdite aux paco", () {
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: null,
+          next: bid(1, 1),
+          totalDice: 10,
+        ),
+        isFalse,
+      );
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: null,
+          next: bid(2, 1),
+          totalDice: 10,
+        ),
+        isFalse,
+      );
+      expect(PerudoRules.minQuantityForFace(previous: null, face: 1), isNull);
+      // Les bots n'auront jamais de paco dans leurs enchères d'ouverture.
+      expect(
+        PerudoRules.legalBids(
+          previous: null,
+          totalDice: 10,
+          playerSeat: 0,
+        ).where((bid) => bid.face == 1),
+        isEmpty,
+      );
+      // Le palifico garde ses règles propres, l'ouverture paco y reste
+      // possible.
+      expect(
+        PerudoRules.isLegalRaise(
+          previous: null,
+          next: bid(2, 1),
+          totalDice: 10,
+          palifico: true,
+        ),
+        isTrue,
+      );
+    });
+
     test('même face : il faut ajouter un dé', () {
       expect(
         PerudoRules.isLegalRaise(

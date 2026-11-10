@@ -961,6 +961,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Ici, le pirate affirme qu\'il y a au moins quatre dés de valeur 5 sur toute la table. Les paco comptent aussi.';
 
   @override
+  String get rulesBidOpeningNote =>
+      'La manche ne s\'ouvre jamais sur les paco : ce sont des jokers, l\'ouverture leur est interdite. Le palifico fait exception.';
+
+  @override
   String get rulesRaiseTitle => 'Surenchérir';
 
   @override

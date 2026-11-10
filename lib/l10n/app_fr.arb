@@ -319,6 +319,7 @@
   "rulesBidBody": "Un pari a deux nombres : une quantité et une face.",
   "rulesBidQuote": "« Il y a au moins 4 dés de 5 sur la table. »",
   "rulesBidExplain": "Ici, le pirate affirme qu'il y a au moins quatre dés de valeur 5 sur toute la table. Les paco comptent aussi.",
+  "rulesBidOpeningNote": "La manche ne s'ouvre jamais sur les paco : ce sont des jokers, l'ouverture leur est interdite. Le palifico fait exception.",
   "rulesRaiseTitle": "Surenchérir",
   "rulesRaiseIntro": "Le pari suivant doit toujours être plus fort :",
   "rulesRaiseSameFace": "Plus de dés sur la même face : 4 dés de 5 → 5 dés de 5.",

@@ -33,7 +33,7 @@ Played on Android phones in portrait orientation, touch and haptics. Solo play i
 ## Capabilities and Constraints
 
 - Solo game: one human plus 1–5 AI pirates; 5 dice per player; last player with dice wins.
-- Standard Perudo bidding with pacos (1s) wild; legal raises enforced by the engine; dudo challenges, optional calza, and palifico rounds when a pirate is reduced to one die.
+- Standard Perudo bidding with pacos (1s) wild; legal raises enforced by the engine; no opening bid on pacos; dudo challenges, optional calza, and palifico rounds when a pirate is reduced to one die.
 - Online salons: up to 6 seats (1 human host + guests + AI pirates), six-character codes, host chooses bot count and difficulty, host-authoritative relay with guest mirrors, seat reclaim on reconnect, 60 s turn timeout, live salon thread (chat, canned reactions).
 - Three bot difficulties that differ in risk tolerance and bluffing, using only information a player would have.
 - Interface in French and English, chosen by the device language; copy in both is first-class, ARB-driven.

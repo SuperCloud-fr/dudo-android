@@ -1,6 +1,10 @@
-# Dudo 0.2.0 — bêta 19 : les bots ont leur tempérament
+# Dudo 0.2.0 — bêta 20 : pas de paco en ouverture
 
-- **L’hôte choisit la difficulté des pirates IA directement dans le lobby** : Mousse, Flibustier ou Capitaine. Le choix règle les bots côté hôte et est transmis aux miroirs pour l’écran de résultat.
+- **La manche ne s'ouvre jamais sur les paco** : règle standard Perudo (les paco sont jokers, ouvrir dessus donnerait un avantage injuste). Appliquée au moteur, aux bots, à la feuille d'enchères et décrite dans l'écran Règles. Le palifico reste l'exception.
+
+## Bêta 19 : les bots ont leur tempérament
+
+- **L'hôte choisit la difficulté des pirates IA directement dans le lobby** : Mousse, Flibustier ou Capitaine. Le choix règle les bots côté hôte et est transmis aux miroirs pour l'écran de résultat.
 
 ## Bêta 18 : qui lance les enchères ?
 

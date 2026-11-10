@@ -17,6 +17,9 @@ abstract final class PerudoRules {
   /// - aces → normal: double the aces plus one;
   /// - normal → normal: more dice, or the same dice with a higher face.
   ///
+  /// The opening bid cannot be aces: aces are wild, so opening on them
+  /// would hand the opener an unfair edge.
+  ///
   /// Palifico (a live player sits at exactly one die):
   /// - the opening bid fixes the face of the whole round;
   /// - later bids must keep that face and may only raise the quantity;
@@ -31,9 +34,11 @@ abstract final class PerudoRules {
     if (next.quantity < 1 || next.quantity > totalDice) return false;
     if (next.face < 1 || next.face > faces) return false;
     if (previous == null) {
-      if (!palifico) return true;
-      return totalDice >= palificoOpeningMinimum &&
-          next.quantity >= palificoOpeningMinimum;
+      if (palifico) {
+        return totalDice >= palificoOpeningMinimum &&
+            next.quantity >= palificoOpeningMinimum;
+      }
+      return next.face != 1;
     }
     if (palifico) {
       return next.face == previous.face && next.quantity > previous.quantity;
@@ -67,7 +72,8 @@ abstract final class PerudoRules {
     if (face < 1 || face > faces) return null;
     if (previous == null) {
       if (palifico) return palificoOpeningMinimum;
-      return 1;
+      // Aces are wild: opening on them is not allowed.
+      return face == 1 ? null : 1;
     }
     if (palifico) {
       if (face != previous.face) return null;

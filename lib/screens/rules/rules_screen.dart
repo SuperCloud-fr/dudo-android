@@ -89,6 +89,14 @@ class RulesScreen extends StatelessWidget {
                                           .bodySmall
                                           ?.copyWith(fontSize: 12.5),
                                     ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      l10n.rulesBidOpeningNote,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(fontSize: 12.5),
+                                    ),
                                   ],
                                 ),
                               ),

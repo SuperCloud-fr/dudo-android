@@ -1598,6 +1598,12 @@ abstract class AppLocalizations {
   /// **'Ici, le pirate affirme qu\'il y a au moins quatre dés de valeur 5 sur toute la table. Les paco comptent aussi.'**
   String get rulesBidExplain;
 
+  /// No description provided for @rulesBidOpeningNote.
+  ///
+  /// In fr, this message translates to:
+  /// **'La manche ne s\'ouvre jamais sur les paco : ce sont des jokers, l\'ouverture leur est interdite. Le palifico fait exception.'**
+  String get rulesBidOpeningNote;
+
   /// No description provided for @rulesRaiseTitle.
   ///
   /// In fr, this message translates to:
