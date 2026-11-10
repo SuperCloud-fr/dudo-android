@@ -25,6 +25,10 @@ class FakeWebSocketChannel extends StreamChannelMixin
   @override
   Stream<dynamic> get stream => _incoming.stream;
 
+  /// True once the session stopped listening on this channel — what the
+  /// double-delivery fix guarantees for any thrown-away socket.
+  bool get unlistened => !_incoming.hasListener;
+
   @override
   WebSocketSink get sink => _FakeSink(this);
 

@@ -339,6 +339,10 @@ class NetworkSalonSession extends SalonSession
   /// Opens the WebSocket, sends the join frame and waits for the first
   /// server answer. Returns sans message when nothing came in time.
   Future<SalonJoinResult> _attemptHandshake(String base, String name) async {
+    // No stale whispering: any previous listener is cut before the new
+    // socket is wired, otherwise a single server frame can arrive twice
+    // (old flow + new flow) — double bubbles, double system lines.
+    await _shutSocket();
     final completer = Completer<SalonJoinResult>();
     _joinCompleter = completer;
     _closedByServer = false;
@@ -721,8 +725,14 @@ class NetworkSalonSession extends SalonSession
       'salon: silence de ${silence.inSeconds}s, je coupe et je reprends',
     );
     pushSystemMessage(SalonSystem.watchdogCut);
+    // Cut the flow AND mute its listener. _shutSocket reads the fields, so
+    // hand it nothing: close the captured channel and cancel the captured
+    // subscription ourselves, then clear the fields.
+    final frames = _frames;
     final socket = _channel;
+    _frames = null;
     _channel = null;
+    unawaited(frames?.cancel());
     if (socket != null) {
       unawaited(_closeChannel(socket));
     }
@@ -833,6 +843,17 @@ class NetworkSalonSession extends SalonSession
   }
 
   // -------------------------------------------------------------- cleanup
+
+  /// Test hooks: drive the watchdog by hand instead of racing the event
+  /// loop under a loaded suite.
+  @visibleForTesting
+  void debugAgeLastFrameForTest([Duration? age]) {
+    _lastServerFrame =
+        DateTime.now().subtract(age ?? const Duration(seconds: 600));
+  }
+
+  @visibleForTesting
+  void debugRunLivenessForTest() => _checkLiveness();
 
   @override
   void dispose() {

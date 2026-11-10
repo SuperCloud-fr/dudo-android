@@ -485,8 +485,60 @@ void main() {
         session.messages.any((message) => message.body.contains('Reconnecté')),
         isTrue,
       );
+      session.dispose();
     },
   );
+
+  test('une ancienne socket coupée ne murmure plus dans le fil', () async {
+    final created = <FakeWebSocketChannel>[];
+    final session = NetworkSalonSession(
+      handshakeTimeout: const Duration(milliseconds: 80),
+      reconnectDelay: const Duration(milliseconds: 20),
+      createSalonCode: (_, _) async => 'S99FTH',
+      channelFactory: (uri) {
+        final channel = FakeWebSocketChannel.confirmed(uri);
+        created.add(channel);
+        return channel;
+      },
+    );
+
+    final creating = session.createSalon('Cap Hôte', 0);
+    await settle();
+    await untilOneSent(created.first);
+    created.first.serverSends(
+      salonFrame(
+        you: 0,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+        ],
+      ),
+    );
+    await creating;
+
+    // The relay drops the socket; the recovery dials another one.
+    await created.first.serverCloses();
+    for (var tick = 0; tick < 100 && created.length < 2; tick++) {
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+    }
+    expect(created, hasLength(2));
+    await untilOneSent(created[1]);
+    created[1].serverSends(
+      salonFrame(
+        you: 0,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+        ],
+      ),
+    );
+    await settle(6);
+
+    // The OLD flow must have stopped listening — the double-delivery fix
+    // guarantees no whisper can ever land in the thread again. (Peeking
+    // frames into the closed fake controller would throw; the contract is
+    // the cancellation itself.)
+    expect(created.first.unlistened, isTrue, reason: 'flux fantôme mueté');
+    session.dispose();
+  }, timeout: const Timeout(Duration(seconds: 30)));
 
   test(
     'le client répond pong au ping du serveur (liveness partagé)',
@@ -554,12 +606,14 @@ void main() {
     await creating;
 
     // The server never speaks again (no pings, no traffic): the watchdog
-    // must cut the dessicated flow and run the recovery machinery. The
-    // replacement handshakes keep timing out against the mute fake every
-    // 80 ms, so the factory may be called several times — what matters is
-    // that channel #1 got cut and at least one successor opened.
-    for (var tick = 0; tick < 90 && created.length < 2; tick++) {
-      await Future<void>.delayed(const Duration(milliseconds: 200));
+    // must cut the dessicated flow and run the recovery machinery. We age
+    // the last frame by hand and pull the check directly: depending on
+    // real timers under a loaded suite would be exactly the flake this
+    // hook removes. What matters: channel #1 cut, successor dialled.
+    session.debugAgeLastFrameForTest();
+    session.debugRunLivenessForTest();
+    for (var tick = 0; tick < 100 && created.length < 2; tick++) {
+      await Future<void>.delayed(const Duration(milliseconds: 50));
     }
     expect(feedClosed(created.first), isTrue, reason: 'le flux muet est coupé');
     expect(

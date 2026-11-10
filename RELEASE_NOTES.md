@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 14 : le sommeil ne verrouille plus personne dehors
+# Dudo 0.2.0 — bêta 15 : les bulles une fois, point
+
+- **Les messages de chat qui apparaissaient en double** (en reprise après un verrouillage) sont réparés : l'ancienne connexion gardait encore un auditeur actif ; désormais toute socket abandonnée est désabonnée puis fermée proprement — plus de doublon possible, et le garde-fou de silence ferme réellement son canal (c'est ce qui lui manquait).
+- Test de couverture : le canal fantôme ne peut plus espionner le fil après le transfert.
+
+## Bêta 14 : le sommeil ne verrouille plus personne dehors
 
 - **La cause racine du « Salon injoignable — not upgraded » trouvée** : les sockets fantômes d'un téléphone en veille bloquaient le seuil de 12 connexions, le serveur refusait l'entrée par un 429, et le siège restait invaincu. Désormais le rejoin du même nom **envahit le siège à force** (la socket fantôme est balayée par le serveur), le seuil est porté à 24 et le ping du téléphone est répondu automatiquement même pendant le sommeil du serveur.
 - **Diagnostic dans le fil** : si un upgrade est refusé, l'app sonde le serveur immédiatement — « réseau: 200 {"ok":true} » (= le réseau va, le refus vient du serveur) ou « la sonde a échoué » (= un portail/VPN capte le flux).
