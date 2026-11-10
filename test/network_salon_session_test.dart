@@ -554,11 +554,19 @@ void main() {
     await creating;
 
     // The server never speaks again (no pings, no traffic): the watchdog
-    // must cut the dessicated flow and run the recovery machinery.
+    // must cut the dessicated flow and run the recovery machinery. The
+    // replacement handshakes keep timing out against the mute fake every
+    // 80 ms, so the factory may be called several times — what matters is
+    // that channel #1 got cut and at least one successor opened.
     for (var tick = 0; tick < 50 && created.length < 2; tick++) {
       await Future<void>.delayed(const Duration(milliseconds: 200));
     }
-    expect(created, hasLength(2), reason: 'le flux muet est remplacé');
+    expect(feedClosed(created.first), isTrue, reason: 'le flux muet est coupé');
+    expect(
+      created.length,
+      greaterThanOrEqualTo(2),
+      reason: 'un successeur a été déroulé pour la reprise',
+    );
     session.dispose();
   }, timeout: const Timeout(Duration(seconds: 30)));
 
