@@ -91,6 +91,10 @@ class GameController extends ChangeNotifier {
 
   Player get human => players.first;
   bool get isHumanTurn => phase == GamePhase.bidding && currentPlayer == 0;
+  /// Whether this device may advance the private-peek screen into bidding.
+  /// In solo play and on the authoritative host this is true; salon guests
+  /// wait for the host to start the shared bidding phase.
+  bool get canBeginBiddingFromPeek => true;
   bool get canHumanChallenge =>
       isHumanTurn && currentBid != null && currentBid!.playerSeat != 0;
   bool get canHumanCalza => canHumanChallenge && config.calzaEnabled;

@@ -430,6 +430,7 @@ class _GameScreenState extends State<GameScreen> {
           dice: _controller.human.dice,
           humanStarts: _controller.starter == 0,
           starterName: _controller.players[_controller.starter].name,
+          canBeginBidding: _controller.canBeginBiddingFromPeek,
           onReady: _controller.beginBidding,
         );
       case GamePhase.reveal:

@@ -139,6 +139,7 @@
   "peekWildHint": "Paco count as wild for every face.",
   "peekPlayerOpens": "It’s {name}’s turn to open",
   "@peekPlayerOpens": {"placeholders": {"name": {"type": "String"}}},
+  "peekOnlyHostStarts": "Only the host can start bidding. You can look at your dice while you wait.",
   "peekLiftCupSemantics": "Lift the cup to see your dice",
   "peekShakeButton": "Shake the phone to stir your dice",
   "peekTapCupHint": "… or tap the cup to lift it",

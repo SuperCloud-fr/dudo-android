@@ -237,6 +237,9 @@ class GuestGameController extends GameController {
   final NetworkSalonSession _session;
   StreamSubscription<RelayedTableMessage>? _subscription;
 
+  @override
+  bool get canBeginBiddingFromPeek => false;
+
   /// Diagnostics for the field investigations during live rehearsals:
   /// the seed the mirror last applied, and how many snapshots arrived
   /// with no seed at all.

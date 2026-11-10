@@ -3,6 +3,7 @@ import 'package:dudo/core/widgets/dice_face.dart';
 import 'package:dudo/l10n/generated/app_localizations.dart';
 import 'package:dudo/salon/salon_models.dart';
 import 'package:dudo/salon/screens/salon_screens.dart';
+import 'package:dudo/screens/game/widgets/peek_overlay.dart';
 import 'package:dudo/screens/rules/rules_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -58,5 +59,35 @@ void main() {
       ),
     );
     expect(find.bySemanticsLabel('Die of value 5'), findsOneWidget);
+  });
+
+  testWidgets('un invité voit que seul l’hôte peut lancer les enchères', (
+    tester,
+  ) async {
+    var started = false;
+    await tester.pumpWidget(
+      _english(
+        Scaffold(
+          body: PeekOverlay(
+            round: 1,
+            dice: const [2, 3, 4, 5, 6],
+            palifico: false,
+            humanStarts: false,
+            starterName: 'Anne',
+            canBeginBidding: false,
+            onReady: () => started = true,
+          ),
+        ),
+      ),
+    );
+    final l10n = AppLocalizations.of(
+      tester.element(find.byType(PeekOverlay)),
+    )!;
+    await tester.tap(find.text(l10n.peekTapCupHint));
+    await tester.pumpAndSettle();
+
+    expect(find.text(l10n.peekOnlyHostStarts), findsOneWidget);
+    expect(find.text(l10n.peekPlayerOpens('Anne')), findsNothing);
+    expect(started, isFalse);
   });
 }

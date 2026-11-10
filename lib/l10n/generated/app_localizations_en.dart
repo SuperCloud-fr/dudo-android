@@ -419,6 +419,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get peekOnlyHostStarts =>
+      'Only the host can start bidding. You can look at your dice while you wait.';
+
+  @override
   String get peekLiftCupSemantics => 'Lift the cup to see your dice';
 
   @override

@@ -117,6 +117,8 @@ void main() {
       session: phones.guestHarness.session,
       names: ['Cap Hôte', 'Anne', 'Bob'],
     );
+    expect(relay.controller.canBeginBiddingFromPeek, isTrue);
+    expect(guest.canBeginBiddingFromPeek, isFalse);
     await phones.forwardHostToGuest();
     expect(guest.players, hasLength(3));
     expect(guest.round, host.round);

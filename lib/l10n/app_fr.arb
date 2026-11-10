@@ -139,6 +139,7 @@
   "peekWildHint": "Les paco comptent pour toutes les faces.",
   "peekPlayerOpens": "C’est à {name} d’ouvrir",
   "@peekPlayerOpens": {"placeholders": {"name": {"type": "String"}}},
+  "peekOnlyHostStarts": "Seul le maître de la partie peut lancer les enchères. Tu peux déjà regarder tes dés.",
   "peekLiftCupSemantics": "Soulever le gobelet pour voir tes dés",
   "peekShakeButton": "Secoue le téléphone pour brasser tes dés",
   "peekTapCupHint": "… ou touche le gobelet pour le soulever",

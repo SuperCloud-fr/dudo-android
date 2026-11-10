@@ -22,6 +22,7 @@ class PeekOverlay extends StatefulWidget {
     required this.palifico,
     required this.humanStarts,
     required this.starterName,
+    required this.canBeginBidding,
     required this.onReady,
   });
 
@@ -30,6 +31,7 @@ class PeekOverlay extends StatefulWidget {
   final bool palifico;
   final bool humanStarts;
   final String starterName;
+  final bool canBeginBidding;
   final VoidCallback onReady;
 
   @override
@@ -256,16 +258,55 @@ class _PeekOverlayState extends State<PeekOverlay>
                                               ),
                                         ),
                                         const SizedBox(height: 20),
-                                        TavernButton(
-                                          label: widget.humanStarts
-                                              ? l10n.bidOpenHostilities
-                                              : l10n.peekPlayerOpens(
-                                                  widget.starterName,
+                                        if (widget.canBeginBidding)
+                                          TavernButton(
+                                            label: widget.humanStarts
+                                                ? l10n.bidOpenHostilities
+                                                : l10n.peekPlayerOpens(
+                                                    widget.starterName,
+                                                  ),
+                                            icon: Icons.visibility_outlined,
+                                            expand: true,
+                                            onPressed: widget.onReady,
+                                          )
+                                        else
+                                          Container(
+                                            padding: const EdgeInsets.all(14),
+                                            decoration: BoxDecoration(
+                                              color: AppColors.leatherDeep
+                                                  .withValues(alpha: 0.72),
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                              border: Border.all(
+                                                color: AppColors.brassDim
+                                                    .withValues(alpha: 0.55),
+                                              ),
+                                            ),
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Icon(
+                                                  Icons.hourglass_top,
+                                                  size: 18,
+                                                  color: AppColors.brassBright,
                                                 ),
-                                          icon: Icons.visibility_outlined,
-                                          expand: true,
-                                          onPressed: widget.onReady,
-                                        ),
+                                                const SizedBox(width: 10),
+                                                Expanded(
+                                                  child: Text(
+                                                    l10n.peekOnlyHostStarts,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall
+                                                        ?.copyWith(
+                                                          color: AppColors
+                                                              .parchment,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
                                       ],
                                     )
                                   : _CupHint(

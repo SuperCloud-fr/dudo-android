@@ -422,6 +422,10 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get peekOnlyHostStarts =>
+      'Seul le maître de la partie peut lancer les enchères. Tu peux déjà regarder tes dés.';
+
+  @override
   String get peekLiftCupSemantics => 'Soulever le gobelet pour voir tes dés';
 
   @override

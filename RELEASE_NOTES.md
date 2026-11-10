@@ -1,4 +1,8 @@
-# Dudo 0.2.0 — bêta 17 : une bulle par message
+# Dudo 0.2.0 — bêta 18 : qui lance les enchères ?
+
+- **Avant les enchères, un guest voit clairement que seul l’hôte peut les lancer.** Après avoir regardé ses dés, il voit « Seul le maître de la partie peut lancer les enchères. Tu peux déjà regarder tes dés. » au lieu du bouton identique à celui de l’hôte qui ne faisait rien.
+
+## Bêta 17 : une bulle par message
 
 - **Un message envoyé ne s'affiche plus deux fois** : chaque bulle porte maintenant un identifiant de client, repris dans l'écho du Worker. L'écho optimiste, la réponse serveur et toute retransmission du même message sont réconciliés sur cet identifiant (plutôt que seulement sur le texte et la bulle précédente).
 - Vérifié par test de régression avec une autre bulle intercalée et un écho serveur retransmis, et par répétition live à deux téléphones sur le vrai Worker.

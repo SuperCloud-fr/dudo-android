@@ -746,6 +746,12 @@ abstract class AppLocalizations {
   /// **'C’est à {name} d’ouvrir'**
   String peekPlayerOpens(String name);
 
+  /// No description provided for @peekOnlyHostStarts.
+  ///
+  /// In fr, this message translates to:
+  /// **'Seul le maître de la partie peut lancer les enchères. Tu peux déjà regarder tes dés.'**
+  String get peekOnlyHostStarts;
+
   /// No description provided for @peekLiftCupSemantics.
   ///
   /// In fr, this message translates to:
