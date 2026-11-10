@@ -1,4 +1,11 @@
-# Dudo 0.2.0 — bêta 13 : toute la table parle sa langue
+# Dudo 0.2.0 — bêta 14 : le sommeil ne verrouille plus personne dehors
+
+- **La cause racine du « Salon injoignable — not upgraded » trouvée** : les sockets fantômes d'un téléphone en veille bloquaient le seuil de 12 connexions, le serveur refusait l'entrée par un 429, et le siège restait invaincu. Désormais le rejoin du même nom **envahit le siège à force** (la socket fantôme est balayée par le serveur), le seuil est porté à 24 et le ping du téléphone est répondu automatiquement même pendant le sommeil du serveur.
+- **Diagnostic dans le fil** : si un upgrade est refusé, l'app sonde le serveur immédiatement — « réseau: 200 {"ok":true} » (= le réseau va, le refus vient du serveur) ou « la sonde a échoué » (= un portail/VPN capte le flux).
+- **Le client se fait signe de lui-même** : ping sortant toutes les 15 s, répondu sans réveil côté serveur — les mains gelées « 5 pacos » ne devraient plus exister : le miroir reçoit une image fraîche en rejoin (resync).
+- Lien « Politique de confidentialité » dans les Réglages (requis Play Store).
+
+## Bêta 13 : toute la table parle sa langue
 
 - **Les libellés de dés du journal et de l'historique** (`4 dés de 5`, `3×P`) sont traduits — plus un seul « dés » français sur un téléphone anglais.
 - **Les tempéraments des bots** suivent la langue : Mousse/Flibustier/Capitaine deviennent Cabin Hand/Freebooter/Captain, descriptions comprises (les noms des pirates, eux, restent des noms propres).
