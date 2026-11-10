@@ -1483,6 +1483,312 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Écrire un message libre…'**
   String get reactionFreeHint;
+
+  /// No description provided for @rulesHeader.
+  ///
+  /// In fr, this message translates to:
+  /// **'LES RÈGLES'**
+  String get rulesHeader;
+
+  /// No description provided for @rulesBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get rulesBack;
+
+  /// No description provided for @rulesHeroTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le jeu du mensonge'**
+  String get rulesHeroTitle;
+
+  /// No description provided for @rulesHeroIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Perudo, Dudo, Cacho… peu importe le nom. Les dés ne mentent pas. Les pirates, si.'**
+  String get rulesHeroIntro;
+
+  /// No description provided for @rulesShowcaseCaption.
+  ///
+  /// In fr, this message translates to:
+  /// **'Cinq dés, un paco joker, et aucune raison de dire la vérité.'**
+  String get rulesShowcaseCaption;
+
+  /// No description provided for @rulesGoalTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le but'**
+  String get rulesGoalTitle;
+
+  /// No description provided for @rulesGoalBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rester le dernier pirate avec au moins un dé. Chaque manche, on parie sur ce que cachent les gobelets. Celui qui se trompe perd un dé.'**
+  String get rulesGoalBody;
+
+  /// No description provided for @rulesCupTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton gobelet'**
+  String get rulesCupTitle;
+
+  /// No description provided for @rulesCupBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Chacun reçoit cinq dés et les cache sous son gobelet. Tu regardes les tiens en secret.'**
+  String get rulesCupBody;
+
+  /// No description provided for @rulesPacoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les paco sont jokers'**
+  String get rulesPacoTitle;
+
+  /// No description provided for @rulesPacoBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un paco (1) compte pour n\'importe quelle face. Il ne compte que comme un paco quand le pari porte sur les paco. Un paco vaut donc deux dés normaux au moment de surenchérir.'**
+  String get rulesPacoBody;
+
+  /// No description provided for @rulesBidTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pari'**
+  String get rulesBidTitle;
+
+  /// No description provided for @rulesBidBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un pari a deux nombres : une quantité et une face.'**
+  String get rulesBidBody;
+
+  /// No description provided for @rulesBidQuote.
+  ///
+  /// In fr, this message translates to:
+  /// **'« Il y a au moins 4 dés de 5 sur la table. »'**
+  String get rulesBidQuote;
+
+  /// No description provided for @rulesBidExplain.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ici, le pirate affirme qu\'il y a au moins quatre dés de valeur 5 sur toute la table. Les paco comptent aussi.'**
+  String get rulesBidExplain;
+
+  /// No description provided for @rulesRaiseTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Surenchérir'**
+  String get rulesRaiseTitle;
+
+  /// No description provided for @rulesRaiseIntro.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pari suivant doit toujours être plus fort :'**
+  String get rulesRaiseIntro;
+
+  /// No description provided for @rulesRaiseSameFace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Plus de dés sur la même face : 4 dés de 5 → 5 dés de 5.'**
+  String get rulesRaiseSameFace;
+
+  /// No description provided for @rulesRaiseHigherFace.
+  ///
+  /// In fr, this message translates to:
+  /// **'Même nombre, face plus haute : 4 dés de 5 → 4 dés de 6.'**
+  String get rulesRaiseHigherFace;
+
+  /// No description provided for @rulesRaiseTowardPaco.
+  ///
+  /// In fr, this message translates to:
+  /// **'Vers les paco : au moins la moitié, arrondie au-dessus : 4 dés de 5 → 2 paco.'**
+  String get rulesRaiseTowardPaco;
+
+  /// No description provided for @rulesRaiseFromPaco.
+  ///
+  /// In fr, this message translates to:
+  /// **'Depuis les paco : le double plus un : 2 paco → 5 dés de n\'importe quelle face.'**
+  String get rulesRaiseFromPaco;
+
+  /// No description provided for @rulesConvert45.
+  ///
+  /// In fr, this message translates to:
+  /// **'4 dés de 5'**
+  String get rulesConvert45;
+
+  /// No description provided for @rulesConvert2Paco.
+  ///
+  /// In fr, this message translates to:
+  /// **'2 paco'**
+  String get rulesConvert2Paco;
+
+  /// No description provided for @rulesConvert5F2.
+  ///
+  /// In fr, this message translates to:
+  /// **'5 dés de 2'**
+  String get rulesConvert5F2;
+
+  /// No description provided for @rulesConvert5F6.
+  ///
+  /// In fr, this message translates to:
+  /// **'5 dés de 6'**
+  String get rulesConvert5F6;
+
+  /// No description provided for @rulesConvert3Paco.
+  ///
+  /// In fr, this message translates to:
+  /// **'3 paco'**
+  String get rulesConvert3Paco;
+
+  /// No description provided for @rulesDudoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dudo !'**
+  String get rulesDudoTitle;
+
+  /// No description provided for @rulesDudoBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Au lieu de surenchérir, tu peux douter du dernier pari. Tout le monde soulève son gobelet et on compte.'**
+  String get rulesDudoBody;
+
+  /// No description provided for @rulesDudoHoldsTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pari tient'**
+  String get rulesDudoHoldsTitle;
+
+  /// No description provided for @rulesDudoHoldsBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le douteur perd un dé.'**
+  String get rulesDudoHoldsBody;
+
+  /// No description provided for @rulesDudoWrongTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pari est faux'**
+  String get rulesDudoWrongTitle;
+
+  /// No description provided for @rulesDudoWrongBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le parieur perd un dé.'**
+  String get rulesDudoWrongBody;
+
+  /// No description provided for @rulesCalzaTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calza — optionnel'**
+  String get rulesCalzaTitle;
+
+  /// No description provided for @rulesCalzaBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu peux aussi annoncer que le compte est exactement bon. C\'est la calza.'**
+  String get rulesCalzaBody;
+
+  /// No description provided for @rulesCalzaAllOrNothing.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tout ou rien'**
+  String get rulesCalzaAllOrNothing;
+
+  /// No description provided for @rulesCalzaAllOrNothingBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Compte exact : tu gagnes un dé (cinq maximum). Compte faux : tu en perds un. La calza peut être désactivée avant la partie.'**
+  String get rulesCalzaAllOrNothingBody;
+
+  /// No description provided for @rulesEndTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'La fin'**
+  String get rulesEndTitle;
+
+  /// No description provided for @rulesEndBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un pirate qui perd son dernier dé est à l\'eau. Le dernier survivant gagne la taverne. Le perdant de la manche ouvre la suivante.'**
+  String get rulesEndBody;
+
+  /// No description provided for @rulesPalificoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Palifico'**
+  String get rulesPalificoTitle;
+
+  /// No description provided for @rulesPalificoBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le pirate qui perd son avant-dernier dé déclenche le palifico : la manche suivante se joue entièrement sur une seule face, imposée par l\'ouverture.'**
+  String get rulesPalificoBody;
+
+  /// No description provided for @rulesPalificoFaceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Face imposée'**
+  String get rulesPalificoFaceTitle;
+
+  /// No description provided for @rulesPalificoFaceBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le premier pari choisit la face et ouvre à deux dés minimum. Tous les suivants montent la quantité de cette même face ; impossible de changer de valeur.'**
+  String get rulesPalificoFaceBody;
+
+  /// No description provided for @rulesPalificoPacoTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paco sans joker'**
+  String get rulesPalificoPacoTitle;
+
+  /// No description provided for @rulesPalificoPacoBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pendant le palifico, les paco ne comptent que comme paco : plus de joker.'**
+  String get rulesPalificoPacoBody;
+
+  /// No description provided for @rulesPalificoOnceTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Une seule manche'**
+  String get rulesPalificoOnceTitle;
+
+  /// No description provided for @rulesPalificoOnceBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'À la manche d\'après, les enchères reprennent la forme normale, même si le pirate reste à un dé. Et si quelqu\'un rechute à un dé plus tard, le palifico se déclenche à nouveau.'**
+  String get rulesPalificoOnceBody;
+
+  /// No description provided for @rulesTipQuote.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le meilleur bluff est celui que personne n\'a envie de payer.'**
+  String get rulesTipQuote;
+
+  /// No description provided for @rulesUnderstood.
+  ///
+  /// In fr, this message translates to:
+  /// **'J\'ai compris'**
+  String get rulesUnderstood;
+
+  /// No description provided for @diceHiddenText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dé caché'**
+  String get diceHiddenText;
+
+  /// No description provided for @diceAceText.
+  ///
+  /// In fr, this message translates to:
+  /// **'As, joker'**
+  String get diceAceText;
+
+  /// No description provided for @diceValueText.
+  ///
+  /// In fr, this message translates to:
+  /// **'Dé de valeur {value}'**
+  String diceValueText(int value);
 }
 
 class _AppLocalizationsDelegate

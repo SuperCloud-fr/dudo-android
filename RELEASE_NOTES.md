@@ -1,4 +1,10 @@
-# Dudo 0.2.0 — bêta 11 : le salon parle la langue du téléphone
+# Dudo 0.2.0 — bêta 12 : les règles parlent deux langues
+
+- **L'écran Règles est bilingue** (FR/EN) : les huit sections, les conversions, le manuel palifico — tout suit la langue du téléphone.
+- Les sémantiques du plateau, du dé caché et de la manche palifico sont traduites aussi (lecteurs d'écran).
+- Reste au programme i18n : les libellés de dés du journal (brigade modèle), les portraits des bots, et les messages système du salon — suivi dans l'issue #8.
+
+## Bêta 11 : le salon parle la langue du téléphone
 
 - **Zone salon traduite en entier** : accueil multijoueur, création, rejointe, lobby (partage, fil, barre de réactions) suivent la langue du téléphone, FR/EN. L'esprit des réactions prêtes à l'emploi est conservé entre les deux langues.
 

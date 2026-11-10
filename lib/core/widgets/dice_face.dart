@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// A die drawn as a physical object: ivory body, bevelled edge, dark pips.
 /// Aces carry a red pip because they are the wild card of the table.
@@ -28,13 +29,14 @@ class DiceFace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final label =
         semanticLabel ??
         (hidden
-            ? 'Dé caché'
+            ? (l10n?.diceHiddenText ?? 'Dé caché')
             : value == 1
-            ? 'As, joker'
-            : 'Dé de valeur $value');
+            ? (l10n?.diceAceText ?? 'As, joker')
+            : (l10n?.diceValueText(value) ?? 'Dé de valeur $value'));
     return Semantics(
       label: label,
       image: true,

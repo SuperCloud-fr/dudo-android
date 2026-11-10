@@ -6,12 +6,14 @@ import '../../core/widgets/dice_face.dart';
 import '../../core/widgets/tavern_background.dart';
 import '../../core/widgets/tavern_button.dart';
 import '../../game/models/bid.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 class RulesScreen extends StatelessWidget {
   const RulesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.ink,
       body: TavernBackground(
@@ -32,7 +34,7 @@ class RulesScreen extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
                               Text(
-                                'Le jeu du mensonge',
+                                l10n.rulesHeroTitle,
                                 maxLines: 2,
                                 style: AppTypography.inscription(
                                   size: 30,
@@ -42,60 +44,46 @@ class RulesScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Perudo, Dudo, Cacho… peu importe le nom. '
-                                'Les dés ne mentent pas. Les pirates, si.',
+                                l10n.rulesHeroIntro,
                                 style: Theme.of(context).textTheme.bodyMedium
                                     ?.copyWith(color: AppColors.parchmentMuted),
                               ),
                               const SizedBox(height: 18),
                               _DiceShowcase(),
                               const SizedBox(height: 26),
-                              const _RuleSection(
+                              _RuleSection(
                                 number: 1,
-                                title: 'Le but',
-                                child: Text(
-                                  'Rester le dernier pirate avec au moins un dé. '
-                                  'Chaque manche, on parie sur ce que cachent les gobelets. '
-                                  'Celui qui se trompe perd un dé.',
-                                ),
+                                title: l10n.rulesGoalTitle,
+                                child: Text(l10n.rulesGoalBody),
                               ),
-                              const _RuleSection(
+                              _RuleSection(
                                 number: 2,
-                                title: 'Ton gobelet',
+                                title: l10n.rulesCupTitle,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'Chacun reçoit cinq dés et les cache sous son gobelet. '
-                                      'Tu regardes les tiens en secret.',
-                                    ),
-                                    SizedBox(height: 10),
+                                    Text(l10n.rulesCupBody),
+                                    const SizedBox(height: 10),
                                     _Callout(
                                       icon: Icons.auto_awesome,
-                                      title: 'Les paco sont jokers',
-                                      text:
-                                          'Un paco (1) compte pour n\'importe quelle face. '
-                                          'Il ne compte que comme un paco quand le pari porte sur les paco. '
-                                          'Un paco vaut donc deux dés normaux au moment de surenchérir.',
+                                      title: l10n.rulesPacoTitle,
+                                      text: l10n.rulesPacoBody,
                                     ),
                                   ],
                                 ),
                               ),
                               _RuleSection(
                                 number: 3,
-                                title: 'Le pari',
+                                title: l10n.rulesBidTitle,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    const Text(
-                                      'Un pari a deux nombres : une quantité et une face.',
-                                    ),
+                                    Text(l10n.rulesBidBody),
                                     const SizedBox(height: 10),
                                     _BidExample(),
                                     const SizedBox(height: 10),
                                     Text(
-                                      'Ici, le pirate affirme qu\'il y a au moins quatre dés '
-                                      'de valeur 5 sur toute la table. Les as comptent aussi.',
+                                      l10n.rulesBidExplain,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodySmall
@@ -106,127 +94,86 @@ class RulesScreen extends StatelessWidget {
                               ),
                               _RuleSection(
                                 number: 4,
-                                title: 'Surenchérir',
+                                title: l10n.rulesRaiseTitle,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'Le pari suivant doit toujours être plus fort :',
-                                    ),
-                                    SizedBox(height: 8),
-                                    _Bullet(
-                                      'Plus de dés sur la même face : 4 dés de 5 → 5 dés de 5.',
-                                    ),
-                                    _Bullet(
-                                      'Même nombre, face plus haute : 4 dés de 5 → 4 dés de 6.',
-                                    ),
-                                    _Bullet(
-                                      'Vers les paco : au moins la moitié, arrondie au-dessus : '
-                                      '4 dés de 5 → 2 paco.',
-                                    ),
-                                    _Bullet(
-                                      'Depuis les paco : le double plus un : '
-                                      '2 paco → 5 dés de n\'importe quelle face.',
-                                    ),
-                                    SizedBox(height: 10),
+                                    Text(l10n.rulesRaiseIntro),
+                                    const SizedBox(height: 8),
+                                    _Bullet(l10n.rulesRaiseSameFace),
+                                    _Bullet(l10n.rulesRaiseHigherFace),
+                                    _Bullet(l10n.rulesRaiseTowardPaco),
+                                    _Bullet(l10n.rulesRaiseFromPaco),
+                                    const SizedBox(height: 10),
                                     _ConversionRow(),
                                   ],
                                 ),
                               ),
-                              const _RuleSection(
+                              _RuleSection(
                                 number: 5,
-                                title: 'Dudo !',
+                                title: l10n.rulesDudoTitle,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'Au lieu de surenchérir, tu peux douter du dernier pari. '
-                                      'Tout le monde soulève son gobelet et on compte.',
-                                    ),
-                                    SizedBox(height: 10),
+                                    Text(l10n.rulesDudoBody),
+                                    const SizedBox(height: 10),
                                     _VerdictRow(
-                                      leftTitle: 'Le pari tient',
-                                      leftText: 'Le douteur perd un dé.',
-                                      rightTitle: 'Le pari est faux',
-                                      rightText: 'Le parieur perd un dé.',
+                                      leftTitle: l10n.rulesDudoHoldsTitle,
+                                      leftText: l10n.rulesDudoHoldsBody,
+                                      rightTitle: l10n.rulesDudoWrongTitle,
+                                      rightText: l10n.rulesDudoWrongBody,
                                       leftIcon: Icons.check_circle_outline,
                                       rightIcon: Icons.cancel_outlined,
                                     ),
                                   ],
                                 ),
                               ),
-                              const _RuleSection(
+                              _RuleSection(
                                 number: 6,
-                                title: 'Calza — optionnel',
+                                title: l10n.rulesCalzaTitle,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'Tu peux aussi annoncer que le compte est exactement bon. '
-                                      'C\'est la calza.',
-                                    ),
-                                    SizedBox(height: 10),
+                                    Text(l10n.rulesCalzaBody),
+                                    const SizedBox(height: 10),
                                     _Callout(
                                       icon: Icons.gps_fixed,
-                                      title: 'Tout ou rien',
-                                      text:
-                                          'Compte exact : tu gagnes un dé (cinq maximum). '
-                                          'Compte faux : tu en perds un. '
-                                          'La calza peut être désactivée avant la partie.',
+                                      title: l10n.rulesCalzaAllOrNothing,
+                                      text: l10n.rulesCalzaAllOrNothingBody,
                                     ),
                                   ],
                                 ),
                               ),
-                              const _RuleSection(
+                              _RuleSection(
                                 number: 7,
-                                title: 'La fin',
-                                child: Text(
-                                  'Un pirate qui perd son dernier dé est à l\'eau. '
-                                  'Le dernier survivant gagne la taverne. '
-                                  'Le perdant de la manche ouvre la suivante.',
-                                ),
+                                title: l10n.rulesEndTitle,
+                                child: Text(l10n.rulesEndBody),
                               ),
 
                               _RuleSection(
                                 number: 8,
-                                title: 'Palifico',
+                                title: l10n.rulesPalificoTitle,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'Le pirate qui perd son avant-dernier dé '
-                                      'déclenche le palifico : la manche '
-                                      'suivante se joue entièrement sur une '
-                                      'seule face, imposée par l\u2019ouverture.',
-                                    ),
+                                    Text(l10n.rulesPalificoBody),
                                     const SizedBox(height: 10),
                                     _Callout(
                                       icon: Icons.lock_outline,
-                                      title: 'Face imposée',
-                                      text: 'Le premier pari choisit la face '
-                                          'et ouvre à deux dés minimum. '
-                                          'Tous les suivants montent la '
-                                          'quantité de cette même face ; '
-                                          'impossible de changer de valeur.',
+                                      title: l10n.rulesPalificoFaceTitle,
+                                      text: l10n.rulesPalificoFaceBody,
                                     ),
                                     const SizedBox(height: 10),
                                     _Callout(
                                       icon: Icons.push_pin_outlined,
-                                      title: 'Paco sans joker',
-                                      text: 'Pendant le palifico, les paco ne '
-                                          'comptent que comme paco : plus '
-                                          'de joker.',
+                                      title: l10n.rulesPalificoPacoTitle,
+                                      text: l10n.rulesPalificoPacoBody,
                                     ),
                                     const SizedBox(height: 10),
                                     _Callout(
                                       icon: Icons.history,
-                                      title: 'Une seule manche',
-                                      text: 'À la manche d\u2019après, les '
-                                          'enchères reprennent la forme '
-                                          'normale, même si le pirate reste '
-                                          'à un dé. Et si quelqu\u2019un '
-                                          'rechute à un dé plus tard, le '
-                                          'palifico se déclenche à nouveau.',
+                                      title: l10n.rulesPalificoOnceTitle,
+                                      text: l10n.rulesPalificoOnceBody,
                                     ),
                                   ],
                                 ),
@@ -256,7 +203,7 @@ class RulesScreen extends StatelessWidget {
                                     const SizedBox(width: 10),
                                     Expanded(
                                       child: Text(
-                                        'Le meilleur bluff est celui que personne n\'a envie de payer.',
+                                        l10n.rulesTipQuote,
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodyMedium
@@ -271,7 +218,7 @@ class RulesScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 22),
                               TavernButton(
-                                label: 'J\'ai compris',
+                                label: l10n.rulesUnderstood,
                                 icon: Icons.check,
                                 expand: true,
                                 onPressed: () => Navigator.of(context).pop(),
@@ -298,13 +245,13 @@ class RulesScreen extends StatelessWidget {
         children: [
           RoundIconButton(
             icon: Icons.arrow_back,
-            semanticLabel: 'Retour',
+            semanticLabel: AppLocalizations.of(context)!.rulesBack,
             onPressed: () => Navigator.of(context).pop(),
             size: 48,
           ),
           Expanded(
             child: Text(
-              'LES RÈGLES',
+              AppLocalizations.of(context)!.rulesHeader,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.labelMedium
                   ?.copyWith(color: AppColors.brass, letterSpacing: 2.4),
@@ -320,6 +267,7 @@ class RulesScreen extends StatelessWidget {
 class _DiceShowcase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
@@ -349,7 +297,7 @@ class _DiceShowcase extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Cinq dés, un paco joker, et aucune raison de dire la vérité.',
+            l10n.rulesShowcaseCaption,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodySmall
                 ?.copyWith(color: AppColors.parchmentDim, fontSize: 12),
@@ -525,6 +473,7 @@ class _Callout extends StatelessWidget {
 class _BidExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     const bid = Bid(quantity: 4, face: 5, playerSeat: 0);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -548,7 +497,7 @@ class _BidExample extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Text(
-              '« Il y a au moins 4 dés de 5 sur la table. »',
+              l10n.rulesBidQuote,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: AppColors.parchmentDim,
                 fontStyle: FontStyle.italic,
@@ -565,13 +514,14 @@ class _BidExample extends StatelessWidget {
 class _ConversionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: const [
-        _Conversion(from: '4 dés de 5', to: '2 as'),
-        _Conversion(from: '2 as', to: '5 dés de 2'),
-        _Conversion(from: '5 dés de 6', to: '3 as'),
+      children: [
+        _Conversion(from: l10n.rulesConvert45, to: l10n.rulesConvert2Paco),
+        _Conversion(from: l10n.rulesConvert2Paco, to: l10n.rulesConvert5F2),
+        _Conversion(from: l10n.rulesConvert5F6, to: l10n.rulesConvert3Paco),
       ],
     );
   }

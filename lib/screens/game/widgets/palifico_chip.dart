@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/generated/app_localizations.dart';
 
 /// The red wax stamp shown whenever the table plays a palifico round.
 class PalificoChip extends StatelessWidget {
@@ -11,7 +12,7 @@ class PalificoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Manche palifico : une seule face imposée, paco non jokers',
+      label: AppLocalizations.of(context)!.palificoSemantics,
       excludeSemantics: true,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),

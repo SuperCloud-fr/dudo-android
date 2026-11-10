@@ -62,9 +62,9 @@ class DiceTray extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             SectionLabel(
-              'Ta main',
+              AppLocalizations.of(context)!.trayTitle,
               trailing: Text(
-                '${values.length} ${values.length == 1 ? 'dé' : 'dés'} · ${palifico ? 'paco simples' : 'paco joker'}',
+                '${AppLocalizations.of(context)!.trayDiceCount(values.length)} · ${palifico ? AppLocalizations.of(context)!.trayAcesPlain : AppLocalizations.of(context)!.trayAcesWild}',
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: AppColors.parchmentMuted,
                   letterSpacing: 0.4,
@@ -234,7 +234,7 @@ class _ThinkingDotsState extends State<ThinkingDots>
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'réfléchit',
+      label: AppLocalizations.of(context)!.seatThinking,
       excludeSemantics: true,
       child: AnimatedBuilder(
         animation: _controller,

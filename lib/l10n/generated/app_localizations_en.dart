@@ -889,4 +889,178 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reactionFreeHint => 'Type a free message…';
+
+  @override
+  String get rulesHeader => 'THE RULES';
+
+  @override
+  String get rulesBack => 'Back';
+
+  @override
+  String get rulesHeroTitle => 'The game of lies';
+
+  @override
+  String get rulesHeroIntro =>
+      'Perudo, Dudo, Cacho… call it what you like. The dice don\'t lie. The pirates do.';
+
+  @override
+  String get rulesShowcaseCaption =>
+      'Five dice, one wild paco, and no reason to tell the truth.';
+
+  @override
+  String get rulesGoalTitle => 'The goal';
+
+  @override
+  String get rulesGoalBody =>
+      'Be the last pirate standing with at least one die. Each round you bet on what the cups hide. Whoever gets it wrong loses a die.';
+
+  @override
+  String get rulesCupTitle => 'Your cup';
+
+  @override
+  String get rulesCupBody =>
+      'Everyone gets five dice and hides them under the cup. You may only look at your own.';
+
+  @override
+  String get rulesPacoTitle => 'Pacos are jokers';
+
+  @override
+  String get rulesPacoBody =>
+      'A paco (1) counts as any face. It only counts as a paco when the bid is about pacos. So a paco is worth two plain dice when raising.';
+
+  @override
+  String get rulesBidTitle => 'The bid';
+
+  @override
+  String get rulesBidBody => 'A bid is two numbers: a quantity and a face.';
+
+  @override
+  String get rulesBidQuote => '\"There are at least 4 fives on the table.\"';
+
+  @override
+  String get rulesBidExplain =>
+      'Here the pirate claims at least four dice of value 5 across the whole table. The pacos count too.';
+
+  @override
+  String get rulesRaiseTitle => 'Raising';
+
+  @override
+  String get rulesRaiseIntro => 'The next bid must always be stronger:';
+
+  @override
+  String get rulesRaiseSameFace =>
+      'More dice on the same face: 4 fives → 5 fives.';
+
+  @override
+  String get rulesRaiseHigherFace =>
+      'Same count, higher face: 4 fives → 4 sixes.';
+
+  @override
+  String get rulesRaiseTowardPaco =>
+      'Toward the pacos: at least half, rounded up: 4 fives → 2 pacos.';
+
+  @override
+  String get rulesRaiseFromPaco =>
+      'From the pacos: double plus one: 2 pacos → 5 dice of any face.';
+
+  @override
+  String get rulesConvert45 => '4 fives';
+
+  @override
+  String get rulesConvert2Paco => '2 pacos';
+
+  @override
+  String get rulesConvert5F2 => '5 twos';
+
+  @override
+  String get rulesConvert5F6 => '5 sixes';
+
+  @override
+  String get rulesConvert3Paco => '3 pacos';
+
+  @override
+  String get rulesDudoTitle => 'Dudo!';
+
+  @override
+  String get rulesDudoBody =>
+      'Instead of raising, you may call the last bid a lie. Everyone lifts the cup and you count.';
+
+  @override
+  String get rulesDudoHoldsTitle => 'The bid stands';
+
+  @override
+  String get rulesDudoHoldsBody => 'The doubter loses a die.';
+
+  @override
+  String get rulesDudoWrongTitle => 'The bid is wrong';
+
+  @override
+  String get rulesDudoWrongBody => 'The bidder loses a die.';
+
+  @override
+  String get rulesCalzaTitle => 'Calza — optional';
+
+  @override
+  String get rulesCalzaBody =>
+      'You may also announce the count is exactly right. That\'s the calza.';
+
+  @override
+  String get rulesCalzaAllOrNothing => 'All or nothing';
+
+  @override
+  String get rulesCalzaAllOrNothingBody =>
+      'Exact count: you win a die (up to five). Wrong count: you lose one. Calza can be turned off before the game.';
+
+  @override
+  String get rulesEndTitle => 'The end';
+
+  @override
+  String get rulesEndBody =>
+      'A pirate who loses the last die is overboard. The last survivor wins the tavern. The round\'s loser opens the next round.';
+
+  @override
+  String get rulesPalificoTitle => 'Palifico';
+
+  @override
+  String get rulesPalificoBody =>
+      'A pirate who loses their second-to-last die triggers palifico: the next round plays on a single face, forced by the opening bid.';
+
+  @override
+  String get rulesPalificoFaceTitle => 'Forced face';
+
+  @override
+  String get rulesPalificoFaceBody =>
+      'The first bid picks the face and opens with at least two dice. Every later bid raises the count on that same face; the face can\'t change.';
+
+  @override
+  String get rulesPalificoPacoTitle => 'Paco, no jokers';
+
+  @override
+  String get rulesPalificoPacoBody =>
+      'During palifico, pacos count only as pacos: no wild value.';
+
+  @override
+  String get rulesPalificoOnceTitle => 'One round only';
+
+  @override
+  String get rulesPalificoOnceBody =>
+      'Next round, bidding returns to normal even if the pirate still holds one die. And if anyone drops to one die later, palifico triggers again.';
+
+  @override
+  String get rulesTipQuote =>
+      'The best bluff is the one nobody wants to pay for.';
+
+  @override
+  String get rulesUnderstood => 'Got it';
+
+  @override
+  String get diceHiddenText => 'Hidden die';
+
+  @override
+  String get diceAceText => 'Ace, wild';
+
+  @override
+  String diceValueText(int value) {
+    return 'Die of value $value';
+  }
 }

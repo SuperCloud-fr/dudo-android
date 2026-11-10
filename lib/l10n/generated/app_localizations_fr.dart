@@ -894,4 +894,180 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get reactionFreeHint => 'Écrire un message libre…';
+
+  @override
+  String get rulesHeader => 'LES RÈGLES';
+
+  @override
+  String get rulesBack => 'Retour';
+
+  @override
+  String get rulesHeroTitle => 'Le jeu du mensonge';
+
+  @override
+  String get rulesHeroIntro =>
+      'Perudo, Dudo, Cacho… peu importe le nom. Les dés ne mentent pas. Les pirates, si.';
+
+  @override
+  String get rulesShowcaseCaption =>
+      'Cinq dés, un paco joker, et aucune raison de dire la vérité.';
+
+  @override
+  String get rulesGoalTitle => 'Le but';
+
+  @override
+  String get rulesGoalBody =>
+      'Rester le dernier pirate avec au moins un dé. Chaque manche, on parie sur ce que cachent les gobelets. Celui qui se trompe perd un dé.';
+
+  @override
+  String get rulesCupTitle => 'Ton gobelet';
+
+  @override
+  String get rulesCupBody =>
+      'Chacun reçoit cinq dés et les cache sous son gobelet. Tu regardes les tiens en secret.';
+
+  @override
+  String get rulesPacoTitle => 'Les paco sont jokers';
+
+  @override
+  String get rulesPacoBody =>
+      'Un paco (1) compte pour n\'importe quelle face. Il ne compte que comme un paco quand le pari porte sur les paco. Un paco vaut donc deux dés normaux au moment de surenchérir.';
+
+  @override
+  String get rulesBidTitle => 'Le pari';
+
+  @override
+  String get rulesBidBody =>
+      'Un pari a deux nombres : une quantité et une face.';
+
+  @override
+  String get rulesBidQuote => '« Il y a au moins 4 dés de 5 sur la table. »';
+
+  @override
+  String get rulesBidExplain =>
+      'Ici, le pirate affirme qu\'il y a au moins quatre dés de valeur 5 sur toute la table. Les paco comptent aussi.';
+
+  @override
+  String get rulesRaiseTitle => 'Surenchérir';
+
+  @override
+  String get rulesRaiseIntro =>
+      'Le pari suivant doit toujours être plus fort :';
+
+  @override
+  String get rulesRaiseSameFace =>
+      'Plus de dés sur la même face : 4 dés de 5 → 5 dés de 5.';
+
+  @override
+  String get rulesRaiseHigherFace =>
+      'Même nombre, face plus haute : 4 dés de 5 → 4 dés de 6.';
+
+  @override
+  String get rulesRaiseTowardPaco =>
+      'Vers les paco : au moins la moitié, arrondie au-dessus : 4 dés de 5 → 2 paco.';
+
+  @override
+  String get rulesRaiseFromPaco =>
+      'Depuis les paco : le double plus un : 2 paco → 5 dés de n\'importe quelle face.';
+
+  @override
+  String get rulesConvert45 => '4 dés de 5';
+
+  @override
+  String get rulesConvert2Paco => '2 paco';
+
+  @override
+  String get rulesConvert5F2 => '5 dés de 2';
+
+  @override
+  String get rulesConvert5F6 => '5 dés de 6';
+
+  @override
+  String get rulesConvert3Paco => '3 paco';
+
+  @override
+  String get rulesDudoTitle => 'Dudo !';
+
+  @override
+  String get rulesDudoBody =>
+      'Au lieu de surenchérir, tu peux douter du dernier pari. Tout le monde soulève son gobelet et on compte.';
+
+  @override
+  String get rulesDudoHoldsTitle => 'Le pari tient';
+
+  @override
+  String get rulesDudoHoldsBody => 'Le douteur perd un dé.';
+
+  @override
+  String get rulesDudoWrongTitle => 'Le pari est faux';
+
+  @override
+  String get rulesDudoWrongBody => 'Le parieur perd un dé.';
+
+  @override
+  String get rulesCalzaTitle => 'Calza — optionnel';
+
+  @override
+  String get rulesCalzaBody =>
+      'Tu peux aussi annoncer que le compte est exactement bon. C\'est la calza.';
+
+  @override
+  String get rulesCalzaAllOrNothing => 'Tout ou rien';
+
+  @override
+  String get rulesCalzaAllOrNothingBody =>
+      'Compte exact : tu gagnes un dé (cinq maximum). Compte faux : tu en perds un. La calza peut être désactivée avant la partie.';
+
+  @override
+  String get rulesEndTitle => 'La fin';
+
+  @override
+  String get rulesEndBody =>
+      'Un pirate qui perd son dernier dé est à l\'eau. Le dernier survivant gagne la taverne. Le perdant de la manche ouvre la suivante.';
+
+  @override
+  String get rulesPalificoTitle => 'Palifico';
+
+  @override
+  String get rulesPalificoBody =>
+      'Le pirate qui perd son avant-dernier dé déclenche le palifico : la manche suivante se joue entièrement sur une seule face, imposée par l\'ouverture.';
+
+  @override
+  String get rulesPalificoFaceTitle => 'Face imposée';
+
+  @override
+  String get rulesPalificoFaceBody =>
+      'Le premier pari choisit la face et ouvre à deux dés minimum. Tous les suivants montent la quantité de cette même face ; impossible de changer de valeur.';
+
+  @override
+  String get rulesPalificoPacoTitle => 'Paco sans joker';
+
+  @override
+  String get rulesPalificoPacoBody =>
+      'Pendant le palifico, les paco ne comptent que comme paco : plus de joker.';
+
+  @override
+  String get rulesPalificoOnceTitle => 'Une seule manche';
+
+  @override
+  String get rulesPalificoOnceBody =>
+      'À la manche d\'après, les enchères reprennent la forme normale, même si le pirate reste à un dé. Et si quelqu\'un rechute à un dé plus tard, le palifico se déclenche à nouveau.';
+
+  @override
+  String get rulesTipQuote =>
+      'Le meilleur bluff est celui que personne n\'a envie de payer.';
+
+  @override
+  String get rulesUnderstood => 'J\'ai compris';
+
+  @override
+  String get diceHiddenText => 'Dé caché';
+
+  @override
+  String get diceAceText => 'As, joker';
+
+  @override
+  String diceValueText(int value) {
+    return 'Dé de valeur $value';
+  }
 }
