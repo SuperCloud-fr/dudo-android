@@ -1129,6 +1129,360 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Manche palifico : une seule face imposée, paco non jokers'**
   String get palificoSemantics;
+
+  /// No description provided for @salonBackToTavern.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour à la taverne'**
+  String get salonBackToTavern;
+
+  /// No description provided for @salonHeader.
+  ///
+  /// In fr, this message translates to:
+  /// **'MULTIJOUEUR'**
+  String get salonHeader;
+
+  /// No description provided for @salonHomeTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un salon, cinq gobelets'**
+  String get salonHomeTitle;
+
+  /// No description provided for @salonHomeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Les amis entrent avec un code à six caractères. L\'hôte distribue les pirates IA, le salon communique en direct.'**
+  String get salonHomeHint;
+
+  /// No description provided for @salonCreateCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer un salon'**
+  String get salonCreateCta;
+
+  /// No description provided for @salonJoinCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejoindre un salon'**
+  String get salonJoinCta;
+
+  /// No description provided for @salonBack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retour'**
+  String get salonBack;
+
+  /// No description provided for @salonCreateHeader.
+  ///
+  /// In fr, this message translates to:
+  /// **'CRÉER UN SALON'**
+  String get salonCreateHeader;
+
+  /// No description provided for @salonCreateTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu arrives premier'**
+  String get salonCreateTitle;
+
+  /// No description provided for @salonCreateHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisis ton matelot et combien de pirates IA viendront mentir avec toi.'**
+  String get salonCreateHint;
+
+  /// No description provided for @salonNameLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton nom de pirate'**
+  String get salonNameLabel;
+
+  /// No description provided for @salonBotsSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Pirates IA'**
+  String get salonBotsSection;
+
+  /// No description provided for @salonCreateSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Créer le salon'**
+  String get salonCreateSubmit;
+
+  /// No description provided for @salonDefaultName.
+  ///
+  /// In fr, this message translates to:
+  /// **'Toi'**
+  String get salonDefaultName;
+
+  /// No description provided for @salonCreateFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'La création du salon a échoué.'**
+  String get salonCreateFailed;
+
+  /// No description provided for @salonJoinHeader.
+  ///
+  /// In fr, this message translates to:
+  /// **'REJOINDRE UN SALON'**
+  String get salonJoinHeader;
+
+  /// No description provided for @salonJoinTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code fait foi'**
+  String get salonJoinTitle;
+
+  /// No description provided for @salonJoinHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Entre les six caractères que l\'hôte t\'a envoyés. Sur le salon, ton nom est tout ce que tu peux changer.'**
+  String get salonJoinHint;
+
+  /// No description provided for @salonCodeLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code du salon'**
+  String get salonCodeLabel;
+
+  /// No description provided for @salonPasteHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rentrer en frais — via SMS, mail, WhatsApp, Signal ou n\'importe où ailleurs, c\'est juste mieux.'**
+  String get salonPasteHint;
+
+  /// No description provided for @salonJoinNameLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton nom (tu peux encore le changer)'**
+  String get salonJoinNameLabel;
+
+  /// No description provided for @salonJoinSubmit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rejoindre'**
+  String get salonJoinSubmit;
+
+  /// No description provided for @salonJoinFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salon injoignable pour l\'instant.'**
+  String get salonJoinFailed;
+
+  /// No description provided for @salonLeaveSemantic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quitter le salon'**
+  String get salonLeaveSemantic;
+
+  /// No description provided for @salonCodeHeader.
+  ///
+  /// In fr, this message translates to:
+  /// **'SALON {code}'**
+  String salonCodeHeader(String code);
+
+  /// No description provided for @salonHostRole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu reines sur ce salon'**
+  String get salonHostRole;
+
+  /// No description provided for @salonGuestRole.
+  ///
+  /// In fr, this message translates to:
+  /// **'Invité de l\'hôte'**
+  String get salonGuestRole;
+
+  /// No description provided for @salonCopySemantic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Copier le code'**
+  String get salonCopySemantic;
+
+  /// No description provided for @salonCopied.
+  ///
+  /// In fr, this message translates to:
+  /// **'Code copié dans le presse-papier.'**
+  String get salonCopied;
+
+  /// No description provided for @salonStartRound.
+  ///
+  /// In fr, this message translates to:
+  /// **'Lancer la manche'**
+  String get salonStartRound;
+
+  /// No description provided for @salonRoundPreparing.
+  ///
+  /// In fr, this message translates to:
+  /// **'La manche se prépare…'**
+  String get salonRoundPreparing;
+
+  /// No description provided for @salonWaitingHost.
+  ///
+  /// In fr, this message translates to:
+  /// **'En attente que l\'hôte lance la manche…'**
+  String get salonWaitingHost;
+
+  /// No description provided for @salonFeedSection.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le fil du salon'**
+  String get salonFeedSection;
+
+  /// No description provided for @salonStartFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'La manche n\'a pas pu démarrer. Réessaie.'**
+  String get salonStartFailed;
+
+  /// No description provided for @salonShareSemantic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Partager le code'**
+  String get salonShareSemantic;
+
+  /// No description provided for @salonShareSmsSemantic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer par SMS'**
+  String get salonShareSmsSemantic;
+
+  /// No description provided for @salonShareMailSemantic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer par mail'**
+  String get salonShareMailSemantic;
+
+  /// No description provided for @salonShareWhatsappSemantic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Envoyer sur WhatsApp'**
+  String get salonShareWhatsappSemantic;
+
+  /// No description provided for @salonShareHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'WhatsApp, Signal, SMS, mail : chaque app ouvre les bons liens, sinon copie.'**
+  String get salonShareHint;
+
+  /// No description provided for @salonPlayersCount.
+  ///
+  /// In fr, this message translates to:
+  /// **'À table ({count})'**
+  String salonPlayersCount(int count);
+
+  /// No description provided for @salonRemoveBotSemantic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Retirer un pirate IA'**
+  String get salonRemoveBotSemantic;
+
+  /// No description provided for @salonAddBotSemantic.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ajouter un pirate IA'**
+  String get salonAddBotSemantic;
+
+  /// No description provided for @salonYouSuffix.
+  ///
+  /// In fr, this message translates to:
+  /// **'(toi)'**
+  String get salonYouSuffix;
+
+  /// No description provided for @salonHostBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'HÔTE'**
+  String get salonHostBadge;
+
+  /// No description provided for @salonLeaveTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quitter le salon ?'**
+  String get salonLeaveTitle;
+
+  /// No description provided for @salonLeaveBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code deviendra inutilisable pour cette partie.'**
+  String get salonLeaveBody;
+
+  /// No description provided for @salonLeaveStay.
+  ///
+  /// In fr, this message translates to:
+  /// **'Rester'**
+  String get salonLeaveStay;
+
+  /// No description provided for @salonLeaveQuit.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quitter'**
+  String get salonLeaveQuit;
+
+  /// No description provided for @reactionHeader.
+  ///
+  /// In fr, this message translates to:
+  /// **'RÉAGIR'**
+  String get reactionHeader;
+
+  /// No description provided for @speakHeader.
+  ///
+  /// In fr, this message translates to:
+  /// **'PARLE'**
+  String get speakHeader;
+
+  /// No description provided for @reactionTargetSummary.
+  ///
+  /// In fr, this message translates to:
+  /// **'{player} · mes dés : {n}'**
+  String reactionTargetSummary(String player, int n);
+
+  /// No description provided for @reactionLine1.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu n\'es pas obligé de me croire, mais j\'ai {n} dés.'**
+  String reactionLine1(int n);
+
+  /// No description provided for @reactionLine2.
+  ///
+  /// In fr, this message translates to:
+  /// **'Alors non, {player}, c\'est pas possible.'**
+  String reactionLine2(String player);
+
+  /// No description provided for @reactionLine3.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le paco, c\'est ta fin, {player}.'**
+  String reactionLine3(String player);
+
+  /// No description provided for @reactionLine4.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je te promets : au plus {n} dés sur la table, ils mentent.'**
+  String reactionLine4(int n);
+
+  /// No description provided for @reactionLine5.
+  ///
+  /// In fr, this message translates to:
+  /// **'Regarde mes {n} dés, {player}, tu es à l\'eau d\'ici ce soir.'**
+  String reactionLine5(int n, String player);
+
+  /// No description provided for @reactionLine6.
+  ///
+  /// In fr, this message translates to:
+  /// **'Paco sur paco paco paco.'**
+  String get reactionLine6;
+
+  /// No description provided for @reactionLine7.
+  ///
+  /// In fr, this message translates to:
+  /// **'Je te crois, {player}, te voilà bien détrompé.'**
+  String reactionLine7(String player);
+
+  /// No description provided for @reactionFreeHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Écrire un message libre…'**
+  String get reactionFreeHint;
 }
 
 class _AppLocalizationsDelegate

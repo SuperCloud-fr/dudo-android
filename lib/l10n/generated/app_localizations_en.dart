@@ -689,4 +689,204 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get palificoSemantics =>
       'Palifico round: one forced face, paco no longer wild';
+
+  @override
+  String get salonBackToTavern => 'Back to the tavern';
+
+  @override
+  String get salonHeader => 'MULTIPLAYER';
+
+  @override
+  String get salonHomeTitle => 'One code, five cups';
+
+  @override
+  String get salonHomeHint =>
+      'Friends walk in with a six-character code. The host pours the AI pirates, the table talks live.';
+
+  @override
+  String get salonCreateCta => 'Create a code';
+
+  @override
+  String get salonJoinCta => 'Join with a code';
+
+  @override
+  String get salonBack => 'Back';
+
+  @override
+  String get salonCreateHeader => 'CREATE A SALON';
+
+  @override
+  String get salonCreateTitle => 'You\'re the first';
+
+  @override
+  String get salonCreateHint =>
+      'Pick your cabin name and how many AI pirates will lie with you.';
+
+  @override
+  String get salonNameLabel => 'Your pirate name';
+
+  @override
+  String get salonBotsSection => 'AI pirates';
+
+  @override
+  String get salonCreateSubmit => 'Open the salon';
+
+  @override
+  String get salonDefaultName => 'Captain';
+
+  @override
+  String get salonCreateFailed => 'The salon could not be created.';
+
+  @override
+  String get salonJoinHeader => 'JOIN A SALON';
+
+  @override
+  String get salonJoinTitle => 'The code is the bond';
+
+  @override
+  String get salonJoinHint =>
+      'Type the six characters the host sent you. On the table, your name is the only thing you can change.';
+
+  @override
+  String get salonCodeLabel => 'Salon code';
+
+  @override
+  String get salonPasteHint =>
+      'Sharing fresh — SMS, mail, WhatsApp, Signal or anywhere else — just works better.';
+
+  @override
+  String get salonJoinNameLabel => 'Your name (still editable here)';
+
+  @override
+  String get salonJoinSubmit => 'Join';
+
+  @override
+  String get salonJoinFailed => 'Salon unreachable right now.';
+
+  @override
+  String get salonLeaveSemantic => 'Leave the salon';
+
+  @override
+  String salonCodeHeader(String code) {
+    return 'SALON $code';
+  }
+
+  @override
+  String get salonHostRole => 'You reign over this table';
+
+  @override
+  String get salonGuestRole => 'Host\'s guest';
+
+  @override
+  String get salonCopySemantic => 'Copy the code';
+
+  @override
+  String get salonCopied => 'Code copied to the clipboard.';
+
+  @override
+  String get salonStartRound => 'Start the round';
+
+  @override
+  String get salonRoundPreparing => 'The round is being poured…';
+
+  @override
+  String get salonWaitingHost => 'Waiting for the host to start the round…';
+
+  @override
+  String get salonFeedSection => 'The salon thread';
+
+  @override
+  String get salonStartFailed => 'The round could not start. Try again.';
+
+  @override
+  String get salonShareSemantic => 'Share the code';
+
+  @override
+  String get salonShareSmsSemantic => 'Send by text';
+
+  @override
+  String get salonShareMailSemantic => 'Send by email';
+
+  @override
+  String get salonShareWhatsappSemantic => 'Send on WhatsApp';
+
+  @override
+  String get salonShareHint =>
+      'WhatsApp, Signal, SMS, mail: each app opens the right links, otherwise copy.';
+
+  @override
+  String salonPlayersCount(int count) {
+    return 'At the table ($count)';
+  }
+
+  @override
+  String get salonRemoveBotSemantic => 'Remove an AI pirate';
+
+  @override
+  String get salonAddBotSemantic => 'Add an AI pirate';
+
+  @override
+  String get salonYouSuffix => '(you)';
+
+  @override
+  String get salonHostBadge => 'HOST';
+
+  @override
+  String get salonLeaveTitle => 'Leave the salon?';
+
+  @override
+  String get salonLeaveBody => 'The code becomes unusable for this game.';
+
+  @override
+  String get salonLeaveStay => 'Stay';
+
+  @override
+  String get salonLeaveQuit => 'Leave';
+
+  @override
+  String get reactionHeader => 'REACT';
+
+  @override
+  String get speakHeader => 'SPEAK';
+
+  @override
+  String reactionTargetSummary(String player, int n) {
+    return '$player · my dice: $n';
+  }
+
+  @override
+  String reactionLine1(int n) {
+    return 'You don\'t have to believe me, but I\'ve got $n dice.';
+  }
+
+  @override
+  String reactionLine2(String player) {
+    return 'No, $player, that can\'t be.';
+  }
+
+  @override
+  String reactionLine3(String player) {
+    return 'The paco will be your end, $player.';
+  }
+
+  @override
+  String reactionLine4(int n) {
+    return 'I swear: at most $n dice on that table, they lie.';
+  }
+
+  @override
+  String reactionLine5(int n, String player) {
+    return 'Look at my $n dice, $player — you\'ll sleep with the fishes.';
+  }
+
+  @override
+  String get reactionLine6 => 'Paco on paco, paco, paco...';
+
+  @override
+  String reactionLine7(String player) {
+    return 'I believed you, $player — freshly fooled, aren\'t you.';
+  }
+
+  @override
+  String get reactionFreeHint => 'Type a free message…';
 }

@@ -693,4 +693,205 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get palificoSemantics =>
       'Manche palifico : une seule face imposée, paco non jokers';
+
+  @override
+  String get salonBackToTavern => 'Retour à la taverne';
+
+  @override
+  String get salonHeader => 'MULTIJOUEUR';
+
+  @override
+  String get salonHomeTitle => 'Un salon, cinq gobelets';
+
+  @override
+  String get salonHomeHint =>
+      'Les amis entrent avec un code à six caractères. L\'hôte distribue les pirates IA, le salon communique en direct.';
+
+  @override
+  String get salonCreateCta => 'Créer un salon';
+
+  @override
+  String get salonJoinCta => 'Rejoindre un salon';
+
+  @override
+  String get salonBack => 'Retour';
+
+  @override
+  String get salonCreateHeader => 'CRÉER UN SALON';
+
+  @override
+  String get salonCreateTitle => 'Tu arrives premier';
+
+  @override
+  String get salonCreateHint =>
+      'Choisis ton matelot et combien de pirates IA viendront mentir avec toi.';
+
+  @override
+  String get salonNameLabel => 'Ton nom de pirate';
+
+  @override
+  String get salonBotsSection => 'Pirates IA';
+
+  @override
+  String get salonCreateSubmit => 'Créer le salon';
+
+  @override
+  String get salonDefaultName => 'Toi';
+
+  @override
+  String get salonCreateFailed => 'La création du salon a échoué.';
+
+  @override
+  String get salonJoinHeader => 'REJOINDRE UN SALON';
+
+  @override
+  String get salonJoinTitle => 'Le code fait foi';
+
+  @override
+  String get salonJoinHint =>
+      'Entre les six caractères que l\'hôte t\'a envoyés. Sur le salon, ton nom est tout ce que tu peux changer.';
+
+  @override
+  String get salonCodeLabel => 'Code du salon';
+
+  @override
+  String get salonPasteHint =>
+      'Rentrer en frais — via SMS, mail, WhatsApp, Signal ou n\'importe où ailleurs, c\'est juste mieux.';
+
+  @override
+  String get salonJoinNameLabel => 'Ton nom (tu peux encore le changer)';
+
+  @override
+  String get salonJoinSubmit => 'Rejoindre';
+
+  @override
+  String get salonJoinFailed => 'Salon injoignable pour l\'instant.';
+
+  @override
+  String get salonLeaveSemantic => 'Quitter le salon';
+
+  @override
+  String salonCodeHeader(String code) {
+    return 'SALON $code';
+  }
+
+  @override
+  String get salonHostRole => 'Tu reines sur ce salon';
+
+  @override
+  String get salonGuestRole => 'Invité de l\'hôte';
+
+  @override
+  String get salonCopySemantic => 'Copier le code';
+
+  @override
+  String get salonCopied => 'Code copié dans le presse-papier.';
+
+  @override
+  String get salonStartRound => 'Lancer la manche';
+
+  @override
+  String get salonRoundPreparing => 'La manche se prépare…';
+
+  @override
+  String get salonWaitingHost => 'En attente que l\'hôte lance la manche…';
+
+  @override
+  String get salonFeedSection => 'Le fil du salon';
+
+  @override
+  String get salonStartFailed => 'La manche n\'a pas pu démarrer. Réessaie.';
+
+  @override
+  String get salonShareSemantic => 'Partager le code';
+
+  @override
+  String get salonShareSmsSemantic => 'Envoyer par SMS';
+
+  @override
+  String get salonShareMailSemantic => 'Envoyer par mail';
+
+  @override
+  String get salonShareWhatsappSemantic => 'Envoyer sur WhatsApp';
+
+  @override
+  String get salonShareHint =>
+      'WhatsApp, Signal, SMS, mail : chaque app ouvre les bons liens, sinon copie.';
+
+  @override
+  String salonPlayersCount(int count) {
+    return 'À table ($count)';
+  }
+
+  @override
+  String get salonRemoveBotSemantic => 'Retirer un pirate IA';
+
+  @override
+  String get salonAddBotSemantic => 'Ajouter un pirate IA';
+
+  @override
+  String get salonYouSuffix => '(toi)';
+
+  @override
+  String get salonHostBadge => 'HÔTE';
+
+  @override
+  String get salonLeaveTitle => 'Quitter le salon ?';
+
+  @override
+  String get salonLeaveBody =>
+      'Le code deviendra inutilisable pour cette partie.';
+
+  @override
+  String get salonLeaveStay => 'Rester';
+
+  @override
+  String get salonLeaveQuit => 'Quitter';
+
+  @override
+  String get reactionHeader => 'RÉAGIR';
+
+  @override
+  String get speakHeader => 'PARLE';
+
+  @override
+  String reactionTargetSummary(String player, int n) {
+    return '$player · mes dés : $n';
+  }
+
+  @override
+  String reactionLine1(int n) {
+    return 'Tu n\'es pas obligé de me croire, mais j\'ai $n dés.';
+  }
+
+  @override
+  String reactionLine2(String player) {
+    return 'Alors non, $player, c\'est pas possible.';
+  }
+
+  @override
+  String reactionLine3(String player) {
+    return 'Le paco, c\'est ta fin, $player.';
+  }
+
+  @override
+  String reactionLine4(int n) {
+    return 'Je te promets : au plus $n dés sur la table, ils mentent.';
+  }
+
+  @override
+  String reactionLine5(int n, String player) {
+    return 'Regarde mes $n dés, $player, tu es à l\'eau d\'ici ce soir.';
+  }
+
+  @override
+  String get reactionLine6 => 'Paco sur paco paco paco.';
+
+  @override
+  String reactionLine7(String player) {
+    return 'Je te crois, $player, te voilà bien détrompé.';
+  }
+
+  @override
+  String get reactionFreeHint => 'Écrire un message libre…';
 }

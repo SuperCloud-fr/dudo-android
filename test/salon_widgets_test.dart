@@ -1,3 +1,4 @@
+import 'package:dudo/l10n/generated/app_localizations.dart';
 import 'package:dudo/salon/salon_models.dart';
 import 'package:dudo/salon/screens/salon_screens.dart';
 import 'package:dudo/salon/widgets/reaction_bar.dart';
@@ -8,6 +9,9 @@ void main() {
   testWidgets('la barre de réactions supporte un salon vide', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: ReactionBar(
             players: const <SalonPlayer>[],
@@ -26,7 +30,12 @@ void main() {
   ) async {
     final session = LocalSalonSession();
     await tester.pumpWidget(
-      MaterialApp(home: SalonLobbyScreen(session: session)),
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SalonLobbyScreen(session: session),
+      ),
     );
     expect(tester.takeException(), isNull);
   });

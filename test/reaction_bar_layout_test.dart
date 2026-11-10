@@ -1,3 +1,4 @@
+import 'package:dudo/l10n/generated/app_localizations.dart';
 import 'package:dudo/salon/salon_models.dart';
 import 'package:dudo/salon/screens/salon_screens.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,12 @@ void main() {
     final session = LocalSalonSession();
     await session.createSalon('Cap Hôte', 2);
     await tester.pumpWidget(
-      MaterialApp(home: SalonLobbyScreen(session: session)),
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SalonLobbyScreen(session: session),
+      ),
     );
     await tester.pump();
 

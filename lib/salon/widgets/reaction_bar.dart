@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../widgets/salon_bits.dart';
 import '../salon_models.dart';
 
@@ -25,19 +26,6 @@ class ReactionBar extends StatefulWidget {
 
 class _ReactionBarState extends State<ReactionBar> {
   static const emojis = ['😂', '🤯', '😈', '😤', '🍺', '🦜'];
-
-  static const recipes = [
-    ('Tu n\u2019es pas obligé de me croire, mais j\u2019ai {n} dés.', 'dés'),
-    ('Alors non, {player}, c\u2019est pas possible.', 'nonnull'),
-    ('Le paco, c\u2019est ta fin, {player}.', 'paco'),
-    ('Je te promets : au plus {n} dés sur la table, ils mentent.', 'table'),
-    (
-      'Regarde mes {n} dés, {player}, tu es à l\u2019eau d\u2019ici ce soir.',
-      'next',
-    ),
-    ('Paco sur paco paco paco.', 'paco'),
-    ('Je te crois, {player}, te voilà bien détrompé.', 'miss'),
-  ];
 
   final int _diceCount = 2;
   SalonPlayer? _targetPlayer;
@@ -69,11 +57,7 @@ class _ReactionBarState extends State<ReactionBar> {
     super.dispose();
   }
 
-  String _interpolate(String template) {
-    return template
-        .replaceAll('{n}', '$_diceCount')
-        .replaceAll('{player}', _targetPlayer?.name ?? 'Barbe-Noire');
-  }
+  String get _targetName => _targetPlayer?.name ?? 'Barbe-Noire';
 
   void _send(String body) {
     widget.onSendChat(body.trim());
@@ -82,6 +66,18 @@ class _ReactionBarState extends State<ReactionBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    // Canned table-talk, localized; {n}/{player} are filled by the
+    // generated accessors.
+    final recipes = <String>[
+      l10n.reactionLine1(_diceCount),
+      l10n.reactionLine2(_targetName),
+      l10n.reactionLine3(_targetName),
+      l10n.reactionLine4(_diceCount),
+      l10n.reactionLine5(_diceCount, _targetName),
+      l10n.reactionLine6,
+      l10n.reactionLine7(_targetName),
+    ];
     return Container(
       padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
       decoration: BoxDecoration(
@@ -95,7 +91,7 @@ class _ReactionBarState extends State<ReactionBar> {
           Row(
             children: [
               Text(
-                'RÉAGIR',
+                l10n.reactionHeader,
                 style: Theme.of(context).textTheme.labelMedium
                     ?.copyWith(color: AppColors.brass, letterSpacing: 1.4),
               ),
@@ -131,14 +127,17 @@ class _ReactionBarState extends State<ReactionBar> {
           Row(
             children: [
               Text(
-                'PARLE',
+                l10n.speakHeader,
                 style: Theme.of(context).textTheme.labelMedium
                     ?.copyWith(color: AppColors.brass, letterSpacing: 1.4),
               ),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  '${_targetPlayer?.name ?? '-'} · mes dés : $_diceCount',
+                  l10n.reactionTargetSummary(
+                    _targetPlayer?.name ?? '-',
+                    _diceCount,
+                  ),
                   style: Theme.of(context).textTheme.labelSmall
                       ?.copyWith(color: AppColors.parchmentMuted),
                 ),
@@ -153,8 +152,7 @@ class _ReactionBarState extends State<ReactionBar> {
               itemCount: recipes.length,
               separatorBuilder: (_, _) => const SizedBox(width: 6),
               itemBuilder: (context, index) {
-                final (raw, _) = recipes[index];
-                final label = _interpolate(raw);
+                final label = recipes[index];
                 return OutlinedButton(
                   onPressed: () => _send(label),
                   child: Text(
@@ -194,7 +192,7 @@ class _ReactionBarState extends State<ReactionBar> {
                       size: 18,
                     ),
                     prefixIconColor: AppColors.brassDim,
-                    hintText: 'Écrire un message libre…',
+                    hintText: l10n.reactionFreeHint,
                     hintStyle: Theme.of(context).textTheme.bodySmall
                         ?.copyWith(),
                   ),

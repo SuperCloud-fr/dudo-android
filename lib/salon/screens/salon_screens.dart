@@ -7,6 +7,7 @@ import '../../core/widgets/ornaments.dart';
 import '../../core/widgets/tavern_background.dart';
 import '../../core/widgets/tavern_button.dart';
 import '../../game/models/game_config.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../screens/game/game_screen.dart';
 import '../network_game.dart';
 import '../network_salon_session.dart';
@@ -25,6 +26,7 @@ class SalonHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.ink,
       body: TavernBackground(
@@ -41,14 +43,14 @@ class SalonHomeScreen extends StatelessWidget {
                       children: [
                         RoundIconButton(
                           icon: Icons.arrow_back,
-                          semanticLabel: 'Retour à la taverne',
+                          semanticLabel: l10n.salonBackToTavern,
                           onPressed: () => Navigator.of(context).pop(),
                           size: 42,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'MULTIJOUEUR',
+                            l10n.salonHeader,
                             style: Theme.of(context).textTheme.labelMedium
                                 ?.copyWith(
                                   color: AppColors.brass,
@@ -59,16 +61,12 @@ class SalonHomeScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 20),
-                    const SalonTitle('Un salon, cinq gobelets'),
+                    SalonTitle(l10n.salonHomeTitle),
                     const SizedBox(height: 6),
-                    const SalonHint(
-                      'Les amis entrent avec un code à six caractères. '
-                      'L\u2019hôte distribue les pirates IA, le salon '
-                      'communique en direct par le Worker.',
-                    ),
+                    SalonHint(l10n.salonHomeHint),
                     const SizedBox(height: 24),
                     TavernButton(
-                      label: 'Créer un salon',
+                      label: l10n.salonCreateCta,
                       icon: Icons.wine_bar,
                       expand: true,
                       onPressed: () async {
@@ -81,7 +79,7 @@ class SalonHomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     TavernButton(
-                      label: 'Rejoindre un salon',
+                      label: l10n.salonJoinCta,
                       icon: Icons.door_sliding_outlined,
                       tone: TavernButtonTone.ghost,
                       expand: true,
@@ -133,6 +131,7 @@ class _CreateSalonScreenState extends State<CreateSalonScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.ink,
       body: TavernBackground(
@@ -149,14 +148,14 @@ class _CreateSalonScreenState extends State<CreateSalonScreen> {
                       children: [
                         RoundIconButton(
                           icon: Icons.arrow_back,
-                          semanticLabel: 'Retour',
+                          semanticLabel: l10n.salonBack,
                           onPressed: () => Navigator.of(context).pop(),
                           size: 42,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'CRÉER UN SALON',
+                            l10n.salonCreateHeader,
                             style: Theme.of(context).textTheme.labelMedium
                                 ?.copyWith(
                                   color: AppColors.brass,
@@ -167,20 +166,18 @@ class _CreateSalonScreenState extends State<CreateSalonScreen> {
                       ],
                     ),
                     const SizedBox(height: 18),
-                    const SalonTitle('Tu arrives premier'),
+                    SalonTitle(l10n.salonCreateTitle),
                     const SizedBox(height: 6),
-                    const SalonHint(
-                      'Choisis ton matelot et combien de pirates IA viendront mentir avec toi.',
-                    ),
+                    SalonHint(l10n.salonCreateHint),
                     const SizedBox(height: 18),
                     SalonTextField(
-                      label: 'Ton nom de pirate',
+                      label: l10n.salonNameLabel,
                       controller: _name,
                       maxLength: 14,
                       textCapitalization: TextCapitalization.words,
                     ),
                     const SizedBox(height: 16),
-                    const SalonSectionLabel('Pirates IA'),
+                    SalonSectionLabel(l10n.salonBotsSection),
                     const SizedBox(height: 8),
                     SalonCrewCard(
                       bots: _bots,
@@ -191,19 +188,19 @@ class _CreateSalonScreenState extends State<CreateSalonScreen> {
                     ),
                     const SizedBox(height: 22),
                     TavernButton(
-                      label: 'Créer le salon',
+                      label: l10n.salonCreateSubmit,
                       icon: Icons.record_voice_over_outlined,
                       expand: true,
                       onPressed: () async {
                         final name = _name.text.trim().isEmpty
-                            ? 'Toi'
+                            ? l10n.salonDefaultName
                             : _name.text.trim();
                         await widget.session.createSalon(name, _bots);
                         if (!context.mounted) return;
                         if (widget.session.code.isEmpty ||
                             widget.session.players.isEmpty) {
                           final last = widget.session.messages.isEmpty
-                              ? 'La création du salon a échoué.'
+                              ? l10n.salonCreateFailed
                               : widget.session.messages.last.body;
                           ScaffoldMessenger.of(context)
                               .showSnackBar(SnackBar(content: Text(last)));
@@ -259,6 +256,7 @@ class _JoinSalonScreenState extends State<JoinSalonScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.ink,
       body: TavernBackground(
@@ -275,14 +273,14 @@ class _JoinSalonScreenState extends State<JoinSalonScreen> {
                       children: [
                         RoundIconButton(
                           icon: Icons.arrow_back,
-                          semanticLabel: 'Retour',
+                          semanticLabel: l10n.salonBack,
                           onPressed: () => Navigator.of(context).pop(),
                           size: 42,
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'REJOINDRE UN SALON',
+                            l10n.salonJoinHeader,
                             style: Theme.of(context).textTheme.labelMedium
                                 ?.copyWith(
                                   color: AppColors.brass,
@@ -293,15 +291,12 @@ class _JoinSalonScreenState extends State<JoinSalonScreen> {
                       ],
                     ),
                     const SizedBox(height: 18),
-                    const SalonTitle('Le code fait foi'),
+                    SalonTitle(l10n.salonJoinTitle),
                     const SizedBox(height: 6),
-                    const SalonHint(
-                      'Entre les six caractères que l\u2019hôte t\u2019a envoyés. '
-                      'Sur le salon, ton nom est tout ce que tu peux changer.',
-                    ),
+                    SalonHint(l10n.salonJoinHint),
                     const SizedBox(height: 18),
                     SalonTextField(
-                      label: 'Code du salon',
+                      label: l10n.salonCodeLabel,
                       controller: _code,
                       maxLength: 6,
                       autofocus: true,
@@ -317,14 +312,12 @@ class _JoinSalonScreenState extends State<JoinSalonScreen> {
                       child: TextButton.icon(
                         onPressed: () {},
                         icon: const Icon(Icons.cached, size: 16),
-                        label: const Text(
-                          'Rentrer en frais — via SMS, mail, WhatsApp, Signal ou n\u2019importe où ailleurs c\u2019est juste mieux.',
-                        ),
+                        label: Text(l10n.salonPasteHint),
                       ),
                     ),
                     const SizedBox(height: 14),
                     SalonTextField(
-                      label: 'Ton nom (tu peux encore le changer)',
+                      label: l10n.salonJoinNameLabel,
                       controller: _name,
                       maxLength: 14,
                       textCapitalization: TextCapitalization.words,
@@ -334,7 +327,7 @@ class _JoinSalonScreenState extends State<JoinSalonScreen> {
                       listenable: _code,
                       builder: (context, _) {
                         return TavernButton(
-                          label: 'Rejoindre',
+                          label: l10n.salonJoinSubmit,
                           icon: Icons.group_add_outlined,
                           expand: true,
                           onPressed: _canJoin
@@ -347,7 +340,8 @@ class _JoinSalonScreenState extends State<JoinSalonScreen> {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text(
-                                          result.message ?? 'Salon injoignable pour l\u2019instant.',
+                                          result.message ??
+                                              l10n.salonJoinFailed,
                                         ),
                                       ),
                                     );
@@ -432,6 +426,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   @override
   Widget build(BuildContext context) {
     final session = widget.session;
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.ink,
       body: TavernBackground(
@@ -444,7 +439,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                   children: [
                     RoundIconButton(
                       icon: Icons.close,
-                      semanticLabel: 'Quitter le salon',
+                      semanticLabel: l10n.salonLeaveSemantic,
                       onPressed: () => _confirmLeave(context),
                       size: 42,
                     ),
@@ -454,7 +449,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'SALON ${session.code}',
+                            l10n.salonCodeHeader(session.code),
                             style: AppTypography.inscription(
                               size: 18,
                               color: AppColors.brassBright,
@@ -463,8 +458,8 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                           ),
                           Text(
                             isHost
-                                ? 'Tu reines sur ce salon'
-                                : "Invité de l’hôte",
+                                ? l10n.salonHostRole
+                                : l10n.salonGuestRole,
                             style: Theme.of(context).textTheme.labelSmall,
                           ),
                         ],
@@ -472,15 +467,13 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                     ),
                     RoundIconButton(
                       icon: Icons.language,
-                      semanticLabel: 'Copier le code',
+                      semanticLabel: l10n.salonCopySemantic,
                       onPressed: () async {
                         await session.copyCode();
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Code copié dans le presse-papier.',
-                              ),
+                            SnackBar(
+                              content: Text(l10n.salonCopied),
                             ),
                           );
                         }
@@ -512,8 +505,8 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                             if (isHost)
                               TavernButton(
                                 label: _starting
-                                    ? 'La manche se prépare…'
-                                    : 'Lancer la manche',
+                                    ? l10n.salonRoundPreparing
+                                    : l10n.salonStartRound,
                                 icon: _starting
                                     ? Icons.hourglass_top
                                     : Icons.sports_esports_outlined,
@@ -527,12 +520,10 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                               ),
                             if (!isHost) ...[
                               const SizedBox(height: 8),
-                              const SalonHint(
-                                'En attente que l\u2019hôte lance la manche…',
-                              ),
+                              SalonHint(l10n.salonWaitingHost),
                             ],
                             const SizedBox(height: 18),
-                            const SalonSectionLabel('Le fil du salon'),
+                            SalonSectionLabel(l10n.salonFeedSection),
                             const SizedBox(height: 8),
                             for (final message in session.messages)
                               _SalonMessageRow(message: message),
@@ -556,31 +547,30 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   }
 
   Future<void> _confirmLeave(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final quit = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(
-            'Quitter le salon ?',
+            l10n.salonLeaveTitle,
             style: AppTypography.inscription(
               size: 22,
               color: AppColors.parchment,
             ),
           ),
-          content: const Text(
-            'Le code deviendra inutilisable pour cette partie.',
-          ),
+          content: Text(l10n.salonLeaveBody),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Rester'),
+              child: Text(l10n.salonLeaveStay),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.bloodBright,
               ),
-              child: const Text('Quitter'),
+              child: Text(l10n.salonLeaveQuit),
             ),
           ],
         );
@@ -602,8 +592,8 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
     if (!widget.session.isStarting) {
       if (mounted) setState(() => _starting = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('La manche n\u2019a pas pu démarrer. Réessaie.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.salonStartFailed),
         ),
       );
       return;
@@ -673,6 +663,7 @@ class _ShareRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
@@ -697,37 +688,35 @@ class _ShareRow extends StatelessWidget {
             children: [
               RoundIconButton(
                 icon: Icons.share_outlined,
-                semanticLabel: 'Partager le code',
+                semanticLabel: l10n.salonShareSemantic,
                 onPressed: session.shareCode,
                 size: 44,
               ),
               const SizedBox(width: 6),
               RoundIconButton(
                 icon: Icons.sms_outlined,
-                semanticLabel: 'Envoyer par SMS',
+                semanticLabel: l10n.salonShareSmsSemantic,
                 onPressed: session.writeOnSms,
                 size: 44,
               ),
               const SizedBox(width: 6),
               RoundIconButton(
                 icon: Icons.mail_outline,
-                semanticLabel: 'Envoyer par mail',
+                semanticLabel: l10n.salonShareMailSemantic,
                 onPressed: session.writeOnMail,
                 size: 44,
               ),
               const SizedBox(width: 6),
               RoundIconButton(
                 icon: Icons.chat_outlined,
-                semanticLabel: 'Envoyer sur WhatsApp',
+                semanticLabel: l10n.salonShareWhatsappSemantic,
                 onPressed: session.shareOnWhatsapp,
                 size: 44,
               ),
             ],
           ),
           const SizedBox(height: 6),
-          SalonHint(
-            'WhatsApp, Signal, SMS, mail : chaque app ouvre les bons liens, sinon copie.',
-          ),
+          SalonHint(l10n.salonShareHint),
         ],
       ),
     );
@@ -742,6 +731,7 @@ class _PlayersCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
@@ -753,14 +743,14 @@ class _PlayersCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SalonSectionLabel(
-            'À table (${session.players.length})',
+            l10n.salonPlayersCount(session.players.length),
             trailing: isHost
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       RoundIconButton(
                         icon: Icons.remove,
-                        semanticLabel: 'Retirer un pirate IA',
+                        semanticLabel: l10n.salonRemoveBotSemantic,
                         onPressed: session.removeBot,
                         size: 38,
                       ),
@@ -776,7 +766,7 @@ class _PlayersCard extends StatelessWidget {
                       const SizedBox(width: 6),
                       RoundIconButton(
                         icon: Icons.add,
-                        semanticLabel: 'Ajouter un pirate IA',
+                        semanticLabel: l10n.salonAddBotSemantic,
                         onPressed: session.addBot,
                         size: 38,
                       ),
@@ -801,7 +791,7 @@ class _PlayersCard extends StatelessWidget {
                   Expanded(
                     child: Text(
                       !player.isBot && player.seat == 0
-                          ? '${player.name} (toi)'
+                          ? '${player.name} ${l10n.salonYouSuffix}'
                           : player.name,
                       style: Theme.of(context).textTheme.titleSmall
                           ?.copyWith(color: AppColors.parchment, fontSize: 14),
@@ -809,7 +799,7 @@ class _PlayersCard extends StatelessWidget {
                   ),
                   if (player.isHost)
                     Text(
-                      'HÔTE',
+                      l10n.salonHostBadge,
                       style: Theme.of(context).textTheme.labelSmall
                           ?.copyWith(color: AppColors.brass),
                     ),

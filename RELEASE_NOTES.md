@@ -1,4 +1,8 @@
-# Dudo 0.2.0 — bêta 10 : le va-et-vient des pirates
+# Dudo 0.2.0 — bêta 11 : le salon parle la langue du téléphone
+
+- **Zone salon traduite en entier** : accueil multijoueur, création, rejointe, lobby (partage, fil, barre de réactions) suivent la langue du téléphone, FR/EN. L'esprit des réactions prêtes à l'emploi est conservé entre les deux langues.
+
+## Bêta 10 : le va-et-vient des pirates
 
 - **Reprendre son siège devient instantané** : un téléphone qui rejoint une table en marche (rejoin après avoir quitté, reconnexion) demande la table complète dès son écran de jeu — plus d'attente du prochain coup du voisin pour voir quelque chose.
 - Partie testée en conditions réelles contre le serveur : hôte + invité + 3 bots, 23 manches, 28 s de silence radio absorbées, dés identiques des deux côtés à chaque coup d'œil, invité qui PART en pleine manche puis RÉCUPÈRE son siège (deux fois), salon fini rejoint par un troisième téléphone.
