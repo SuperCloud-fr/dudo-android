@@ -236,7 +236,15 @@ class GuestGameController extends GameController {
 
   final NetworkSalonSession _session;
   StreamSubscription<RelayedTableMessage>? _subscription;
-  int _derivedSeed = -1;
+
+  /// Diagnostics for the field investigations during live rehearsals:
+  /// the seed the mirror last applied, and how many snapshots arrived
+  /// with no seed at all.
+  int? debugLastSeed;
+  int debugSeedNullCount = 0;
+  int debugSnapshotCount = 0;
+  List<int>? debugDerivedLens;
+  List<int>? debugAppliedCounts;
 
   int get mySalonSeat => _session.you;
 
@@ -262,6 +270,7 @@ class GuestGameController extends GameController {
     final salonPlayers = snapshot['players'] as List<dynamic>? ?? const [];
     final size = salonPlayers.length;
     if (size == 0) return;
+    debugSnapshotCount++;
     final mySeat = mySalonSeat;
     int reb(int salonSeat) => ((salonSeat - mySeat) % size + size) % size;
 
@@ -303,15 +312,22 @@ class GuestGameController extends GameController {
     starter = reb((snapshot['starter'] as num?)?.toInt() ?? 0);
     currentPlayer = reb((snapshot['currentPlayer'] as num?)?.toInt() ?? 0);
 
-    // --- deterministic dice for every newly announced seed. The gate is
-    // the SEED, not the phase: a snapshot arriving mid-round (first frames
-    // lost, late join, reconnect during bidding) must still roll, or the
-    // tray falls on the empty-dice placeholder — which renders five pacos.
+    // --- deterministic dice for every snapshot that carries a seed. The
+    // derivation is idempotent: the same seed plus the same counts always
+    // yields the same rolls, so we re-derive on EVERY snapshot instead of
+    // only on change — the players list is rebuilt here too, and without
+    // the re-roll the second snapshot would wipe the first one's dice and
+    // leave the guest staring at the empty-tray placeholder (five pacos),
+    // which is exactly what happened on the phones.
     final seedRaw = snapshot['seed'];
     final roundSeed = seedRaw is num ? seedRaw.toInt() : null;
-    if (roundSeed != null && roundSeed != _derivedSeed) {
+    if (roundSeed != null) {
       _deriveDice(roundSeed, salonDiceCounts: diceCounts, salonStart: mySeat);
-      _derivedSeed = roundSeed;
+      debugLastSeed = roundSeed;
+      debugDerivedLens = [for (final p in players) p.dice.length];
+      debugAppliedCounts = List<int>.of(diceCounts);
+    } else {
+      debugSeedNullCount++;
     }
 
     // --- bid, journal, outcome, result.

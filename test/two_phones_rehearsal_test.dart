@@ -307,6 +307,49 @@ Future<void> _rehearsal() async {
       expect(_threadFailures(guest.messages), isEmpty,
           reason: 'fil invité propre (manche ${engine.round})');
 
+      // The guest's own tray may never show dice it has not derived — the
+      // DiceTray paints an empty hand as five pacos, so an empty list with
+      // dice alive is the bug the phones live-reported today. The check
+      // sleeps until the mirror has seen at least ONE real round snapshot
+      // (round 0 = the pre-game frame, no seed yet).
+      if (mirror.phase != GamePhase.gameOver &&
+          mirror.round >= 1 &&
+          mirror.round == engine.round) {
+        final me = mirror.players.first;
+        if (me.diceCount > 0 && mirror.phase == engine.phase &&
+            (mirror.phase == GamePhase.peek || mirror.phase == GamePhase.bidding)) {
+          expect(
+            me.dice,
+            isNotEmpty,
+            reason: 'manche ${mirror.round} phase ${mirror.phase.name} : '
+                'la main du miroir est dérivée '
+                '(snapshots=${mirror.debugSnapshotCount} '
+                'dernièreGraine=${mirror.debugLastSeed} '
+                'sansGraine=${mirror.debugSeedNullCount} '
+                'diceMirror=${[
+                  for (final p in mirror.players) p.dice.length,
+                ]} '
+                'countsMirror=${[
+                  for (final p in mirror.players) p.diceCount,
+                ]} '
+                'derived=${mirror.debugDerivedLens} '
+                'countsAtDerive=${mirror.debugAppliedCounts} '
+                'diceHôte=${[
+                  for (final p in engine.players) p.dice.length,
+                ]})',
+          );
+          expect(
+            me.diceCount,
+            engine.players[(0 + guest.you) % engine.players.length].diceCount,
+            reason: 'le nombre de dés du miroir suit l\'hôte '
+                '(roundMiroir=${mirror.round} roundHôte=${engine.round} '
+                'phaseM=${mirror.phase.name} phaseH=${engine.phase.name} '
+                'countsMirror=${[for (final p in mirror.players) p.diceCount]} '
+                'countsHôte=${[for (final p in engine.players) p.diceCount]})',
+          );
+        }
+      }
+
       if (engine.result != null || mirror.result != null) {
         ended = true;
         say('partie terminée à la manche ${engine.round}');

@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 15 : les bulles une fois, point
+# Dudo 0.2.0 — bêta 16 : la main fantôme des pacos
+
+- **La vraie cause des « 5 pacos » du téléphone invité est morte** : chaque snapshot reconstruisait la liste des joueurs de son miroir — et **effaçait les dés dérivés** que la précédente had computed ; les images suivantes ne re-dérivaient que si la graine changeait, ce qui n'arrivait qu'éliminé Souris. Désormais la dérivation est **idempotente** (la même graine redonne exactement les mêmes dés à chaque image) ; les dés survivent à chaque mise à jour du miroir.
+- Prouvé répétition-live contre le vrai serveur : la main du miroir est dérivée à chaque image (peek et enchères) sur 23 manches, y compris à la reprise de siège.
+
+## Bêta 15 : les bulles une fois, point
 
 - **Les messages de chat qui apparaissaient en double** (en reprise après un verrouillage) sont réparés : l'ancienne connexion gardait encore un auditeur actif ; désormais toute socket abandonnée est désabonnée puis fermée proprement — plus de doublon possible, et le garde-fou de silence ferme réellement son canal (c'est ce qui lui manquait).
 - Test de couverture : le canal fantôme ne peut plus espionner le fil après le transfert.

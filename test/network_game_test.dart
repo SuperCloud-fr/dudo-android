@@ -131,8 +131,7 @@ void main() {
     relay.dispose();
   });
 
-  test('un snapshot arrivé en pleine enchère dérive quand même les dés', () async {
-    final phones = await openTable();
+  test('un snapshot arrivé en pleine enchère dérive quand même les dés', () async {    final phones = await openTable();
 
     // No relay: the mirror receives a hand-crafted snapshot whose bidding
     // phase has already started (mirrors a lost first frame or a late
@@ -174,6 +173,40 @@ void main() {
       expect(guest.players[local].dice, salonDice[salonSeat]);
     }
     guest.dispose();
+  });
+
+  test('le deuxième snapshot à la même graine ne retombe pas en pacos', () async {
+    final phones = await openTable();
+
+    final relay = phones.startHostRelay();
+    final host = relay.controller;
+    final guest = GuestGameController(
+      config: const GameConfig(opponentCount: 2),
+      session: phones.guestHarness.session,
+      names: ['Cap Hôte', 'Anne', 'Bob'],
+    );
+    await phones.forwardHostToGuest();
+    final reference = [for (final player in guest.players) player.dice];
+    expect(
+      reference.every((dice) => dice.isNotEmpty),
+      isTrue,
+      reason: 'la première image dérive les dés',
+    );
+
+    // A mutation re-broadcasts the SAME seed (bots, phase move): the
+    // players list is rebuilt, and without the idempotent re-derivation
+    // every later snapshot blanked the dice — the pacos bug on phones.
+    host.beginBidding();
+    await phones.forwardHostToGuest();
+    for (var local = 0; local < 3; local++) {
+      expect(
+        guest.players[local].dice,
+        reference[local],
+        reason: 'les dés survivent aux snapshots suivants',
+      );
+    }
+    guest.dispose();
+    relay.dispose();
   });
 
   test(
