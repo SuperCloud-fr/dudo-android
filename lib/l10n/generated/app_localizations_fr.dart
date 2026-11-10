@@ -739,7 +739,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get salonCreateSubmit => 'Créer le salon';
 
   @override
-  String get salonDefaultName => 'Toi';
+  String get salonDefaultName => 'Barman';
 
   @override
   String get salonCreateFailed => 'La création du salon a échoué.';
@@ -825,6 +825,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String salonPlayersCount(int count) {
     return 'À table ($count)';
   }
+
+  @override
+  String get salonBotBadge => 'IA';
 
   @override
   String get salonRemoveBotSemantic => 'Retirer un pirate IA';

@@ -802,6 +802,13 @@ class _PlayersCard extends StatelessWidget {
                       l10n.salonHostBadge,
                       style: Theme.of(context).textTheme.labelSmall
                           ?.copyWith(color: AppColors.brass),
+                    )
+                  else if (player.isBot)
+                    Text(
+                      l10n.salonBotBadge,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: AppColors.parchmentDim,
+                      ),
                     ),
                 ],
               ),

@@ -1217,7 +1217,7 @@ abstract class AppLocalizations {
   /// No description provided for @salonDefaultName.
   ///
   /// In fr, this message translates to:
-  /// **'Toi'**
+  /// **'Barman'**
   String get salonDefaultName;
 
   /// No description provided for @salonCreateFailed.
@@ -1375,6 +1375,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'À table ({count})'**
   String salonPlayersCount(int count);
+
+  /// No description provided for @salonBotBadge.
+  ///
+  /// In fr, this message translates to:
+  /// **'IA'**
+  String get salonBotBadge;
 
   /// No description provided for @salonRemoveBotSemantic.
   ///

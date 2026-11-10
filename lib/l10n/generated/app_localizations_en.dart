@@ -735,7 +735,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salonCreateSubmit => 'Open the salon';
 
   @override
-  String get salonDefaultName => 'Captain';
+  String get salonDefaultName => 'Tavern Keeper';
 
   @override
   String get salonCreateFailed => 'The salon could not be created.';
@@ -821,6 +821,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String salonPlayersCount(int count) {
     return 'At the table ($count)';
   }
+
+  @override
+  String get salonBotBadge => 'AI';
 
   @override
   String get salonRemoveBotSemantic => 'Remove an AI pirate';
