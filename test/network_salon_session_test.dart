@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dudo/salon/network_salon_session.dart';
 import 'package:dudo/salon/salon_models.dart';
@@ -120,15 +121,33 @@ void main() {
     );
     await done;
 
+    final baseline = harness.session.messages.length;
     await harness.session.sendChat('En route !');
     expect(framesOf(channel.sent, 'chat').first, contains('En route !'));
-    // Nothing locally echoed: only the relayed frame lands in the feed.
-    final baseline = harness.session.messages.length;
+    expect(harness.session.messages, hasLength(baseline + 1));
+    expect(harness.session.messages.last.body, 'En route !');
+    expect(harness.session.messages.last.clientId, isNotNull);
+    final clientId =
+        (jsonDecode(framesOf(channel.sent, 'chat').first)
+            as Map<String, dynamic>)['clientId'] as String;
 
+    // An unrelated frame may beat the server echo back to the sender.
     channel.serverSends(<String, dynamic>{
       'type': 'chat',
       'chat': {'seat': 1, 'name': 'Anne', 'text': 'Salut capitaine !'},
     });
+    // The same id is echoed twice to simulate a retry/duplicate delivery.
+    final ownEcho = <String, dynamic>{
+      'type': 'chat',
+      'chat': {
+        'seat': 0,
+        'name': 'Cap Hôte',
+        'text': 'En route !',
+        'clientId': clientId,
+      },
+    };
+    channel.serverSends(ownEcho);
+    channel.serverSends(ownEcho);
     channel.serverSends(<String, dynamic>{
       'type': 'reaction',
       'reaction': {'seat': 1, 'name': 'Anne', 'emoji': '🍺'},
@@ -139,11 +158,14 @@ void main() {
     });
     await settle();
 
-    expect(harness.session.messages, hasLength(baseline + 3));
-    expect(harness.session.messages[baseline].body, 'Salut capitaine !');
-    expect(harness.session.messages[baseline].isMine, isFalse);
-    expect(harness.session.messages[baseline + 1].kind, SalonMessageKind.emoji);
-    expect(harness.session.messages[baseline + 2].isMine, isTrue);
+    expect(harness.session.messages, hasLength(baseline + 4));
+    expect(harness.session.messages[baseline].body, 'En route !');
+    expect(harness.session.messages[baseline].isMine, isTrue);
+    expect(harness.session.messages[baseline + 1].body, 'Salut capitaine !');
+    expect(harness.session.messages[baseline + 1].isMine, isFalse);
+    expect(harness.session.messages[baseline + 2].kind, SalonMessageKind.emoji);
+    expect(harness.session.messages[baseline + 3].body, 'Toujours !');
+    expect(harness.session.messages[baseline + 3].isMine, isTrue);
   });
 
   test('startGame côté hôte attend le \u2019started\u2019 du Worker', () async {

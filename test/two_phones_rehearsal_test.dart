@@ -237,6 +237,25 @@ Future<void> _rehearsal() async {
     }
     expect(host.players, hasLength(5), reason: 'hôte + invité + 3 bots');
     expect(guest.players, hasLength(5), reason: 'invité voit la table entière');
+
+    // Live chat echo: optimistic local bubble + Worker echo must render
+    // exactly once on sender, and once on the other phone.
+    const chatProbe = 'clientId echo rehearsal';
+    await guest.sendChat(chatProbe);
+    for (var tick = 0; tick < 40; tick++) {
+      if (host.messages.any((m) => (m as dynamic).body == chatProbe)) break;
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    }
+    expect(
+      guest.messages.where((m) => (m as dynamic).body == chatProbe),
+      hasLength(1),
+      reason: 'l\u2019écho du Worker ne double pas la bulle locale',
+    );
+    expect(
+      host.messages.where((m) => (m as dynamic).body == chatProbe),
+      hasLength(1),
+      reason: 'le téléphone pair reçoit une bulle',
+    );
     await host.startGame();
     await _awaitTableOpen(host, say);
     await _awaitTableOpen(guest, say);

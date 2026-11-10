@@ -53,6 +53,7 @@ class SalonMessage {
     required this.kind,
     required this.at,
     this.isMine = false,
+    this.clientId,
   });
 
   final int? authorSeat;
@@ -65,6 +66,10 @@ class SalonMessage {
   /// Whether the local device authored this message. Local sessions use
   /// seat 0; network sessions know the real "you" seat.
   final bool isMine;
+
+  /// Stable id for a client send, echoed by the Worker. Allows the optimistic
+  /// bubble and any server retries to be reconciled without comparing text.
+  final String? clientId;
 }
 
 /// The session contract implemented by the local prototype and by the

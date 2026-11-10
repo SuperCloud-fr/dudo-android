@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -137,6 +138,17 @@ class NetworkSalonSession extends SalonSession
   Completer<SalonJoinResult>? _joinCompleter;
   Completer<void>? _startCompleter;
   bool _closedByServer = false;
+
+  int _messageSequence = 0;
+  final Set<String> _seenMessageIds = <String>{};
+  final Queue<String> _messageIdOrder = Queue<String>();
+
+  @override
+  void resetThread() {
+    _seenMessageIds.clear();
+    _messageIdOrder.clear();
+    super.resetThread();
+  }
 
   /// True from the moment Android freezes the app (screen locked) to its
   /// resume, so socket losses during the doze stay silent here and the
@@ -424,9 +436,19 @@ class NetworkSalonSession extends SalonSession
       pushSystemMessage(SalonSystem.chatRate(_chatWait));
       return;
     }
-    _sendJson(<String, dynamic>{'type': 'reaction', 'emoji': emoji});
+    final clientId = _newMessageId();
+    _sendJson(<String, dynamic>{
+      'type': 'reaction',
+      'emoji': emoji,
+      'clientId': clientId,
+    });
     _appendDialogue(
-      {'seat': you >= 0 ? you : 0, 'name': myName, 'emoji': emoji},
+      {
+        'seat': you >= 0 ? you : 0,
+        'name': myName,
+        'emoji': emoji,
+        'clientId': clientId,
+      },
       bodyOf: (_) => '',
       emojiOf: (raw) => '${raw['emoji'] ?? ''}',
     );
@@ -444,9 +466,19 @@ class NetworkSalonSession extends SalonSession
       pushSystemMessage(SalonSystem.chatRate(_chatWait));
       return;
     }
-    _sendJson(<String, dynamic>{'type': 'chat', 'text': text});
+    final clientId = _newMessageId();
+    _sendJson(<String, dynamic>{
+      'type': 'chat',
+      'text': text,
+      'clientId': clientId,
+    });
     _appendDialogue(
-      {'seat': you >= 0 ? you : 0, 'name': myName, 'text': text},
+      {
+        'seat': you >= 0 ? you : 0,
+        'name': myName,
+        'text': text,
+        'clientId': clientId,
+      },
       bodyOf: (raw) => '${raw['text'] ?? ''}',
     );
   }
@@ -567,7 +599,7 @@ class NetworkSalonSession extends SalonSession
       case 'reaction':
         _appendDialogue(
           frame['reaction'],
-          bodyOf: (reaction) => '${reaction['name'] ?? ''}',
+          bodyOf: (_) => '',
           emojiOf: (reaction) => '${reaction['emoji'] ?? ''}',
         );
       case 'game':
@@ -621,21 +653,32 @@ class NetworkSalonSession extends SalonSession
     final seat = (raw['seat'] as num?)?.toInt() ?? -1;
     final stringBody = bodyOf(raw).trim();
     final stringEmoji = emojiOf?.call(raw);
+    final clientId = raw['clientId'] is String
+        ? (raw['clientId'] as String)
+        : null;
     if (stringBody.isEmpty && (stringEmoji ?? '').isEmpty) {
       return;
     }
 
-    // Optimistic sends are rendered the moment the user speaks; when the
-    // server echo of the very same line lands, skip it instead of
-    // duplicating the bubble.
-    if (messages.isNotEmpty && messages.last.isMine) {
-      final last = messages.last;
-      final sameLine =
-          last.isMine &&
-          last.body == stringBody &&
-          last.emoji == stringEmoji &&
-          DateTime.now().difference(last.at) < const Duration(seconds: 4);
-      if (sameLine) return;
+    // Stable ids reconcile our optimistic echo with the Worker echo, even
+    // if other chat frames arrived in between. They also suppress duplicate
+    // delivery/retries on every seat, not only on the sender's phone.
+    if (clientId != null) {
+      if (_seenMessageIds.contains(clientId)) return;
+      _rememberMessageId(clientId);
+    } else {
+      // Compatibility with an older Worker during rolling upgrades: match
+      // only a recent optimistic bubble by the same seat and exact payload.
+      final legacyEcho = messages.reversed.take(16).any(
+        (message) =>
+            message.isMine &&
+            message.clientId != null &&
+            message.authorSeat == seat &&
+            message.body == stringBody &&
+            message.emoji == stringEmoji &&
+            DateTime.now().difference(message.at) < const Duration(seconds: 10),
+      );
+      if (legacyEcho) return;
     }
 
     messages.add(
@@ -649,9 +692,22 @@ class NetworkSalonSession extends SalonSession
             : SalonMessageKind.emoji,
         at: DateTime.now(),
         isMine: seat == you,
+        clientId: clientId,
       ),
     );
     notifyListeners();
+  }
+
+  String _newMessageId() =>
+      '${DateTime.now().microsecondsSinceEpoch}-${_messageSequence++}';
+
+  void _rememberMessageId(String id) {
+    _seenMessageIds.add(id);
+    _messageIdOrder.addLast(id);
+    // Keep duplicate protection bounded for long-lived salon sessions.
+    while (_messageIdOrder.length > 256) {
+      _seenMessageIds.remove(_messageIdOrder.removeFirst());
+    }
   }
 
   void _relayTable(String kind, Map<String, dynamic> frame) {

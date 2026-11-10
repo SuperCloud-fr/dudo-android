@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 16 : la main fantôme des pacos
+# Dudo 0.2.0 — bêta 17 : une bulle par message
+
+- **Un message envoyé ne s'affiche plus deux fois** : chaque bulle porte maintenant un identifiant de client, repris dans l'écho du Worker. L'écho optimiste, la réponse serveur et toute retransmission du même message sont réconciliés sur cet identifiant (plutôt que seulement sur le texte et la bulle précédente).
+- Vérifié par test de régression avec une autre bulle intercalée et un écho serveur retransmis, et par répétition live à deux téléphones sur le vrai Worker.
+
+## Bêta 16 : la main fantôme des pacos
 
 - **La vraie cause des « 5 pacos » du téléphone invité est morte** : chaque snapshot reconstruisait la liste des joueurs de son miroir — et **effaçait les dés dérivés** que la précédente had computed ; les images suivantes ne re-dérivaient que si la graine changeait, ce qui n'arrivait qu'éliminé Souris. Désormais la dérivation est **idempotente** (la même graine redonne exactement les mêmes dés à chaque image) ; les dés survivent à chaque mise à jour du miroir.
 - Prouvé répétition-live contre le vrai serveur : la main du miroir est dérivée à chaque image (peek et enchères) sur 23 manches, y compris à la reprise de siège.
