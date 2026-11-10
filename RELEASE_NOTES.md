@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 20 : pas de paco en ouverture
+# Dudo 0.2.0 — bêta 21 : le salon respire encore
+
+- **Quitter une manche ouvre à nouveau le salon** : l'abandon dit « gameOver » au Worker — plus jamais l'« la manche se prépare » éternel, et les boutons +/− des bots revivent immédiatement.
+- Sommeil de l'hôte en pleine manche : le Worker garde la table ouverte et l'hôte **reprend son siège** à la reconnexion (il était la seule personne refusée — « La partie a déjà commencé » en boucle, invités chassés).
+
+## Bêta 20 : pas de paco en ouverture
 
 - **La manche ne s'ouvre jamais sur les paco** : règle standard Perudo (les paco sont jokers, ouvrir dessus donnerait un avantage injuste). Appliquée au moteur, aux bots, à la feuille d'enchères et décrite dans l'écran Règles. Le palifico reste l'exception.
 

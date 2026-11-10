@@ -131,9 +131,11 @@ class HostGameRelay {
   bool _gameOverSent = false;
 
   /// Tells the relay the salon is open again the moment the final standings
-  /// exist (and still at dispose, belt against braces).
-  void _announceGameOverIfNeeded() {
-    if (_gameOverSent || controller.result == null) return;
+  /// exist — and unconditionally at dispose (quit mid-round never produces
+  /// standings, but the Worker must reopen the salon all the same).
+  void _announceGameOverIfNeeded({bool force = false}) {
+    if (_gameOverSent) return;
+    if (!force && controller.result == null) return;
     _gameOverSent = true;
     session.sendGameOver();
   }
@@ -165,7 +167,11 @@ class HostGameRelay {
     _tableSubscription?.cancel();
     _tableSubscription = null;
     controller.removeListener(_broadcasting);
-    _announceGameOverIfNeeded();
+    // Abandon: forcing the gameOver here is what revives the lobby —
+    // without it `started` stays true on the Worker, `isStarting` stays
+    // true on this phone ("la manche se prépare" forever, bot +/- blocked)
+    // and every rejoin gets "La partie a déjà commencé".
+    _announceGameOverIfNeeded(force: true);
   }
 
   void _broadcasting() {

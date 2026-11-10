@@ -654,11 +654,13 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
         botSeats: botSeats,
       );
       relay.start();
-      navigator.push(
-        MaterialPageRoute<void>(
-          builder: (_) => GameScreen(controller: relay.controller),
-        ),
+      final route = MaterialPageRoute<void>(
+        builder: (_) => GameScreen(controller: relay.controller),
       );
+      // Leaving the table — quit dialog or back after the standings —
+      // folds the relay and tells the Worker the round is over.
+      route.popped.then((_) => relay.dispose());
+      navigator.push(route);
       return;
     }
     final guest = GuestGameController(
@@ -666,9 +668,12 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       session: network,
       names: names,
     );
-    navigator.push(
-      MaterialPageRoute<void>(builder: (_) => GameScreen(controller: guest)),
+    final route = MaterialPageRoute<void>(
+      builder: (_) => GameScreen(controller: guest),
     );
+    // Same fold for the mirror so nothing keeps listening to the session.
+    route.popped.then((_) => guest.dispose());
+    navigator.push(route);
   }
 }
 

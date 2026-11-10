@@ -106,6 +106,26 @@ void main() {
     return phones;
   }
 
+  test(
+    'un abandon rouvre le salon : gameOver part même sans standings',
+    () async {
+      final phones = await openTable();
+
+      final relay = phones.startHostRelay();
+      expect(relay.controller.result, isNull);
+
+      // Quitting mid-round pops the route → dispose; the Worker must hear
+      // the gameOver so `started` reopens instead of blocking everything.
+      relay.dispose();
+
+      final gameOvers = framesOf(phones.hostChannel().sent, 'gameOver');
+      expect(gameOvers, hasLength(1));
+      // A second dispose (another fold attempt) stays silent.
+      relay.dispose();
+      expect(framesOf(phones.hostChannel().sent, 'gameOver'), hasLength(1));
+    },
+  );
+
   test('le même seed fait émerger les mêmes dés des deux côtés', () async {
     final phones = await openTable();
 
