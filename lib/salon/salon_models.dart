@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'salon_system_strings.dart';
+
 /// Multiplayer salon code for Dudo.
 ///
 /// The salon flow is driven through [SalonBackend] implementations:
@@ -218,7 +220,7 @@ class LocalSalonSession extends SalonSession implements SalonBackend {
     code = _newCode();
     resetThread();
     _repopulate();
-    pushSystemMessage('Salon créé. Code : $code');
+    pushSystemMessage(SalonSystem.created(code));
     notifyListeners();
   }
 
@@ -229,7 +231,7 @@ class LocalSalonSession extends SalonSession implements SalonBackend {
     myName = guest;
     resetThread();
     _repopulate();
-    pushSystemMessage('Connecté au salon $code');
+    pushSystemMessage(SalonSystem.connectedTab(code));
     notifyListeners();
     return const SalonJoinResult(ok: true);
   }

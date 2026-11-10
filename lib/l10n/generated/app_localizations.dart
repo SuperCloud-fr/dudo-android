@@ -1789,6 +1789,162 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'Dé de valeur {value}'**
   String diceValueText(int value);
+
+  /// No description provided for @bidAcesLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count} paco'**
+  String bidAcesLabel(int count);
+
+  /// No description provided for @bidPlainLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'{count, plural, =1{{count} dé de {face}} other{{count} dés de {face}}}'**
+  String bidPlainLabel(int count, int face);
+
+  /// No description provided for @bidSpokenAces.
+  ///
+  /// In fr, this message translates to:
+  /// **'au moins {count} paco'**
+  String bidSpokenAces(int count);
+
+  /// No description provided for @bidSpokenPlain.
+  ///
+  /// In fr, this message translates to:
+  /// **'au moins {count, plural, =1{{count} dé} other{{count} dés}} de valeur {face}'**
+  String bidSpokenPlain(int count, int face);
+
+  /// No description provided for @bidShortLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'{quantity}×{mark}'**
+  String bidShortLabel(int quantity, String mark);
+
+  /// No description provided for @temperMousseLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Mousse'**
+  String get temperMousseLabel;
+
+  /// No description provided for @temperMousseBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Timide, prudent, facile à bluffer.'**
+  String get temperMousseBody;
+
+  /// No description provided for @temperFlibustierLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Flibustier'**
+  String get temperFlibustierLabel;
+
+  /// No description provided for @temperFlibustierBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un adversaire honnête, qui sait sentir le mensonge.'**
+  String get temperFlibustierBody;
+
+  /// No description provided for @temperCapitaineLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Capitaine'**
+  String get temperCapitaineLabel;
+
+  /// No description provided for @temperCapitaineBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Calcule les probabilités et n\'aime pas perdre.'**
+  String get temperCapitaineBody;
+
+  /// No description provided for @systemPhoneSlept.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le téléphone a mis le salon en sommeil — reconnexion…'**
+  String get systemPhoneSlept;
+
+  /// No description provided for @systemQuietCut.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le salon ne répond plus — je coupe la connexion desséchée et je reprends…'**
+  String get systemQuietCut;
+
+  /// No description provided for @systemCreated.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salon créé. Code : {code}'**
+  String systemCreated(String code);
+
+  /// No description provided for @systemConnected.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connecté au salon {code}'**
+  String systemConnected(String code);
+
+  /// No description provided for @systemRecovered.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reconnecté au salon {code}.'**
+  String systemRecovered(String code);
+
+  /// No description provided for @systemClosed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salon fermé : {reason}'**
+  String systemClosed(String reason);
+
+  /// No description provided for @systemLost.
+  ///
+  /// In fr, this message translates to:
+  /// **'Connexion perdue{detail} — tentative de reconnexion…'**
+  String systemLost(String detail);
+
+  /// No description provided for @systemUnreachableTrack.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salon injoignable — {reason} Je continue d\'essayer.'**
+  String systemUnreachableTrack(String reason);
+
+  /// No description provided for @systemUnreachableBackoff.
+  ///
+  /// In fr, this message translates to:
+  /// **'Salon injoignable — {brief}. Je continue d\'essayer en doublant le délai.'**
+  String systemUnreachableBackoff(String brief);
+
+  /// No description provided for @systemThrottledCreate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Trop de demandes de création — réessaie dans ~{seconds} s.'**
+  String systemThrottledCreate(int seconds);
+
+  /// No description provided for @systemCreateFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de créer un salon pour l\'instant.{detail}'**
+  String systemCreateFailed(String detail);
+
+  /// No description provided for @systemChatRate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Débit du salon atteint — attends {seconds}s.'**
+  String systemChatRate(int seconds);
+
+  /// No description provided for @systemDeadReaction.
+  ///
+  /// In fr, this message translates to:
+  /// **'La connexion au salon est lâchée — la réaction ne peut pas partir.'**
+  String get systemDeadReaction;
+
+  /// No description provided for @systemDeadChat.
+  ///
+  /// In fr, this message translates to:
+  /// **'La connexion au salon est lâchée — le message ne peut pas partir.'**
+  String get systemDeadChat;
+
+  /// No description provided for @systemSixChars.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le code doit faire six caractères.'**
+  String get systemSixChars;
 }
 
 class _AppLocalizationsDelegate

@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme/app_palette.dart';
 import 'core/theme/app_theme.dart';
 import 'l10n/generated/app_localizations.dart';
+import 'salon/salon_system_strings.dart';
 import 'screens/home/home_screen.dart';
 
 class DudoApp extends StatelessWidget {
@@ -35,6 +36,13 @@ class DudoApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           home: const HomeScreen(),
+          builder: (context, child) {
+            // The salon session (no BuildContext) speaks the phone's
+            // language through this once-per-frame snapshot.
+            SalonSystem.bind(AppLocalizations.of(context));
+            return child ??
+                const Text('Dudo', textDirection: TextDirection.ltr);
+          },
         );
       },
     );

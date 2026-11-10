@@ -1063,4 +1063,128 @@ class AppLocalizationsEn extends AppLocalizations {
   String diceValueText(int value) {
     return 'Die of value $value';
   }
+
+  @override
+  String bidAcesLabel(int count) {
+    return '$count pacos';
+  }
+
+  @override
+  String bidPlainLabel(int count, int face) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dice of $face',
+      one: '$count die of $face',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String bidSpokenAces(int count) {
+    return 'at least $count pacos';
+  }
+
+  @override
+  String bidSpokenPlain(int count, int face) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dice',
+      one: '$count die',
+    );
+    return 'at least $_temp0 of value $face';
+  }
+
+  @override
+  String bidShortLabel(int quantity, String mark) {
+    return '$quantity×$mark';
+  }
+
+  @override
+  String get temperMousseLabel => 'Cabin Hand';
+
+  @override
+  String get temperMousseBody => 'Shy, cautious, easy to bluff.';
+
+  @override
+  String get temperFlibustierLabel => 'Freebooter';
+
+  @override
+  String get temperFlibustierBody => 'An honest opponent who can smell a lie.';
+
+  @override
+  String get temperCapitaineLabel => 'Captain';
+
+  @override
+  String get temperCapitaineBody => 'Counts probabilities and hates losing.';
+
+  @override
+  String get systemPhoneSlept =>
+      'The phone put the salon to sleep — reconnecting…';
+
+  @override
+  String get systemQuietCut =>
+      'The salon has gone quiet — I cut the dessicated flow and reconnect…';
+
+  @override
+  String systemCreated(String code) {
+    return 'Salon created. Code: $code';
+  }
+
+  @override
+  String systemConnected(String code) {
+    return 'In the salon $code';
+  }
+
+  @override
+  String systemRecovered(String code) {
+    return 'Back in the salon $code.';
+  }
+
+  @override
+  String systemClosed(String reason) {
+    return 'Salon closed: $reason';
+  }
+
+  @override
+  String systemLost(String detail) {
+    return 'Connection lost$detail — trying to reconnect…';
+  }
+
+  @override
+  String systemUnreachableTrack(String reason) {
+    return 'Salon unreachable — $reason I keep trying.';
+  }
+
+  @override
+  String systemUnreachableBackoff(String brief) {
+    return 'Salon unreachable — $brief. I keep trying, backing off each time.';
+  }
+
+  @override
+  String systemThrottledCreate(int seconds) {
+    return 'Too many creation requests — try again in ~$seconds s.';
+  }
+
+  @override
+  String systemCreateFailed(String detail) {
+    return 'No salon could be created right now.$detail';
+  }
+
+  @override
+  String systemChatRate(int seconds) {
+    return 'The salon is rate-limited — wait ${seconds}s.';
+  }
+
+  @override
+  String get systemDeadReaction =>
+      'The salon connection dropped — the reaction can\'t travel.';
+
+  @override
+  String get systemDeadChat =>
+      'The salon connection dropped — the message can\'t travel.';
+
+  @override
+  String get systemSixChars => 'The code must be six characters.';
 }

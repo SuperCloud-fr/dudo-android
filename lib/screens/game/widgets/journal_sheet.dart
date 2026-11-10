@@ -4,6 +4,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/ornaments.dart';
 import '../../../l10n/generated/app_localizations.dart';
+import '../../../game/models/bid_localized.dart';
 import '../../../game/models/player.dart';
 import '../../../game/models/table_event.dart';
 
@@ -160,7 +161,7 @@ class _JournalRow extends StatelessWidget {
       TableEventKind.bid => (
         Icons.casino_outlined,
         AppColors.brass,
-        l10n.journalSaidBid(name, event.bid?.label ?? ''),
+        l10n.journalSaidBid(name, event.bid?.labelLocalized(l10n) ?? ''),
       ),
       TableEventKind.dudo => (
         Icons.front_hand_outlined,

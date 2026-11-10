@@ -9,6 +9,8 @@ import '../../core/widgets/leather_cup.dart';
 import '../../core/widgets/tavern_background.dart';
 import '../../core/widgets/tavern_button.dart';
 import '../../game/models/bid.dart';
+import '../../game/models/bid_localized.dart';
+import '../../game/models/bot_difficulty_localized.dart';
 import '../../game/models/game_config.dart';
 import '../../game/models/table_event.dart';
 import '../../game/state/game_controller.dart';
@@ -403,7 +405,8 @@ class _GameScreenState extends State<GameScreen> {
             TableEventKind.calza => TableEventViewKind.calza,
           };
           final label = switch (event.kind) {
-            TableEventKind.bid => event.bid?.shortLabel ?? '',
+            TableEventKind.bid =>
+              event.bid?.shortLabelLocalized(AppLocalizations.of(context)!) ?? '',
             TableEventKind.dudo => 'DUDO',
             TableEventKind.calza => 'CALZA',
           };
@@ -417,6 +420,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildOverlay(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     switch (_controller.phase) {
       case GamePhase.peek:
         return PeekOverlay(
@@ -450,7 +454,7 @@ class _GameScreenState extends State<GameScreen> {
           key: ValueKey('over-${result.rounds}-${result.humanWon}'),
           result: result,
           players: _controller.players,
-          difficultyLabel: widget.config.difficulty.label,
+          difficultyLabel: widget.config.difficulty.labelLocalized(l10n),
           onRematch: _controller.rematch,
           onMenu: _leaveGame,
         );
@@ -512,7 +516,7 @@ class _GameScreenState extends State<GameScreen> {
             ),
           ),
           content: Text(
-            l10n.gameDudoConfirmBody(accused, bid.label),
+            l10n.gameDudoConfirmBody(accused, bid.labelLocalized(l10n)),
           ),
           actions: [
             TextButton(

@@ -6,6 +6,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/dice_face.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../game/models/bid.dart';
+import '../../../game/models/bid_localized.dart';
 
 class BidCard extends StatelessWidget {
   const BidCard({
@@ -34,7 +35,7 @@ class BidCard extends StatelessWidget {
       label: current == null
           ? l10n.cardEmptySemantics(starterName)
           : l10n.cardFilledSemantics(
-              current.spokenLabel,
+              current.spokenLabelLocalized(l10n),
               bidderName,
               totalDice,
             ),

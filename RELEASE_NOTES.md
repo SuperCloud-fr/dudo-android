@@ -1,4 +1,11 @@
-# Dudo 0.2.0 — bêta 12 : les règles parlent deux langues
+# Dudo 0.2.0 — bêta 13 : toute la table parle sa langue
+
+- **Les libellés de dés du journal et de l'historique** (`4 dés de 5`, `3×P`) sont traduits — plus un seul « dés » français sur un téléphone anglais.
+- **Les tempéraments des bots** suivent la langue : Mousse/Flibustier/Capitaine deviennent Cabin Hand/Freebooter/Captain, descriptions comprises (les noms des pirates, eux, restent des noms propres).
+- **Les messages système du salon** (reconnexion, débit atteint, création…) sont composés dans la langue du téléphone — la session réseau reçoit un instantané de traduction à chaque frame.
+- Reste : rien. L'issue #8 passe la main.
+
+## Bêta 12 : les règles parlent deux langues
 
 - **L'écran Règles est bilingue** (FR/EN) : les huit sections, les conversions, le manuel palifico — tout suit la langue du téléphone.
 - Les sémantiques du plateau, du dé caché et de la manche palifico sont traduites aussi (lecteurs d'écran).

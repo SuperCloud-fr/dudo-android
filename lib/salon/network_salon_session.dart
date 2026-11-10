@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'salon_models.dart';
+import 'salon_system_strings.dart';
 
 /// Raised when the edge refuses a salon creation (429 + retry-after).
 class SalonRequestThrottled implements Exception {
@@ -208,9 +209,7 @@ class NetworkSalonSession extends SalonSession
         if (await _openSalon(base, host, wanted)) return;
       } catch (error) {
         if (error is SalonRequestThrottled) {
-          pushSystemMessage(
-            'Trop de demandes de création — réessaie dans ~${error.retryAfter} s.',
-          );
+          pushSystemMessage(SalonSystem.throttledCreate(error.retryAfter));
           return;
         }
         lastFailure = error.toString();
@@ -219,8 +218,9 @@ class NetworkSalonSession extends SalonSession
     code = '';
     activeBaseUrl = null;
     pushSystemMessage(
-      'Impossible de créer un salon pour l\u2019instant.'
-      '${lastFailure == null ? '' : ' ($lastFailure)'}',
+      SalonSystem.createFailed(
+        lastFailure == null ? '' : ' ($lastFailure)',
+      ),
     );
   }
 
@@ -235,7 +235,7 @@ class NetworkSalonSession extends SalonSession
     if (!result.ok) return false;
     activeBaseUrl = base;
     _sendBots(botWanted);
-    pushSystemMessage('Salon créé. Code : $code');
+    pushSystemMessage(SalonSystem.created(code));
     return true;
   }
 
@@ -279,9 +279,9 @@ class NetworkSalonSession extends SalonSession
     final cleaned = joinCode.trim().toUpperCase();
     final allowed = RegExp('^[${SalonSession.alphabet}]{6}\$');
     if (!allowed.hasMatch(cleaned)) {
-      return const SalonJoinResult(
+      return SalonJoinResult(
         ok: false,
-        message: 'Le code doit faire six caractères.',
+        message: SalonSystem.sixChars,
       );
     }
 
@@ -301,7 +301,7 @@ class NetworkSalonSession extends SalonSession
         final result = await _attemptHandshake(base, guest);
         if (result.ok) {
           activeBaseUrl = base;
-          pushSystemMessage('Connecté au salon $code');
+          pushSystemMessage(SalonSystem.connectedTab(code));
           return result;
         }
         // A firm answer from a reachable server (salon complet, partie
@@ -397,13 +397,11 @@ class NetworkSalonSession extends SalonSession
   @override
   Future<void> sendReaction(String emoji) async {
     if (_channel == null) {
-      pushSystemMessage(
-        'La connexion au salon est lâchée — la réaction ne peut pas partir.',
-      );
+      pushSystemMessage(SalonSystem.deadReaction);
       return;
     }
     if (!_spendChat()) {
-      pushSystemMessage('Débit du salon atteint — attends ${_chatWait}s.');
+      pushSystemMessage(SalonSystem.chatRate(_chatWait));
       return;
     }
     _sendJson(<String, dynamic>{'type': 'reaction', 'emoji': emoji});
@@ -419,13 +417,11 @@ class NetworkSalonSession extends SalonSession
     final text = body.trim();
     if (text.isEmpty) return;
     if (_channel == null) {
-      pushSystemMessage(
-        'La connexion au salon est lâchée — le message ne peut pas partir.',
-      );
+      pushSystemMessage(SalonSystem.deadChat);
       return;
     }
     if (!_spendChat()) {
-      pushSystemMessage('Débit du salon atteint — attends ${_chatWait}s.');
+      pushSystemMessage(SalonSystem.chatRate(_chatWait));
       return;
     }
     _sendJson(<String, dynamic>{'type': 'chat', 'text': text});
@@ -529,7 +525,9 @@ class NetworkSalonSession extends SalonSession
         isStarting = true;
         notifyListeners();
       case 'closed':
-        pushSystemMessage('Salon fermé : ${frame['reason'] ?? 'taverne vide'}');
+        pushSystemMessage(
+      SalonSystem.closed('${frame['reason'] ?? 'taverne vide'}'),
+    );
         _closedByServer = true;
         _shutSocket();
       case 'error':
@@ -669,7 +667,7 @@ class NetworkSalonSession extends SalonSession
     final detail = closeCode == null
         ? ''
         : ' (fermeture $closeCode${closeReason == null || closeReason.isEmpty ? '' : ' — $closeReason'})';
-    pushSystemMessage('Connexion perdue$detail — tentative de reconnexion…');
+    pushSystemMessage(SalonSystem.lost(detail));
     _scheduleRecovery(_nextRecoveryDelay());
   }
 
@@ -690,9 +688,7 @@ class NetworkSalonSession extends SalonSession
         _appSuspended = false;
         if (!wasSuspended || _disposed || code.isEmpty) return;
         if (_channel != null) return; // socket survived the doze
-        pushSystemMessage(
-          'Le téléphone a mis le salon en sommeil — reconnexion…',
-        );
+        pushSystemMessage(SalonSystem.phoneSlept);
         _scheduleRecovery();
     }
   }
@@ -708,9 +704,7 @@ class NetworkSalonSession extends SalonSession
     debugPrint(
       'salon: silence de ${silence.inSeconds}s, je coupe et je reprends',
     );
-    pushSystemMessage(
-      'Le salon ne répond plus — je coupe la connexion desséchée et je reprends…',
-    );
+    pushSystemMessage(SalonSystem.watchdogCut);
     final socket = _channel;
     _channel = null;
     if (socket != null) {
@@ -746,14 +740,14 @@ class NetworkSalonSession extends SalonSession
       final result = await _attemptHandshake(base, myName);
       if (result.ok) {
         _recoveryFailures = 0;
-        pushSystemMessage('Reconnecté au salon $code.');
+        pushSystemMessage(SalonSystem.recovered(code));
         // Ask the host for a fresh table snapshot (mid-game recovery).
         sendGame(const <String, dynamic>{'kind': 'resync'});
         return;
       }
       _recoveryFailures++;
       final reason = result.message ?? 'Aucune réponse du serveur en 8s.';
-      _threadOnce('Salon injoignable — $reason Je continue d\u2019essayer.');
+      _threadOnce(SalonSystem.unreachableTrack(reason));
     } catch (error) {
       // On a phone, "why" is everything: DNS, proxy, captive portal. The
       // terse edition goes to the thread; the raw error stays in adb.
@@ -764,9 +758,7 @@ class NetworkSalonSession extends SalonSession
       };
       debugPrint('salon: reconnexion a échoué : $brief');
       _recoveryFailures++;
-      _threadOnce(
-        'Salon injoignable — $brief. Je continue d\u2019essayer en doublant le délai.',
-      );
+      _threadOnce(SalonSystem.unreachableBackoff(brief));
     } finally {
       _recovering = false;
       notifyListeners();

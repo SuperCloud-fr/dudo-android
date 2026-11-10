@@ -1070,4 +1070,130 @@ class AppLocalizationsFr extends AppLocalizations {
   String diceValueText(int value) {
     return 'Dé de valeur $value';
   }
+
+  @override
+  String bidAcesLabel(int count) {
+    return '$count paco';
+  }
+
+  @override
+  String bidPlainLabel(int count, int face) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dés de $face',
+      one: '$count dé de $face',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String bidSpokenAces(int count) {
+    return 'au moins $count paco';
+  }
+
+  @override
+  String bidSpokenPlain(int count, int face) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dés',
+      one: '$count dé',
+    );
+    return 'au moins $_temp0 de valeur $face';
+  }
+
+  @override
+  String bidShortLabel(int quantity, String mark) {
+    return '$quantity×$mark';
+  }
+
+  @override
+  String get temperMousseLabel => 'Mousse';
+
+  @override
+  String get temperMousseBody => 'Timide, prudent, facile à bluffer.';
+
+  @override
+  String get temperFlibustierLabel => 'Flibustier';
+
+  @override
+  String get temperFlibustierBody =>
+      'Un adversaire honnête, qui sait sentir le mensonge.';
+
+  @override
+  String get temperCapitaineLabel => 'Capitaine';
+
+  @override
+  String get temperCapitaineBody =>
+      'Calcule les probabilités et n\'aime pas perdre.';
+
+  @override
+  String get systemPhoneSlept =>
+      'Le téléphone a mis le salon en sommeil — reconnexion…';
+
+  @override
+  String get systemQuietCut =>
+      'Le salon ne répond plus — je coupe la connexion desséchée et je reprends…';
+
+  @override
+  String systemCreated(String code) {
+    return 'Salon créé. Code : $code';
+  }
+
+  @override
+  String systemConnected(String code) {
+    return 'Connecté au salon $code';
+  }
+
+  @override
+  String systemRecovered(String code) {
+    return 'Reconnecté au salon $code.';
+  }
+
+  @override
+  String systemClosed(String reason) {
+    return 'Salon fermé : $reason';
+  }
+
+  @override
+  String systemLost(String detail) {
+    return 'Connexion perdue$detail — tentative de reconnexion…';
+  }
+
+  @override
+  String systemUnreachableTrack(String reason) {
+    return 'Salon injoignable — $reason Je continue d\'essayer.';
+  }
+
+  @override
+  String systemUnreachableBackoff(String brief) {
+    return 'Salon injoignable — $brief. Je continue d\'essayer en doublant le délai.';
+  }
+
+  @override
+  String systemThrottledCreate(int seconds) {
+    return 'Trop de demandes de création — réessaie dans ~$seconds s.';
+  }
+
+  @override
+  String systemCreateFailed(String detail) {
+    return 'Impossible de créer un salon pour l\'instant.$detail';
+  }
+
+  @override
+  String systemChatRate(int seconds) {
+    return 'Débit du salon atteint — attends ${seconds}s.';
+  }
+
+  @override
+  String get systemDeadReaction =>
+      'La connexion au salon est lâchée — la réaction ne peut pas partir.';
+
+  @override
+  String get systemDeadChat =>
+      'La connexion au salon est lâchée — le message ne peut pas partir.';
+
+  @override
+  String get systemSixChars => 'Le code doit faire six caractères.';
 }

@@ -7,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../core/widgets/ornaments.dart';
 import '../../core/widgets/tavern_background.dart';
 import '../../core/widgets/tavern_button.dart';
+import '../../game/models/bot_difficulty_localized.dart';
 import '../../game/models/game_config.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../game/game_screen.dart';
@@ -411,11 +412,13 @@ class _DifficultyOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final level = difficulty.index + 1;
     return Semantics(
       button: true,
       selected: selected,
-      label: '${difficulty.label}. ${difficulty.description}',
+      label:
+          '${difficulty.labelLocalized(l10n)}. ${difficulty.descriptionLocalized(l10n)}',
       excludeSemantics: true,
       child: Material(
         color: Colors.transparent,
@@ -462,7 +465,7 @@ class _DifficultyOption extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          difficulty.label,
+                          difficulty.labelLocalized(l10n),
                           style: Theme.of(context).textTheme.titleSmall
                               ?.copyWith(
                                 color: selected
@@ -473,7 +476,7 @@ class _DifficultyOption extends StatelessWidget {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          difficulty.description,
+                          difficulty.descriptionLocalized(l10n),
                           style: Theme.of(context).textTheme.bodySmall
                               ?.copyWith(
                                 color: AppColors.parchmentMuted,
