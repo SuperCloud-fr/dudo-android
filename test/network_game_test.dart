@@ -143,6 +143,14 @@ void main() {
     expect(guest.players, hasLength(3));
     expect(guest.round, host.round);
 
+    // Real names for the neighbours, "human" only on my own seat.
+    expect(guest.players[0].name, 'Anne');
+    expect(guest.players[0].isHuman, isTrue);
+    expect(guest.players[1].name, 'Bob');
+    expect(guest.players[1].isHuman, isFalse);
+    expect(guest.players[2].name, 'Cap Hôte');
+    expect(guest.players[2].isHuman, isFalse);
+
     // Same seed → the same dice values, seen table-relative.
     for (var local = 0; local < 3; local++) {
       final salonSeat = (local + phones.guestHarness.session.you) % 3;
@@ -372,11 +380,22 @@ void main() {
       // The caller, salon seat 1, is local seat 0 on the guest mirror too.
       expect(guest.outcome!.callerSeat, 0);
       expect(guest.outcome!.actualCount, host.outcome!.actualCount);
-      // The mirror never self-applies; the host drives the reveal.
+      // The mirror never self-applies; the guest's tap waves the host along.
       guest.applyOutcome();
       expect(guest.phase, GamePhase.reveal);
-
-      host.applyOutcome();
+      final applyCommands = phones
+          .guestSends()
+          .where((command) => command['kind'] == 'apply')
+          .toList();
+      expect(applyCommands, hasLength(1));
+      relay.handleTable(
+        RelayedTableMessage(
+          kind: 'game',
+          fromSeat: 1,
+          payload: applyCommands.first,
+        ),
+      );
+      expect(host.phase, GamePhase.roundOver);
       await phones.forwardHostToGuest();
       expect(host.phase, GamePhase.roundOver);
       expect(guest.phase, GamePhase.roundOver);
@@ -426,7 +445,10 @@ void main() {
     expect(host.autoPlayBots, isTrue);
     // The guest mirror stays view-only: nobody plays locally.
     expect(guest.autoPlayBots, isFalse);
-    expect(guest.players[1].isHuman, isTrue);
+    // Only "me" is the human on the mirror; the bot reads like a bot.
+    expect(guest.players[0].isHuman, isTrue);
+    expect(guest.players[1].isHuman, isFalse);
+    expect(guest.players[1].name, 'Mérou');
 
     host.beginBidding();
     expect(

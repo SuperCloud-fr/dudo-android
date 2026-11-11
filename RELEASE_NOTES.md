@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 21 : le salon respire encore
+# Dudo 0.2.0 — bêta 22 : la révélation parle aux invités
+
+- **« Voir la suite » fonctionne enfin chez l'invité** : le tap d'un invité fait avancer la révélation côté hôte (commande `apply`), la conséquence revient en image partagée. Avant, le bouton ne faisait rien du tout.
+- **Plus personne ne s'appelle « Toi » chez l'invité** : sur la révélation, le classement et le journal, les voisins retrouvent leurs vrais noms — seul ton siège reste « Toi ».
+
+## Bêta 21 : le salon respire encore
 
 - **Quitter une manche ouvre à nouveau le salon** : l'abandon dit « gameOver » au Worker — plus jamais l'« la manche se prépare » éternel, et les boutons +/− des bots revivent immédiatement.
 - Sommeil de l'hôte en pleine manche : le Worker garde la table ouverte et l'hôte **reprend son siège** à la reconnexion (il était la seule personne refusée — « La partie a déjà commencé » en boucle, invités chassés).

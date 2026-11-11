@@ -207,6 +207,10 @@ class HostGameRelay {
         controller.seatNextRound(seat);
       case 'rematch':
         controller.seatRematch();
+      case 'apply':
+        // A guest waved the reveal forward: apply (phase-guarded inside)
+        // and the mutation re-broadcasts.
+        controller.applyOutcome();
       case 'resync':
         // A player reconnected: hand them the full table immediately.
         _lastPayload = '';
@@ -306,7 +310,10 @@ class GuestGameController extends GameController {
           Player(
             seat: local,
             name: playerNames[(local + mySeat) % size],
-            isHuman: true,
+            // Only "me" is the human at this table. Every other row shows a
+            // real name — marking everyone human made the reveal, the
+            // standings and the journal read "Toi" on every line.
+            isHuman: local == 0,
             sigil: crew[local % crew.length].sigil,
             accent: crew[local % crew.length].accent,
             nerve: crew[local % crew.length].nerve,
@@ -506,7 +513,9 @@ class GuestGameController extends GameController {
 
   @override
   void applyOutcome() {
-    // The host applies the outcome and broadcasts; the mirror stays put.
+    // The reveal is host-authoritative: the guest's tap waves the host's
+    // engine forward and the applied outcome comes back in a snapshot.
+    _session.sendGame(const <String, dynamic>{'kind': 'apply'});
   }
 
   @override
