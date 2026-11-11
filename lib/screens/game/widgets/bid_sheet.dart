@@ -66,6 +66,10 @@ class _BidSheetState extends State<BidSheet> {
     previous: widget.previous,
     face: _face,
     totalDice: widget.totalDice,
+    // Opening on pacos is illegal in a normal round but allowed in a
+    // palifico one — without the flag here the summary stayed legal on
+    // screen while the sheet kept refusing the announce button.
+    palifico: widget.palifico,
   );
 
   bool get _isLegal =>
@@ -89,6 +93,10 @@ class _BidSheetState extends State<BidSheet> {
     if (_facePossible &&
         _minQuantity != null &&
         _minQuantity! <= widget.totalDice) {
+      // Never park the picker below the legal minimum (palifico opening
+      // starts at two dice): the announce button would read illegal while
+      // the face itself is perfectly playable.
+      _quantity = _quantity.clamp(_displayMin, widget.totalDice);
       return;
     }
     for (final face in const [2, 3, 4, 5, 6, 1]) {
@@ -156,9 +164,7 @@ class _BidSheetState extends State<BidSheet> {
             colors: [Color(0xFF2C1D14), Color(0xFF150E09)],
           ),
           borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-          border: Border(
-            top: BorderSide(color: AppColors.brassDim, width: 1),
-          ),
+          border: Border(top: BorderSide(color: AppColors.brassDim, width: 1)),
         ),
         child: SafeArea(
           top: false,
@@ -535,9 +541,7 @@ class _FaceOption extends StatelessWidget {
       button: true,
       selected: selected,
       enabled: enabled,
-      label: ace
-          ? l10n.bidAceSemantics
-          : l10n.bidFaceSemantics(face),
+      label: ace ? l10n.bidAceSemantics : l10n.bidFaceSemantics(face),
       excludeSemantics: true,
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 160),

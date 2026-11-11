@@ -161,6 +161,60 @@ void main() {
     });
   });
 
+  test('la table continue quand le siège local est à l\'eau', () {
+    final controller = createGame(
+      seed: 5,
+      config: const GameConfig(opponentCount: 2),
+    );
+
+    // A challenge the local seat loses with its last die, while the two
+    // other pirates still hold dice: the game must NOT end (multiplayer —
+    // an eliminated host keeps the table alive for its guests).
+    controller.players[0].diceCount = 1;
+    controller.players[1].diceCount = 2;
+    controller.players[2].diceCount = 2;
+    controller
+      ..phase = GamePhase.reveal
+      ..outcome = ChallengeOutcome(
+        bid: const Bid(quantity: 1, face: 2, playerSeat: 0),
+        callerSeat: 1,
+        kind: ChallengeKind.dudo,
+        actualCount: 0,
+        exact: false,
+        callerWon: true,
+        loserSeat: 0,
+        gainSeat: null,
+        gainedDie: false,
+        gainCapped: false,
+      )
+      ..applyOutcome();
+    expect(controller.players[0].isAlive, isFalse);
+    expect(controller.phase, GamePhase.roundOver);
+    controller.nextRound();
+    expect(controller.phase, GamePhase.peek);
+
+    // It only ends when a single pirate still has dice.
+    controller.players[1].diceCount = 1;
+    controller
+      ..phase = GamePhase.reveal
+      ..outcome = ChallengeOutcome(
+        bid: const Bid(quantity: 1, face: 3, playerSeat: 1),
+        callerSeat: 2,
+        kind: ChallengeKind.dudo,
+        actualCount: 0,
+        exact: false,
+        callerWon: true,
+        loserSeat: 1,
+        gainSeat: null,
+        gainedDie: false,
+        gainCapped: false,
+      )
+      ..applyOutcome();
+    expect(controller.phase, GamePhase.gameOver);
+    expect(controller.result, isNotNull);
+    controller.dispose();
+  });
+
   test('rematch remet la table à neuf', () {
     final controller = playToEnd(
       seed: 3,
@@ -186,11 +240,7 @@ void main() {
       controller
         ..phase = GamePhase.reveal
         ..outcome = ChallengeOutcome(
-          bid: Bid(
-            quantity: target.diceCount,
-            face: 5,
-            playerSeat: loserSeat,
-          ),
+          bid: Bid(quantity: target.diceCount, face: 5, playerSeat: loserSeat),
           callerSeat: 0,
           kind: ChallengeKind.dudo,
           actualCount: 0,

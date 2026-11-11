@@ -131,13 +131,16 @@ class GameController extends ChangeNotifier {
   void _buildPlayers() {
     if (tableNames != null) {
       // Network table: one seat per salon player, all driven externally.
+      // Only seat 0 reads as "Toi" — the other humans are guests on their
+      // own phones and must keep their names (two "Toi" bug). Bots stay
+      // identified by [botSeats], not by this display flag.
       for (var seat = 0; seat < tableNames!.length; seat++) {
         final profile = crew[seat % crew.length];
         players.add(
           Player(
             seat: seat,
             name: tableNames![seat],
-            isHuman: !botSeats.contains(seat),
+            isHuman: seat == 0,
             sigil: profile.sigil,
             accent: profile.accent,
             nerve: profile.nerve,
@@ -298,8 +301,8 @@ class GameController extends ChangeNotifier {
     _botTimer?.cancel();
     _botTimer = null;
     if (_disposed || phase != GamePhase.bidding) return;
+    if (!_seatIsBot(currentPlayer)) return;
     final player = players[currentPlayer];
-    if (player.isHuman) return;
 
     final brain = BotBrain(difficulty: config.difficulty, random: random);
     final action = brain.decide(
@@ -445,7 +448,10 @@ class GameController extends ChangeNotifier {
     }
 
     final alive = players.where((player) => player.isAlive).toList();
-    if (!human.isAlive || alive.length <= 1) {
+    // The table plays on until a single pirate still has dice — an
+    // eliminated player watches the rest of the round (multiplayer: the
+    // host's own elimination must NOT end the game for everyone).
+    if (alive.length <= 1) {
       _finishGame();
     } else {
       phase = GamePhase.roundOver;
@@ -523,12 +529,18 @@ class GameController extends ChangeNotifier {
     _scheduleTurnTimeout();
   }
 
+  /// Seats this engine plays by itself: explicit salon bots, or (offline
+  /// table) every non-human seat. Guests are NOT bots — they play on their
+  /// own phones and must never be puppeted here.
+  bool _seatIsBot(int seat) =>
+      botSeats.contains(seat) || (tableNames == null && !players[seat].isHuman);
+
   void _scheduleBot() {
     if (!autoPlayBots || _disposed || _paused) return;
     _botTimer?.cancel();
     _botTimer = null;
     if (phase != GamePhase.bidding) return;
-    if (players[currentPlayer].isHuman) return;
+    if (!_seatIsBot(currentPlayer)) return;
     final delay = botDelay + Duration(milliseconds: random.nextInt(360));
     _botTimer = Timer(delay, () {
       _botTimer = null;
@@ -547,7 +559,9 @@ class GameController extends ChangeNotifier {
     if (!enforceTurnTimeout || _disposed || _paused) return;
     if (turnTimeout <= Duration.zero) return;
     if (phase != GamePhase.bidding) return;
-    if (!players[currentPlayer].isHuman) return;
+    // The guard covers every human seat — the host's own seat AND the
+    // guests (issue #7): only the bots are excluded, they act themselves.
+    if (_seatIsBot(currentPlayer)) return;
     _turnTimer = Timer(turnTimeout, _enforceTurnTimeout);
   }
 
@@ -557,7 +571,7 @@ class GameController extends ChangeNotifier {
   void _enforceTurnTimeout() {
     _turnTimer = null;
     if (_disposed || _paused) return;
-    if (phase != GamePhase.bidding || !players[currentPlayer].isHuman) return;
+    if (phase != GamePhase.bidding || _seatIsBot(currentPlayer)) return;
     _fallbackBotMove(currentPlayer);
   }
 

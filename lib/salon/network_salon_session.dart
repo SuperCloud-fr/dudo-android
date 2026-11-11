@@ -139,6 +139,10 @@ class NetworkSalonSession extends SalonSession
   Completer<void>? _startCompleter;
   bool _closedByServer = false;
 
+  /// Host-side intent "this round is over" that must survive a dead socket:
+  /// replayed until the Worker echoes `started=false` (see sendGameOver).
+  bool _gameOverPending = false;
+
   int _messageSequence = 0;
   final Set<String> _seenMessageIds = <String>{};
   final Queue<String> _messageIdOrder = Queue<String>();
@@ -211,7 +215,14 @@ class NetworkSalonSession extends SalonSession
   /// Host only: announces the game is over so the Worker reopens the salon
   /// (lobby) — otherwise its `started` flag stays true forever and any new
   /// phone gets refused with "La partie a d\u00e9j\u00e0 commenc\u00e9e".
+  ///
+  /// The socket may be dead when this fires (quit while the phone was
+  /// dozing): the frame would vanish into the void. The intent is kept and
+  /// replayed on every fresh salon state until the Worker answers with a
+  /// `started=false` echo — see [_applySalonState].
   void sendGameOver() {
+    if (role != SalonRole.host) return;
+    _gameOverPending = true;
     _sendJson(const <String, dynamic>{'type': 'gameOver'});
   }
 
@@ -226,6 +237,7 @@ class NetworkSalonSession extends SalonSession
     code = '';
     players.clear();
     isStarting = false;
+    _gameOverPending = false;
     // A fresh table starts a clean thread, even when no server answers.
     resetThread();
     notifyListeners();
@@ -319,6 +331,7 @@ class NetworkSalonSession extends SalonSession
     code = cleaned;
     players.clear();
     isStarting = false;
+    _gameOverPending = false;
     // A new table starts a clean thread (recovery never goes through here).
     resetThread();
     notifyListeners();
@@ -615,7 +628,19 @@ class NetworkSalonSession extends SalonSession
     final salonCode = '${state['code'] ?? ''}';
     if (salonCode.isNotEmpty) code = salonCode.toUpperCase();
     you = (state['you'] as num?)?.toInt() ?? -1;
+    // Seat 0 is the host seat: whoever holds it after a reconnect — doze,
+    // app killed mid-game, reclaim by name — is the host again. The role
+    // must not stay "guest" just because the join handshake set it first.
+    if (you == 0) role = SalonRole.host;
     isStarting = state['started'] as bool? ?? false;
+    if (!isStarting) {
+      // The Worker heard the gameOver: the intent is fulfilled.
+      _gameOverPending = false;
+    } else if (_gameOverPending) {
+      // Still "started" while a quit is pending: our earlier gameOver was
+      // lost to a dead socket (doze). Re-announce it; idempotent.
+      _sendJson(const <String, dynamic>{'type': 'gameOver'});
+    }
     final hostSeat = (state['hostSeat'] as num?)?.toInt() ?? 0;
     final playerList = state['players'] as List<dynamic>? ?? const [];
     players

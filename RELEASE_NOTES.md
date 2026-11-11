@@ -1,4 +1,13 @@
-# Dudo 0.2.0 — bêta 22 : la révélation parle aux invités
+# Dudo 0.2.0 — bêta 23 : la table joue jusqu'au dernier pirate
+
+- **La partie continue jusqu'au dernier survivant** : être à l'eau ne coupe plus la table. L'éliminé regarde la manche se jouer, et le vainqueur est le dernier debout.
+- **Ouvrir sur les pacos en palifico fonctionne** : le message « ce montant n'est pas une surenchère valable » ne s'affiche plus ; la quantité se cale d'elle-même sur le minimum légal (2).
+- **Un seul « Toi » sur la liste de l'hôte** : les invités retrouvent leur nom partout (liste, révélation, journal).
+- **« Mousse réfléchit » n'est plus suivi de « à toi de jouer »** : les invités ne sont plus traités comme des sièges locaux par les minuteurs ; la garde anti-AFK couvre aussi les invités silencieux.
+- **Le salon ne reste plus bloqué sur « la manche se prépare »** : si l'hôte quitte la table pendant que son téléphone dormait, l'annonce de fin est rejouée à la reconnexion et le salon rouvre.
+- **L'hôte retrouve son rôle** s'il reprend le siège 0 après une coupure.
+
+## Bêta 22 : la révélation parle aux invités
 
 - **« Voir la suite » fonctionne enfin chez l'invité** : le tap d'un invité fait avancer la révélation côté hôte (commande `apply`), la conséquence revient en image partagée. Avant, le bouton ne faisait rien du tout.
 - **Plus personne ne s'appelle « Toi » chez l'invité** : sur la révélation, le classement et le journal, les voisins retrouvent leurs vrais noms — seul ton siège reste « Toi ».

@@ -2,9 +2,11 @@ import 'package:dudo/core/theme/app_colors.dart';
 import 'package:dudo/core/theme/app_theme.dart';
 import 'package:dudo/game/models/bid.dart';
 import 'package:dudo/game/models/player.dart';
+import 'package:dudo/l10n/generated/app_localizations.dart';
 import 'package:dudo/screens/game/widgets/bid_sheet.dart';
 import 'package:dudo/screens/game/widgets/game_over_overlay.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Future<void> pumpAtLargeType(WidgetTester tester, Widget child) async {
@@ -116,5 +118,66 @@ void main() {
     expect(tester.takeException(), isNull);
 
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('l\'ouverture palifico sur les pacos est annonçable', (
+    tester,
+  ) async {
+    Bid? announced;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.dark(),
+        locale: const Locale('fr'),
+        supportedLocales: const [Locale('fr')],
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => Center(
+              child: TextButton(
+                onPressed: () async {
+                  announced = await showModalBottomSheet<Bid>(
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (_) => BidSheet(
+                      palifico: true,
+                      previous: null,
+                      previousBidderName: '',
+                      totalDice: 10,
+                      initial: null,
+                      calzaEnabled: false,
+                    ),
+                  );
+                },
+                child: const Text('ouvrir'),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('ouvrir'));
+    await tester.pumpAndSettle();
+
+    // Pick the pacos face (allowed in palifico, illegal as a normal opener)
+    // and announce with the default minimum quantity.
+    await tester.ensureVisible(find.text('PACO'));
+    await tester.tap(find.text('PACO'));
+    await tester.pumpAndSettle();
+
+    // The sheet must not read the bid as illegal (was: red "surenchère
+    // valable" message and a dead announce button).
+    expect(find.textContaining('surenchère'), findsNothing);
+    await tester.ensureVisible(find.text('ANNONCER'));
+    await tester.tap(find.text('ANNONCER'));
+    await tester.pumpAndSettle();
+
+    expect(announced, isNotNull);
+    expect(announced!.quantity, 2);
+    expect(announced!.face, 1);
   });
 }

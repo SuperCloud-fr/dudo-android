@@ -129,7 +129,8 @@ void main() {
     expect(harness.session.messages.last.clientId, isNotNull);
     final clientId =
         (jsonDecode(framesOf(channel.sent, 'chat').first)
-            as Map<String, dynamic>)['clientId'] as String;
+                as Map<String, dynamic>)['clientId']
+            as String;
 
     // An unrelated frame may beat the server echo back to the sender.
     channel.serverSends(<String, dynamic>{
@@ -562,42 +563,39 @@ void main() {
     session.dispose();
   }, timeout: const Timeout(Duration(seconds: 30)));
 
-  test(
-    'le client répond pong au ping du serveur (liveness partagé)',
-    () async {
-      final created = <FakeWebSocketChannel>[];
-      final session = NetworkSalonSession(
-        handshakeTimeout: const Duration(milliseconds: 80),
-        reconnectDelay: const Duration(milliseconds: 20),
-        createSalonCode: (_, _) async => 'S99FTH',
-        channelFactory: (uri) {
-          final channel = FakeWebSocketChannel.confirmed(uri);
-          created.add(channel);
-          return channel;
-        },
-      );
+  test('le client répond pong au ping du serveur (liveness partagé)', () async {
+    final created = <FakeWebSocketChannel>[];
+    final session = NetworkSalonSession(
+      handshakeTimeout: const Duration(milliseconds: 80),
+      reconnectDelay: const Duration(milliseconds: 20),
+      createSalonCode: (_, _) async => 'S99FTH',
+      channelFactory: (uri) {
+        final channel = FakeWebSocketChannel.confirmed(uri);
+        created.add(channel);
+        return channel;
+      },
+    );
 
-      final creating = session.createSalon('Cap Hôte', 0);
-      await settle();
-      await untilOneSent(created.first);
-      created.first.serverSends(
-        salonFrame(
-          you: 0,
-          players: <Map<String, dynamic>>[
-            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
-          ],
-        ),
-      );
-      await creating;
+    final creating = session.createSalon('Cap Hôte', 0);
+    await settle();
+    await untilOneSent(created.first);
+    created.first.serverSends(
+      salonFrame(
+        you: 0,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+        ],
+      ),
+    );
+    await creating;
 
-      // The server probes liveness; the client must answer a pong frame.
-      created.first.serverSends(const <String, dynamic>{'type': 'ping'});
-      await settle(6);
-      final pongs = framesOf(created.first.sent, 'pong');
-      expect(pongs, hasLength(greaterThanOrEqualTo(1)));
-      session.dispose();
-    },
-  );
+    // The server probes liveness; the client must answer a pong frame.
+    created.first.serverSends(const <String, dynamic>{'type': 'ping'});
+    await settle(6);
+    final pongs = framesOf(created.first.sent, 'pong');
+    expect(pongs, hasLength(greaterThanOrEqualTo(1)));
+    session.dispose();
+  });
 
   test('un flux totalement muet est coupé puis remplacé (watchdog)', () async {
     final created = <FakeWebSocketChannel>[];
@@ -646,25 +644,25 @@ void main() {
     session.dispose();
   }, timeout: const Timeout(Duration(seconds: 30)));
 
-  test('une création en 429 informe du délai sans marteler les autres hôtes', () async {
-    final session = NetworkSalonSession(
-      baseUrls: const [
-        'https://dudo.supercloud.fr',
-        'https://workers.dev',
-      ],
-      createSalonCode: (_, _) async => throw SalonRequestThrottled(3),
-      channelFactory: (uri) => FakeWebSocketChannel.confirmed(uri),
-    );
-    await session.createSalon('Cap Hôte', 1);
+  test(
+    'une création en 429 informe du délai sans marteler les autres hôtes',
+    () async {
+      final session = NetworkSalonSession(
+        baseUrls: const ['https://dudo.supercloud.fr', 'https://workers.dev'],
+        createSalonCode: (_, _) async => throw SalonRequestThrottled(3),
+        channelFactory: (uri) => FakeWebSocketChannel.confirmed(uri),
+      );
+      await session.createSalon('Cap Hôte', 1);
 
-    expect(
-      session.messages.last.body,
-      contains('réessaie'),
-      reason: 'le 429 doit expliquer la pause',
-    );
-    expect(session.connected, isFalse);
-    expect(session.code, isEmpty);
-  });
+      expect(
+        session.messages.last.body,
+        contains('réessaie'),
+        reason: 'le 429 doit expliquer la pause',
+      );
+      expect(session.connected, isFalse);
+      expect(session.code, isEmpty);
+    },
+  );
 
   test('le seau de chat laisse une rafale de 3 puis refuse la 4e', () async {
     final harness = Harness();
@@ -697,5 +695,102 @@ void main() {
       contains('attends'),
       reason: 'le refus local doit être visible',
     );
+  });
+
+  test('un gameOver perdu pendant la coupure est rejoué au salon', () async {
+    final harness = Harness();
+    final done = harness.session.createSalon('Cap Hôte', 0);
+    await settle();
+    final channel = harness.channel(
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+    );
+    await untilOneSent(channel);
+    channel.serverSends(
+      salonFrame(
+        you: 0,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+        ],
+      ),
+    );
+    await done;
+    await settle();
+
+    // The host quits a started table: the intent goes out immediately.
+    harness.session.sendGameOver();
+    expect(framesOf(channel.sent, 'gameOver'), hasLength(1));
+
+    // The socket was dead while sending: the Worker still reports
+    // started=true, and every fresh salon state replays the intent.
+    channel.serverSends(
+      salonFrame(
+        you: 0,
+        started: true,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+        ],
+      ),
+    );
+    await settle();
+    expect(framesOf(channel.sent, 'gameOver'), hasLength(2));
+
+    // The Worker reopened the salon (started=false echo): the intent is
+    // fulfilled and must NOT fire again on later frames.
+    channel.serverSends(
+      salonFrame(
+        you: 0,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+        ],
+      ),
+    );
+    await settle();
+    channel.serverSends(
+      salonFrame(
+        you: 0,
+        started: true,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+        ],
+      ),
+    );
+    await settle();
+    expect(framesOf(channel.sent, 'gameOver'), hasLength(2));
+  });
+
+  test('la reprise du siège 0 rend le rôle hôte', () async {
+    final harness = Harness();
+    final joining = harness.session.joinSalon('S99FTH', 'Anne');
+    await settle();
+    final channel = harness.channel(
+      'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+    );
+    await untilOneSent(channel);
+    channel.serverSends(
+      salonFrame(
+        you: 1,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+          {'seat': 1, 'name': 'Anne', 'bot': false},
+        ],
+      ),
+    );
+    final result = await joining;
+    expect(result.ok, isTrue);
+    expect(harness.session.role, SalonRole.guest);
+
+    // The Worker hands the host seat back (reclaim after the original
+    // host left): seat 0 is the host seat, whoever holds it.
+    channel.serverSends(
+      salonFrame(
+        you: 0,
+        players: <Map<String, dynamic>>[
+          {'seat': 0, 'name': 'Anne', 'bot': false},
+          {'seat': 1, 'name': 'Barbe-Noire', 'bot': true},
+        ],
+      ),
+    );
+    await settle();
+    expect(harness.session.role, SalonRole.host);
   });
 }
