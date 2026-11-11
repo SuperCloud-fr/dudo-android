@@ -439,6 +439,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Prends ton temps. Les autres pirates attendent.';
 
   @override
+  String get peekSpectatorTitle => 'Tu es à l\'eau';
+
+  @override
+  String get peekSpectatorBody =>
+      'Ta manche se joue sans toi : regarde les pirates debout se mentir, et prépare ta revanche.';
+
+  @override
+  String get peekSpectatorCta => 'Voir la manche';
+
+  @override
+  String get peekSpectatorWait => 'La manche démarre dès que l\'hôte la lance.';
+
+  @override
   String revealDudoLine(String caller, String bidder) {
     return '$caller a douté de $bidder.';
   }

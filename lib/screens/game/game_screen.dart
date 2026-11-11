@@ -20,6 +20,7 @@ import 'widgets/bid_sheet.dart';
 import 'widgets/game_over_overlay.dart';
 import 'widgets/journal_sheet.dart';
 import 'widgets/peek_overlay.dart';
+import 'widgets/spectator_peek.dart';
 import 'widgets/palifico_chip.dart';
 import 'widgets/player_seat.dart';
 import 'widgets/reveal_overlay.dart';
@@ -424,6 +425,17 @@ class _GameScreenState extends State<GameScreen> {
     final l10n = AppLocalizations.of(context)!;
     switch (_controller.phase) {
       case GamePhase.peek:
+        if (!_controller.human.isAlive) {
+          // No dice, no cup: the eliminated player watches the round and
+          // (host/solo) waves it in, like the reveal's "Voir la suite".
+          return SpectatorPeekOverlay(
+            key: ValueKey('spectator-peek-${_controller.round}'),
+            round: _controller.round,
+            palifico: _controller.palifico,
+            canBeginBidding: _controller.canBeginBiddingFromPeek,
+            onReady: _controller.beginBidding,
+          );
+        }
         return PeekOverlay(
           key: ValueKey('peek-${_controller.round}'),
           round: _controller.round,

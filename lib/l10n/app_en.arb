@@ -144,6 +144,10 @@
   "peekShakeButton": "Shake the phone to stir your dice",
   "peekTapCupHint": "… or tap the cup to lift it",
   "peekTakeTimeHint": "Take your time. The other pirates are waiting.",
+  "peekSpectatorTitle": "You're out",
+  "peekSpectatorBody": "The round plays without you: watch the pirates still standing bluff each other, and plot your comeback.",
+  "peekSpectatorCta": "Watch the round",
+  "peekSpectatorWait": "The round starts as soon as the host waves it in.",
 
   "revealDudoLine": "{caller} doubted {bidder}.",
   "@revealDudoLine": {"placeholders": {"caller": {"type": "String"}, "bidder": {"type": "String"}}},

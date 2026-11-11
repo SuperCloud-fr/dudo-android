@@ -776,6 +776,30 @@ abstract class AppLocalizations {
   /// **'Prends ton temps. Les autres pirates attendent.'**
   String get peekTakeTimeHint;
 
+  /// No description provided for @peekSpectatorTitle.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu es à l\'eau'**
+  String get peekSpectatorTitle;
+
+  /// No description provided for @peekSpectatorBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ta manche se joue sans toi : regarde les pirates debout se mentir, et prépare ta revanche.'**
+  String get peekSpectatorBody;
+
+  /// No description provided for @peekSpectatorCta.
+  ///
+  /// In fr, this message translates to:
+  /// **'Voir la manche'**
+  String get peekSpectatorCta;
+
+  /// No description provided for @peekSpectatorWait.
+  ///
+  /// In fr, this message translates to:
+  /// **'La manche démarre dès que l\'hôte la lance.'**
+  String get peekSpectatorWait;
+
   /// No description provided for @revealDudoLine.
   ///
   /// In fr, this message translates to:

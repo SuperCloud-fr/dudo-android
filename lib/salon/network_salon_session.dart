@@ -109,9 +109,7 @@ class NetworkSalonSession extends SalonSession
     });
   }
 
-  static const List<String> defaultBaseUrls = [
-    'https://dudo.supercloud.fr',
-  ];
+  static const List<String> defaultBaseUrls = ['https://dudo.supercloud.fr'];
 
   final List<String> baseUrls;
 
@@ -258,9 +256,7 @@ class NetworkSalonSession extends SalonSession
     code = '';
     activeBaseUrl = null;
     pushSystemMessage(
-      SalonSystem.createFailed(
-        lastFailure == null ? '' : ' ($lastFailure)',
-      ),
+      SalonSystem.createFailed(lastFailure == null ? '' : ' ($lastFailure)'),
     );
   }
 
@@ -319,10 +315,7 @@ class NetworkSalonSession extends SalonSession
     final cleaned = joinCode.trim().toUpperCase();
     final allowed = RegExp('^[${SalonSession.alphabet}]{6}\$');
     if (!allowed.hasMatch(cleaned)) {
-      return SalonJoinResult(
-        ok: false,
-        message: SalonSystem.sixChars,
-      );
+      return SalonJoinResult(ok: false, message: SalonSystem.sixChars);
     }
 
     role = SalonRole.guest;
@@ -485,15 +478,12 @@ class NetworkSalonSession extends SalonSession
       'text': text,
       'clientId': clientId,
     });
-    _appendDialogue(
-      {
-        'seat': you >= 0 ? you : 0,
-        'name': myName,
-        'text': text,
-        'clientId': clientId,
-      },
-      bodyOf: (raw) => '${raw['text'] ?? ''}',
-    );
+    _appendDialogue({
+      'seat': you >= 0 ? you : 0,
+      'name': myName,
+      'text': text,
+      'clientId': clientId,
+    }, bodyOf: (raw) => '${raw['text'] ?? ''}');
   }
 
   @override
@@ -591,8 +581,8 @@ class NetworkSalonSession extends SalonSession
         notifyListeners();
       case 'closed':
         pushSystemMessage(
-      SalonSystem.closed('${frame['reason'] ?? 'taverne vide'}'),
-    );
+          SalonSystem.closed('${frame['reason'] ?? 'taverne vide'}'),
+        );
         _closedByServer = true;
         _shutSocket();
       case 'error':
@@ -694,15 +684,18 @@ class NetworkSalonSession extends SalonSession
     } else {
       // Compatibility with an older Worker during rolling upgrades: match
       // only a recent optimistic bubble by the same seat and exact payload.
-      final legacyEcho = messages.reversed.take(16).any(
-        (message) =>
-            message.isMine &&
-            message.clientId != null &&
-            message.authorSeat == seat &&
-            message.body == stringBody &&
-            message.emoji == stringEmoji &&
-            DateTime.now().difference(message.at) < const Duration(seconds: 10),
-      );
+      final legacyEcho = messages.reversed
+          .take(16)
+          .any(
+            (message) =>
+                message.isMine &&
+                message.clientId != null &&
+                message.authorSeat == seat &&
+                message.body == stringBody &&
+                message.emoji == stringEmoji &&
+                DateTime.now().difference(message.at) <
+                    const Duration(seconds: 10),
+          );
       if (legacyEcho) return;
     }
 
@@ -754,11 +747,6 @@ class NetworkSalonSession extends SalonSession
       notifyListeners();
       return;
     }
-    // While the phone dozes, the socket dies quietly: no failure loop in
-    // the thread, the resume message tells the whole story.
-    if (_appSuspended) {
-      return;
-    }
     // The relay dropped us unexpectedly: try one automatic recovery. The
     // close code travels in the message so a phone-side mystery shows up
     // in the thread instead of staying silent (e.g. 1006 = transport lost
@@ -768,6 +756,15 @@ class NetworkSalonSession extends SalonSession
     final detail = closeCode == null
         ? ''
         : ' (fermeture $closeCode${closeReason == null || closeReason.isEmpty ? '' : ' — $closeReason'})';
+    // Drop the dead flow's fields RIGHT NOW, in every path: a stale
+    // _channel reads like "the socket survived" to the resume handler,
+    // the watchdog and the senders.
+    unawaited(_shutSocket());
+    // While the phone dozes, the socket dies quietly: no failure loop in
+    // the thread, the resume handles the reconnect.
+    if (_appSuspended) {
+      return;
+    }
     pushSystemMessage(SalonSystem.lost(detail));
     _scheduleRecovery(_nextRecoveryDelay());
   }
@@ -783,13 +780,26 @@ class NetworkSalonSession extends SalonSession
         // drop the queued retry, the resume handles one clean attempt.
         _recoveryTimer?.cancel();
         _recoveryTimer = null;
+        // The queued retry no longer exists: leave the flag set and
+        // _scheduleRecovery refuses everything after the unlock — the
+        // session stayed dead on its "connexion perdue" line forever.
+        _recoveryScheduled = false;
       case AppLifecycleState.inactive:
       case AppLifecycleState.resumed:
         final wasSuspended = _appSuspended;
         _appSuspended = false;
         if (!wasSuspended || _disposed || code.isEmpty) return;
-        if (_channel != null) return; // socket survived the doze
+        if (_channel != null) {
+          final silence = DateTime.now().difference(_lastServerFrame);
+          if (silence < livenessStroke) return; // socket survived the doze
+          // No frame since before the sleep: a zombie flow. The close
+          // event already ran (or never will) — drop it like the watchdog
+          // would and take one clean reconnect.
+          unawaited(_shutSocket());
+        }
         pushSystemMessage(SalonSystem.phoneSlept);
+        // One clean attempt on unlock — force through any stale flag.
+        _recoveryScheduled = false;
         _scheduleRecovery();
     }
   }
@@ -833,9 +843,9 @@ class NetworkSalonSession extends SalonSession
   /// Exploding backoff after repeated failures: 1.2s, 2.4s, 4.8s… capped
   /// at 15s so an unreachable salon breathes instead of hammering.
   Duration _nextRecoveryDelay() {
-    final delayMs = (reconnectDelay.inMilliseconds *
-            (1 << _recoveryFailures.clamp(0, 4)))
-        .clamp(reconnectDelay.inMilliseconds, 15000);
+    final delayMs =
+        (reconnectDelay.inMilliseconds * (1 << _recoveryFailures.clamp(0, 4)))
+            .clamp(reconnectDelay.inMilliseconds, 15000);
     return Duration(milliseconds: delayMs);
   }
 
@@ -876,8 +886,11 @@ class NetworkSalonSession extends SalonSession
       _threadOnce(SalonSystem.unreachableBackoff('$brief$probe'));
     } finally {
       _recovering = false;
-      notifyListeners();
-      if (!_disposed && _channel == null && !_closedByServer && !_appSuspended) {
+      if (!_disposed) notifyListeners();
+      if (!_disposed &&
+          _channel == null &&
+          !_closedByServer &&
+          !_appSuspended) {
         // The socket is still down: chase it. One scheduler at a time.
         _scheduleRecovery(_nextRecoveryDelay());
       }
@@ -889,8 +902,7 @@ class NetworkSalonSession extends SalonSession
   /// network reaches the Worker fine and the refusal came FROM the server
   /// (ghosted sockets, 429) — otherwise the flow is hijacked phone-side.
   Future<String> _healthProbe(String base) async {
-    final client = HttpClient()
-      ..connectionTimeout = const Duration(seconds: 6);
+    final client = HttpClient()..connectionTimeout = const Duration(seconds: 6);
     try {
       final request = await client
           .getUrl(Uri.parse('$base/healthz'))
@@ -911,6 +923,7 @@ class NetworkSalonSession extends SalonSession
   /// Same sentence twice in a minute reads like spam in the thread; the
   /// recovery machinery says it once, the reader knows we're still trying.
   void _threadOnce(String body) {
+    if (_disposed) return;
     final messages = this.messages;
     final lastSystem = messages.isEmpty ? null : messages.last;
     final repeated =
@@ -929,8 +942,9 @@ class NetworkSalonSession extends SalonSession
   /// loop under a loaded suite.
   @visibleForTesting
   void debugAgeLastFrameForTest([Duration? age]) {
-    _lastServerFrame =
-        DateTime.now().subtract(age ?? const Duration(seconds: 600));
+    _lastServerFrame = DateTime.now().subtract(
+      age ?? const Duration(seconds: 600),
+    );
   }
 
   @visibleForTesting
@@ -947,6 +961,13 @@ class NetworkSalonSession extends SalonSession
     _outboundPing = null;
     _recoveryTimer?.cancel();
     _recoveryTimer = null;
+    // Settle an in-flight handshake: its timeout would otherwise wake up
+    // after dispose and talk to a dead ChangeNotifier.
+    final join = _joinCompleter;
+    if (join != null && !join.isCompleted) {
+      _joinCompleter = null;
+      join.complete(const SalonJoinResult(ok: false));
+    }
     _frames?.cancel();
     final channel = _channel;
     _channel = null;

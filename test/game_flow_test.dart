@@ -215,6 +215,45 @@ void main() {
     controller.dispose();
   });
 
+  testWidgets('une table sans humain avance toute seule', (tester) async {
+    final controller = GameController(
+      config: const GameConfig(opponentCount: 2),
+      random: Random(11),
+      autoPlayBots: true,
+    );
+
+    // The local seat is already out: bots-only tables must play through
+    // without a spectator tapping "Voir la manche" on every round.
+    controller.players[0]
+      ..diceCount = 0
+      ..dice = const <int>[];
+    controller
+      ..phase = GamePhase.reveal
+      ..outcome = ChallengeOutcome(
+        bid: const Bid(quantity: 1, face: 2, playerSeat: 0),
+        callerSeat: 1,
+        kind: ChallengeKind.dudo,
+        actualCount: 0,
+        exact: false,
+        callerWon: true,
+        loserSeat: 0,
+        gainSeat: null,
+        gainedDie: false,
+        gainCapped: false,
+      )
+      ..applyOutcome();
+    expect(controller.phase, GamePhase.roundOver);
+
+    // roundOver → next round opens by itself…
+    await tester.pump(const Duration(seconds: 2));
+    expect(controller.phase, GamePhase.peek);
+    // …and peek → bidding too: the bots carry the game to the end.
+    await tester.pump(const Duration(seconds: 2));
+    expect(controller.phase, GamePhase.bidding);
+
+    controller.dispose();
+  });
+
   test('rematch remet la table à neuf', () {
     final controller = playToEnd(
       seed: 3,

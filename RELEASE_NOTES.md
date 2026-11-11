@@ -1,4 +1,10 @@
-# Dudo 0.2.0 — bêta 23 : la table joue jusqu'au dernier pirate
+# Dudo 0.2.0 — bêta 24 : spectateur tranquille
+
+- **Éliminé, tu ne secoues plus un gobelet vide** : l'écran d'ouverture de manche devient un écran spectateur « Tu es à l'eau » — plus d'invite de secouage, plus de dé fantôme d'avant la défaite.
+- **Quand il ne reste que des PNJ, la table se joue toute seule** : les manches s'enchaînent en automatique (révélation lisible, mais zéro clic) jusqu'au dernier survivant.
+- **Verrouiller puis déverrouiller le téléphone retrouve le salon** : le verrouillage pouvait bloquer la reconnexion à jamais (« connexion perdue » sans fin) — réparé, avec un cas supplémentaire de socket mort silencieux pendant la veille.
+
+## Bêta 23 : la table joue jusqu'au dernier pirate
 
 - **La partie continue jusqu'au dernier survivant** : être à l'eau ne coupe plus la table. L'éliminé regarde la manche se jouer, et le vainqueur est le dernier debout.
 - **Ouvrir sur les pacos en palifico fonctionne** : le message « ce montant n'est pas une surenchère valable » ne s'affiche plus ; la quantité se cale d'elle-même sur le minimum légal (2).

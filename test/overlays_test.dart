@@ -1,10 +1,12 @@
 import 'package:dudo/core/theme/app_colors.dart';
 import 'package:dudo/core/theme/app_theme.dart';
+import 'package:dudo/core/widgets/leather_cup.dart';
 import 'package:dudo/game/models/bid.dart';
 import 'package:dudo/game/models/player.dart';
 import 'package:dudo/l10n/generated/app_localizations.dart';
 import 'package:dudo/screens/game/widgets/bid_sheet.dart';
 import 'package:dudo/screens/game/widgets/game_over_overlay.dart';
+import 'package:dudo/screens/game/widgets/spectator_peek.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -179,5 +181,38 @@ void main() {
     expect(announced, isNotNull);
     expect(announced!.quantity, 2);
     expect(announced!.face, 1);
+  });
+
+  testWidgets('l\'écran du joueur à l\'eau suit la manche sans gobelet', (
+    tester,
+  ) async {
+    var waved = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.dark(),
+        locale: const Locale('fr'),
+        supportedLocales: const [Locale('fr')],
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        home: Scaffold(
+          body: SpectatorPeekOverlay(
+            round: 4,
+            palifico: false,
+            canBeginBidding: true,
+            onReady: () => waved = true,
+          ),
+        ),
+      ),
+    );
+
+    // No cup, no shake hint — just the elimination notice and the CTA.
+    expect(find.text('Tu es à l\'eau'), findsOneWidget);
+    expect(find.byType(LeatherCup), findsNothing);
+    await tester.tap(find.text('VOIR LA MANCHE'));
+    expect(waved, isTrue);
   });
 }

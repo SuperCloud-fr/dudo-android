@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:dudo/salon/network_salon_session.dart';
 import 'package:dudo/salon/salon_models.dart';
+import 'package:flutter/widgets.dart' show AppLifecycleState;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'salon_test_helpers.dart';
@@ -793,4 +794,117 @@ void main() {
     await settle();
     expect(harness.session.role, SalonRole.host);
   });
+
+  test(
+    'verrouiller pendant une reprise programmée ne bloque pas le salon',
+    () async {
+      final created = <FakeWebSocketChannel>[];
+      final session = NetworkSalonSession(
+        handshakeTimeout: const Duration(milliseconds: 80),
+        reconnectDelay: const Duration(milliseconds: 20),
+        createSalonCode: (_, _) async => 'S99FTH',
+        channelFactory: (uri) {
+          final channel = FakeWebSocketChannel.confirmed(uri);
+          created.add(channel);
+          return channel;
+        },
+      );
+
+      final creating = session.createSalon('Cap Hôte', 0);
+      await settle();
+      await untilOneSent(created.first);
+      created.first.serverSends(
+        salonFrame(
+          you: 0,
+          players: <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+          ],
+        ),
+      );
+      await creating;
+      expect(session.connected, isTrue);
+
+      // The socket drops while the app is awake: a recovery gets scheduled…
+      await created.first.serverCloses();
+      await settle();
+      // …but the phone locks right away, canceling the pending retry.
+      session.didChangeAppLifecycleState(AppLifecycleState.paused);
+      await settle();
+
+      // Unlock: one clean attempt must follow. Before the fix, the stale
+      // scheduler flag swallowed it and the salon never came back.
+      session.didChangeAppLifecycleState(AppLifecycleState.resumed);
+      for (var index = 0; index < 100 && created.length < 2; index++) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      expect(created, hasLength(2));
+      await untilOneSent(created[1]);
+      created[1].serverSends(
+        salonFrame(
+          you: 0,
+          players: <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+          ],
+        ),
+      );
+      await settle(6);
+      expect(session.connected, isTrue);
+    },
+  );
+
+  test(
+    'un socket mort pendant la veille est repris au déverrouillage',
+    () async {
+      final created = <FakeWebSocketChannel>[];
+      final session = NetworkSalonSession(
+        handshakeTimeout: const Duration(milliseconds: 80),
+        reconnectDelay: const Duration(milliseconds: 20),
+        createSalonCode: (_, _) async => 'S99FTH',
+        channelFactory: (uri) {
+          final channel = FakeWebSocketChannel.confirmed(uri);
+          created.add(channel);
+          return channel;
+        },
+      );
+
+      final creating = session.createSalon('Cap Hôte', 0);
+      await settle();
+      await untilOneSent(created.first);
+      created.first.serverSends(
+        salonFrame(
+          you: 0,
+          players: <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+          ],
+        ),
+      );
+      await creating;
+      expect(session.connected, isTrue);
+
+      // The phone dozes and the socket dies SILENTLY while suspended: no
+      // close frame surfaces until the flow is dropped by hand.
+      session.didChangeAppLifecycleState(AppLifecycleState.paused);
+      await created.first.serverCloses();
+      await settle();
+
+      // Unlock: the dead flow must not read as "the socket survived the
+      // doze" — the reconnect has to happen right away.
+      session.didChangeAppLifecycleState(AppLifecycleState.resumed);
+      for (var index = 0; index < 100 && created.length < 2; index++) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      expect(created, hasLength(2));
+      await untilOneSent(created[1]);
+      created[1].serverSends(
+        salonFrame(
+          you: 0,
+          players: <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+          ],
+        ),
+      );
+      await settle(6);
+      expect(session.connected, isTrue);
+    },
+  );
 }

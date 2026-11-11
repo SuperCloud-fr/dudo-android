@@ -144,6 +144,10 @@
   "peekShakeButton": "Secoue le téléphone pour brasser tes dés",
   "peekTapCupHint": "… ou touche le gobelet pour le soulever",
   "peekTakeTimeHint": "Prends ton temps. Les autres pirates attendent.",
+  "peekSpectatorTitle": "Tu es à l'eau",
+  "peekSpectatorBody": "Ta manche se joue sans toi : regarde les pirates debout se mentir, et prépare ta revanche.",
+  "peekSpectatorCta": "Voir la manche",
+  "peekSpectatorWait": "La manche démarre dès que l'hôte la lance.",
 
   "revealDudoLine": "{caller} a douté de {bidder}.",
   "@revealDudoLine": {"placeholders": {"caller": {"type": "String"}, "bidder": {"type": "String"}}},

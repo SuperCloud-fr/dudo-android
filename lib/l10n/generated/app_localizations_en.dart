@@ -436,6 +436,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Take your time. The other pirates are waiting.';
 
   @override
+  String get peekSpectatorTitle => 'You\'re out';
+
+  @override
+  String get peekSpectatorBody =>
+      'The round plays without you: watch the pirates still standing bluff each other, and plot your comeback.';
+
+  @override
+  String get peekSpectatorCta => 'Watch the round';
+
+  @override
+  String get peekSpectatorWait =>
+      'The round starts as soon as the host waves it in.';
+
+  @override
   String revealDudoLine(String caller, String bidder) {
     return '$caller doubted $bidder.';
   }

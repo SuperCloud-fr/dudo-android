@@ -86,6 +86,7 @@ class GameController extends ChangeNotifier {
 
   Timer? _botTimer;
   Timer? _turnTimer;
+  Timer? _spectatorTimer;
   bool _disposed = false;
   bool _paused = false;
   int _nextStarter = 0;
@@ -194,6 +195,9 @@ class GameController extends ChangeNotifier {
     for (final player in players) {
       if (player.isAlive) {
         player.roll(nextDie);
+      } else {
+        // No stale cup from a previous round behind the spectator screen.
+        player.dice = const <int>[];
       }
     }
     currentPlayer = _firstAliveFrom(starterSeat);
@@ -527,6 +531,7 @@ class GameController extends ChangeNotifier {
     _paused = false;
     _scheduleBot();
     _scheduleTurnTimeout();
+    _scheduleSpectatorAdvance();
   }
 
   /// Seats this engine plays by itself: explicit salon bots, or (offline
@@ -584,6 +589,42 @@ class GameController extends ChangeNotifier {
     notifyListeners();
     _scheduleBot();
     _scheduleTurnTimeout();
+    _scheduleSpectatorAdvance();
+  }
+
+  /// A table with no human seat left plays itself: the eliminated local
+  /// player only watches, and the engine waves each phase along after a
+  /// short read — no tapping through the last rounds between bots.
+  void _scheduleSpectatorAdvance() {
+    _spectatorTimer?.cancel();
+    _spectatorTimer = null;
+    if (!autoPlayBots || _disposed || _paused) return;
+    if (human.isAlive) return;
+    if (players.where((player) => player.isAlive).length <= 1) return;
+    final Duration wait;
+    switch (phase) {
+      case GamePhase.peek:
+        wait = const Duration(milliseconds: 1200);
+      case GamePhase.reveal:
+        wait = const Duration(milliseconds: 1800);
+      case GamePhase.roundOver:
+        wait = const Duration(milliseconds: 900);
+      default:
+        return;
+    }
+    _spectatorTimer = Timer(wait, () {
+      _spectatorTimer = null;
+      switch (phase) {
+        case GamePhase.peek:
+          beginBidding();
+        case GamePhase.reveal:
+          applyOutcome();
+        case GamePhase.roundOver:
+          nextRound();
+        default:
+          break;
+      }
+    });
   }
 
   void _cancelBot() {
@@ -591,6 +632,8 @@ class GameController extends ChangeNotifier {
     _botTimer = null;
     _turnTimer?.cancel();
     _turnTimer = null;
+    _spectatorTimer?.cancel();
+    _spectatorTimer = null;
   }
 
   @override
