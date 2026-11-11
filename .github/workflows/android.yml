@@ -156,8 +156,9 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ runner.os }}-
 
-      - name: Build release APKs (one per ABI)
-        run: flutter build apk --release --split-per-abi
+      - name: Build release APK (arm64)
+        # One engine copy, one ABI: the arm64 APK alone went 50MB -> 19.5MB.
+        run: flutter build apk --release --target-platform android-arm64
 
       - name: Android lint (release)
         run: |
@@ -169,17 +170,13 @@ jobs:
       - name: Prepare APK
         id: prepare
         run: |
-          # The fat APK (all ABIs, ~50MB) is gone: one engine copy per
-          # architecture. The release asset is the arm64 build — every
-          # phone Dudo targets runs arm64; the other ABIs stay as
-          # artifacts for the curious.
           if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
             NAME="dudo-${GITHUB_REF_NAME}.apk"
           else
             SAFE_REF=$(echo "${GITHUB_REF_NAME}" | tr "/" "-")
             NAME="dudo-${SAFE_REF}-${GITHUB_SHA::7}.apk"
           fi
-          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk "build/app/outputs/flutter-apk/${NAME}"
+          cp build/app/outputs/flutter-apk/app-release.apk "build/app/outputs/flutter-apk/${NAME}"
           echo "apk_path=build/app/outputs/flutter-apk/${NAME}" >> "$GITHUB_OUTPUT"
           echo "apk_name=${NAME}" >> "$GITHUB_OUTPUT"
 
@@ -188,29 +185,19 @@ jobs:
           APK="${{ steps.prepare.outputs.apk_path }}"
           NAME="${{ steps.prepare.outputs.apk_name }}"
           ls -lh "$APK"
-          echo "### Dudo — APK release (split par ABI)" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Dudo — APK release (arm64)" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "- Commit : \`${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "- Fichier : \`$NAME\` (arm64)" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Fichier : \`$NAME\`" >> "$GITHUB_STEP_SUMMARY"
           echo "- Taille : $(du -h "$APK" | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| ABI | Taille |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
-          for f in build/app/outputs/flutter-apk/app-*-release.apk; do
-            echo "| \`$(basename "$f")\` | $(du -h "$f" | cut -f1) |" >> "$GITHUB_STEP_SUMMARY"
-          done
-          echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "- Téléchargement : artefact **dudo-android-apk** dans l'onglet Actions de ce run." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: dudo-android-apk
-          path: |
-            ${{ steps.prepare.outputs.apk_path }}
-            build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk
-            build/app/outputs/flutter-apk/app-x86_64-release.apk
-          if-no-files-found: warn
+          path: ${{ steps.prepare.outputs.apk_path }}
+          if-no-files-found: error
           retention-days: 14
 
       - name: Upload lint report
