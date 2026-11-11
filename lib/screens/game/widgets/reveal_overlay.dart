@@ -20,6 +20,7 @@ class RevealOverlay extends StatefulWidget {
     required this.players,
     required this.applied,
     required this.onContinue,
+    this.chatAction,
   });
 
   final ChallengeOutcome outcome;
@@ -27,6 +28,7 @@ class RevealOverlay extends StatefulWidget {
   final List<Player> players;
   final bool applied;
   final VoidCallback onContinue;
+  final Widget? chatAction;
 
   @override
   State<RevealOverlay> createState() => _RevealOverlayState();
@@ -100,6 +102,11 @@ class _RevealOverlayState extends State<RevealOverlay>
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
+                                if (widget.chatAction != null)
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: widget.chatAction,
+                                  ),
                                 _stamp(isDudo, accent),
                                 const SizedBox(height: 14),
                                 Text(
@@ -249,9 +256,7 @@ class _RevealOverlayState extends State<RevealOverlay>
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              l10n.revealAnnouncedBy(
-                widget.players[outcome.bidderSeat].name,
-              ),
+              l10n.revealAnnouncedBy(widget.players[outcome.bidderSeat].name),
               style: Theme.of(context).textTheme.bodySmall
                   ?.copyWith(color: AppColors.parchmentDim),
             ),
@@ -380,10 +385,8 @@ class _RevealOverlayState extends State<RevealOverlay>
       final rest = loser.isAlive
           ? (loser.isHuman
                 ? l10n.revealYouRemaining(loser.diceCount)
-                : l10n.revealPlayerRemaining(loser.diceCount))
-          : (loser.isHuman
-                ? l10n.revealYouSunk
-                : l10n.revealPlayerSunk);
+                : l10n.revealPlayerRemaining(loser.name, loser.diceCount))
+          : (loser.isHuman ? l10n.revealYouSunk : l10n.revealPlayerSunk);
       text =
           (loser.isHuman
               ? l10n.revealYouLoseDie

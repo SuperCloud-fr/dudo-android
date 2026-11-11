@@ -16,20 +16,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeWordmark => 'DUDO';
 
   @override
-  String get homeTavernSection => 'Taverne du dernier dé';
+  String get homeTavernSection => 'La taverne du dernier pirate';
 
   @override
-  String get homeSoloBadge => 'SOLO · HORS LIGNE';
-
-  @override
-  String get homeTagline => 'Cinq dés. Un gobelet.\nTout le monde ment.';
+  String get homeTagline => 'Cinq dés. Un gobelet. À toi de bluffer.';
 
   @override
   String get homeSubtitle =>
-      'Le Perudo des pirates, contre un équipage qui sait bluffer.';
+      'Le Perudo en version pirate : affronte un équipage rusé.';
 
   @override
-  String get ctaPlay => 'Jouer';
+  String get ctaPlay => 'Jouer en solo';
 
   @override
   String get ctaSalons => 'Salons multijoueurs';
@@ -38,74 +35,79 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ctaHowTo => 'Comment jouer ?';
 
   @override
-  String get ctaSettings => 'Réglages';
+  String get ctaSettings => 'Paramètres';
 
   @override
-  String get homeVersionBadge => 'v0.1 · 2 à 6 joueurs';
+  String get homeVersionBadge => '2 à 6 joueurs';
 
   @override
-  String get settingsTitle => 'RÉGLAGES';
+  String get settingsTitle => 'PARAMÈTRES';
 
   @override
   String get settingsAmbienceTitle => 'L\'ambiance';
 
   @override
   String get settingsAmbienceHint =>
-      'La table ne change pas. La lumière, si — choisis l\'endroit où tu couches tes dés.';
+      'Choisis une ambiance : les règles restent les mêmes, seule la lumière change.';
 
   @override
-  String get lookChosen => 'Choisi';
+  String get lookChosen => 'Sélectionnée';
 
   @override
-  String get lookPick => 'Toucher pour choisir';
+  String get lookPick => 'Choisir cette ambiance';
 
   @override
-  String get settingsPrivacyPolicy => 'Politique de confidentialité';
+  String get settingsPrivacyPolicy => 'Lire la politique de confidentialité';
 
   @override
-  String get commonCancel => 'Annuler';
+  String get commonCancel => 'Annuler l\'action';
 
   @override
-  String get setupBack => 'Retour';
+  String get setupBack => 'Retour à l\'accueil';
 
   @override
   String get setupTitle => 'NOUVELLE PARTIE';
 
   @override
-  String get setupCrewTitle => 'L\'équipage';
+  String get setupCrewTitle => 'Qui monte à bord ?';
 
   @override
-  String get setupCrewHint =>
-      'Choisis combien de pirates vont te mentir ce soir.';
+  String get setupCrewHint => 'Choisis combien de pirates IA t\'affronteront.';
 
   @override
-  String get setupBotTemperTitle => 'Le tempérament des bots';
+  String get setupBotTemperTitle => 'Le caractère de l\'équipage';
 
   @override
-  String get setupStart => 'Larguer les amarres';
+  String get setupStart => 'Commencer la partie';
 
   @override
   String get setupRulesLink => 'Relire les règles';
 
   @override
-  String get setupTableLabel => 'PIRATES À TA TABLE';
+  String get setupTableLabel => 'QUI EMBARQUE ?';
 
   @override
   String setupPlayersCount(int count) {
-    return '$count joueurs';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pirates à bord',
+      one: '1 pirate à bord',
+    );
+    return '$_temp0';
   }
 
   @override
-  String get setupRemovePirate => 'Retirer un pirate';
+  String get setupRemovePirate => 'Retirer ce pirate';
 
   @override
   String get setupAddPirate => 'Ajouter un pirate';
 
   @override
-  String get setupSeatAtTable => 'à table';
+  String get setupSeatAtTable => 'présent';
 
   @override
-  String get setupSeatAbsent => 'absent';
+  String get setupSeatAbsent => 'au repos';
 
   @override
   String setupCrewSummary(int count, String names) {
@@ -115,7 +117,7 @@ class AppLocalizationsFr extends AppLocalizations {
       other: '$count pirates',
       one: '1 pirate',
     );
-    return 'Toi + $_temp0 : $names';
+    return 'À bord : toi et $_temp0 — $names';
   }
 
   @override
@@ -123,10 +125,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get setupCalzaHint =>
-      'Annoncer le compte exact rapporte un dé. Optionnel, mais féroce.';
+      'Annonce le compte exact pour gagner un dé (cinq maximum). Cette règle est facultative.';
 
   @override
-  String get gameQuitTable => 'Quitter la partie';
+  String get gameQuitTable => 'Quitter la table';
 
   @override
   String gameRound(int round) {
@@ -139,13 +141,16 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get gameOpenJournal => 'Ouvrir le journal de la table';
+  String get gameOpenJournal => 'Consulter le journal de bord';
 
   @override
-  String get gameOpenPrompt => 'Ouvre les hostilités.';
+  String get gameOpenSalonChat => 'Ouvrir le chat du salon';
 
   @override
-  String get gameYourTurnPrompt => 'À toi de parler.';
+  String get gameOpenPrompt => 'À toi de faire le premier pari.';
+
+  @override
+  String get gameYourTurnPrompt => 'À toi de jouer.';
 
   @override
   String get gameCalzaAsk => 'CALZA ?';
@@ -157,24 +162,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get gameRaise => 'Surenchérir';
 
   @override
-  String get gameOpenBid => 'Ouvrir';
+  String get gameOpenBid => 'Ouvrir les hostilités';
 
   @override
   String gameBotThinking(String name) {
-    return '$name réfléchit';
+    return '$name prépare son coup…';
   }
 
   @override
-  String get gameTableListens => 'la table écoute';
+  String get gameTableListens => 'Tout le bord retient son souffle.';
 
   @override
-  String get gameLiftCupPrompt => 'Soulève ton gobelet.';
+  String get gameLiftCupPrompt => 'Soulève ton gobelet pour révéler les dés.';
 
   @override
   String get gameTableHoldsBreath => 'La table retient son souffle.';
 
   @override
-  String get gameBidInvalid => 'Ce pari n\'est plus valable.';
+  String get gameBidInvalid =>
+      'Ce pari n\'est plus valable. Choisis-en un autre.';
 
   @override
   String get gameDudoConfirmTitle => 'Dudo ?';
@@ -189,14 +195,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String gameDudoConfirmBody(String accused, String bid) {
-    return 'Tu penses que $accused sur « $bid ». Si le pari tient, tu perds un dé.';
+    return 'Tu contestes l\'affirmation suivante : $accused sur « $bid ». Si le compte atteint le pari, tu perds un dé.';
   }
 
   @override
-  String get gameDudoConfirm => 'DUDO !';
+  String get gameDudoConfirm => 'Confirmer le Dudo';
 
   @override
-  String get gameCalzaConfirmTitle => 'Calza ?';
+  String get gameCalzaConfirmTitle => 'Compte exact ?';
 
   @override
   String get gameFacePaco => 'paco';
@@ -207,37 +213,37 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String gameCalzaConfirmBody(int count, String faceWord) {
-    return 'Tu penses qu\'il y a exactement $count $faceWord sur la table. Compte exact : tu gagnes un dé. Sinon, tu en perds un.';
+  String gameCalzaConfirmBody(String bid) {
+    return 'Tu annonces $bid. Si le compte est exact, tu gagnes un dé (cinq maximum). Sinon, tu en perds un.';
   }
 
   @override
-  String get gameCalzaConfirm => 'CALZA';
+  String get gameCalzaConfirm => 'Confirmer la calza';
 
   @override
-  String get gameQuitTitle => 'Quitter la table ?';
+  String get gameQuitTitle => 'Abandonner la partie ?';
 
   @override
   String get gameQuitBody =>
-      'La partie en cours sera perdue. Les pirates ne se souviendront pas de toi.';
+      'La partie s\'arrêtera et ne pourra pas être reprise.';
 
   @override
-  String get gameQuitStay => 'Rester';
+  String get gameQuitStay => 'Continuer la partie';
 
   @override
-  String get gameQuitLeave => 'Quitter';
+  String get gameQuitLeave => 'Quitter la partie';
 
   @override
-  String get bidOpenHostilities => 'Ouvrir les hostilités';
+  String get bidOpenHostilities => 'Le premier coup de canon';
 
   @override
-  String get bidRaiseSection => 'Ta surenchère';
+  String get bidRaiseSection => 'À toi de faire monter le pari';
 
   @override
   String get bidRaisePrompt => 'À toi de surenchérir.';
 
   @override
-  String get bidLastBid => 'Dernier pari : ';
+  String get bidLastBid => 'Pari précédent : ';
 
   @override
   String get bidPalificoFaceLabel => 'FACE IMPOSÉE';
@@ -247,12 +253,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String bidSummaryAces(int count) {
-    return 'Je parie qu\'il y a au moins $count as sur la table.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pacos',
+      one: 'un paco',
+    );
+    return 'Il y a au moins $_temp0 sur la table.';
   }
 
   @override
   String bidSummary(int count, String faceWord) {
-    return 'Je parie qu\'il y a au moins $count $faceWord sur la table.';
+    return 'Il y a au moins $count $faceWord sur la table.';
   }
 
   @override
@@ -267,23 +279,24 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get bidPalificoFaceHint => 'Face imposée : manche palifico.';
+  String get bidPalificoFaceHint => 'En palifico, la face est imposée.';
 
   @override
   String get bidPalificoOpenHint =>
-      'Palifico : la face ouverte vaut pour toute la manche.';
+      'En palifico, la face du premier pari s\'applique toute la manche.';
 
   @override
-  String get bidAcesOnlyHint => 'Seuls les paco comptent.';
+  String get bidAcesOnlyHint => 'Seuls les pacos comptent.';
 
   @override
-  String get bidPacoWildHint => 'Les paco comptent pour cette face.';
+  String get bidPacoWildHint => 'Les pacos comptent pour cette face.';
 
   @override
   String get bidAnnounce => 'Annoncer';
 
   @override
-  String get bidIllegalRaise => 'Ce montant n\'est pas une surenchère valable.';
+  String get bidIllegalRaise =>
+      'Ce pari ne respecte pas les règles de surenchère. Essaie une autre combinaison.';
 
   @override
   String get bidDecreaseQty => 'Diminuer la quantité';
@@ -311,45 +324,45 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get bidAceSemantics => 'Paco, joker';
+  String get bidAceSemantics => 'Paco, face 1 et joker';
 
   @override
   String bidFaceSemantics(int face) {
-    return 'Valeur $face';
+    return 'Le dé montre $face';
   }
 
   @override
   String cardEmptySemantics(String name) {
-    return 'Aucun pari. $name ouvre les hostilités.';
+    return 'La table est vierge. $name lance le premier pari.';
   }
 
   @override
   String cardFilledSemantics(String spoken, String bidder, int total) {
-    return 'Pari en cours : $spoken, annoncé par $bidder. $total dés en jeu.';
+    return '$bidder a annoncé $spoken. Il y a $total dés en jeu.';
   }
 
   @override
   String get cardFilledTitle => 'PARI EN COURS';
 
   @override
-  String get cardDiceUnit => 'DÉS';
+  String get cardDiceUnit => 'DÉS EN JEU';
 
   @override
-  String get cardPalificoHint => 'Manche palifico : les paco ne comptent pas';
+  String get cardPalificoHint => 'En palifico, les pacos ne sont pas jokers.';
 
   @override
-  String get cardAcesOnlyHint => 'Seuls les paco comptent';
+  String get cardAcesOnlyHint => 'Seuls les pacos comptent.';
 
   @override
-  String get cardPacoWildHint => 'Les paco comptent pour cette face';
+  String get cardPacoWildHint => 'Les pacos comptent comme cette face.';
 
   @override
   String cardDiceCount(int count) {
-    return '$count dés';
+    return '$count dés en jeu';
   }
 
   @override
-  String get cardTableWaits => 'LA TABLE ATTEND';
+  String get cardTableWaits => 'TOUT LE BORD RETIENT SON SOUFFLE';
 
   @override
   String get cardYouOpen => 'À toi d\'ouvrir';
@@ -370,7 +383,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get peekCupTitle => 'Ton gobelet';
+  String get peekCupTitle => 'Tes dés';
 
   @override
   String get peekSecretHint =>
@@ -378,11 +391,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peekShakeHint =>
-      'Secoue le téléphone comme au vrai comptoir : le cuir se soulève, et toi seul vois tes dés.';
+      'Secoue le téléphone pour lancer tes dés. Toi seul peux les voir.';
 
   @override
   String get peekPalificoHint =>
-      'Manche palifico : une seule face pour tous les paris.';
+      'En palifico, tous les paris portent sur la même face.';
 
   @override
   String peekDiceInHand(int count) {
@@ -403,7 +416,7 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count paco',
+      other: '$count pacos',
       one: '1 paco',
     );
     return '$_temp0';
@@ -411,10 +424,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peekPalificoWildHint =>
-      'Manche palifico : les paco ne comptent que comme paco.';
+      'En palifico, les pacos ne valent que comme pacos.';
 
   @override
-  String get peekWildHint => 'Les paco comptent pour toutes les faces.';
+  String get peekWildHint => 'Les pacos comptent pour toutes les faces.';
 
   @override
   String peekPlayerOpens(String name) {
@@ -423,42 +436,41 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peekOnlyHostStarts =>
-      'Seul le maître de la partie peut lancer les enchères. Tu peux déjà regarder tes dés.';
+      'Le capitaine lance la manche ; en attendant, jette un œil à tes dés.';
 
   @override
   String get peekLiftCupSemantics => 'Soulever le gobelet pour voir tes dés';
 
   @override
-  String get peekShakeButton => 'Secoue le téléphone pour brasser tes dés';
+  String get peekShakeButton => 'Secouer pour lancer les dés';
 
   @override
   String get peekTapCupHint => '… ou touche le gobelet pour le soulever';
 
   @override
-  String get peekTakeTimeHint =>
-      'Prends ton temps. Les autres pirates attendent.';
+  String get peekTakeTimeHint => 'Prends ton temps : les autres attendent.';
 
   @override
-  String get peekSpectatorTitle => 'Tu es à l\'eau';
+  String get peekSpectatorTitle => 'Par-dessus bord';
 
   @override
   String get peekSpectatorBody =>
-      'Ta manche se joue sans toi : regarde les pirates debout se mentir, et prépare ta revanche.';
+      'Plus de dés pour toi : regarde l\'équipage poursuivre la manche et prépare ta revanche.';
 
   @override
-  String get peekSpectatorCta => 'Voir la manche';
+  String get peekSpectatorCta => 'Regarder la manche';
 
   @override
-  String get peekSpectatorWait => 'La manche démarre dès que l\'hôte la lance.';
+  String get peekSpectatorWait => 'En attente du signal du capitaine…';
 
   @override
   String revealDudoLine(String caller, String bidder) {
-    return '$caller a douté de $bidder.';
+    return '$caller a contesté le pari de $bidder.';
   }
 
   @override
   String revealCalzaLine(String caller) {
-    return '$caller a annoncé le compte exact.';
+    return '$caller a tenté une calza.';
   }
 
   @override
@@ -468,7 +480,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get revealLiar => 'Mensonge !';
 
   @override
-  String get revealExactCount => 'Compte exact.';
+  String get revealExactCount => 'Compte exact, matelot !';
 
   @override
   String get revealMissed => 'Raté.';
@@ -488,30 +500,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String revealOnTable(int count) {
-    return 'sur la table · $count annoncés';
+    return 'Sur la table : $count dés annoncés.';
   }
 
   @override
-  String get revealTableHoldsBreath => 'La table retient son souffle…';
+  String get revealTableHoldsBreath => 'Tout le monde retient son souffle…';
 
   @override
-  String get revealCountInOpen => 'Le compte est sous les yeux de tous…';
+  String get revealCountInOpen => 'Révélons les dés…';
 
   @override
   String get revealCapYou =>
-      'Tu avais déjà cinq dés. Le compte exact est noté, mais rien à reprendre.';
+      'Tu as déjà cinq dés, le maximum. Tu ne peux pas en gagner un de plus.';
 
   @override
   String revealCapPlayer(String name) {
-    return '$name avait déjà cinq dés. Le compte exact est noté, mais rien à reprendre.';
+    return '$name a déjà cinq dés, le maximum. Impossible d\'en gagner un de plus.';
   }
 
   @override
-  String get revealWinYou => 'Compte exact : tu reprends un dé.';
+  String get revealWinYou => 'Tu gagnes un dé.';
 
   @override
   String revealWinPlayer(String name) {
-    return '$name reprend un dé.';
+    return '$name gagne un dé.';
   }
 
   @override
@@ -530,76 +542,76 @@ class AppLocalizationsFr extends AppLocalizations {
       other: '$count dés',
       one: '$count dé',
     );
-    return ' Il te reste $_temp0.';
+    return ' Tu as encore $_temp0.';
   }
 
   @override
-  String revealPlayerRemaining(int count) {
+  String revealPlayerRemaining(String name, int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count dés',
       one: '$count dé',
     );
-    return ' Il lui reste $_temp0.';
+    return ' $name a encore $_temp0.';
   }
 
   @override
-  String get revealYouSunk => ' Tu es à l\'eau.';
+  String get revealYouSunk => ' Par-dessus bord !';
 
   @override
-  String get revealPlayerSunk => ' Il est à l\'eau.';
+  String get revealPlayerSunk => ' Plus de dés : hors jeu.';
 
   @override
-  String get revealNoLoser => 'La manche se termine sans perdant.';
+  String get revealNoLoser => 'Personne ne perd de dé cette manche.';
 
   @override
-  String get revealNextRound => 'Manche suivante';
+  String get revealNextRound => 'Continuer';
 
   @override
-  String get revealSeeMore => 'Voir la suite';
+  String get revealSeeMore => 'Découvrir le verdict';
 
   @override
-  String get revealRoleBidder => 'a parié';
+  String get revealRoleBidder => 'a annoncé le pari';
 
   @override
-  String get revealRoleCaller => 'a douté';
+  String get revealRoleCaller => 'a contesté le pari';
 
   @override
   String get revealRoleWaiter => 'a attendu';
 
   @override
-  String get overWonSection => 'La taverne est à toi';
+  String get overWonSection => 'Tu as gagné';
 
   @override
-  String get overLostSection => 'Fin de l\'aventure';
+  String get overLostSection => 'Partie perdue';
 
   @override
-  String get overWonTitle => 'TU RÈGNES';
+  String get overWonTitle => 'VICTOIRE';
 
   @override
-  String get overLostTitle => 'PAR-DESSUS BORD';
+  String get overLostTitle => 'TU ES ÉLIMINÉ';
 
   @override
   String get overWonBody =>
-      'L\'équipage a rendu les armes. La dernière chope est pour toi.';
+      'L\'équipage a baissé pavillon. La dernière chope est pour toi.';
 
   @override
   String overLostBody(String name) {
-    return 'Les pirates t\'ont eu. $name garde la main sur le tonneau.';
+    return 'Les pirates t\'ont éliminé. $name remporte la taverne.';
   }
 
   @override
-  String get overStatRounds => 'manches';
+  String get overStatRounds => 'manches jouées';
 
   @override
-  String get overStatDiceLeft => 'dés restants';
+  String get overStatDiceLeft => 'dés encore en jeu';
 
   @override
   String get overLastWord => 'LE DERNIER MOT';
 
   @override
-  String get overRematch => 'Rejouer';
+  String get overRematch => 'Remettre ça';
 
   @override
   String get overStandingOut => 'à l\'eau';
@@ -612,17 +624,18 @@ class AppLocalizationsFr extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dés',
-      one: '$count dé',
+      other: '$count dés restants',
+      one: '$count dé restant',
     );
     return '$_temp0';
   }
 
   @override
-  String get journalTitle => 'Journal de la table';
+  String get journalTitle => 'Historique de la partie';
 
   @override
-  String get journalSubtitle => 'Tout ce qui s\'est dit.';
+  String get journalSubtitle =>
+      'Les paris, les dudos et les calzas de chaque manche.';
 
   @override
   String journalRoundBadge(int round) {
@@ -631,7 +644,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get journalEmpty =>
-      'Le journal est encore vierge. Les paris vont pleuvoir.';
+      'Aucune action pour l\'instant. Les paris apparaîtront ici.';
 
   @override
   String journalRoundWords(int count) {
@@ -645,7 +658,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get journalClose => 'Fermer le journal';
+  String get journalClose => 'Fermer';
 
   @override
   String journalSaidBid(String name, String bid) {
@@ -659,30 +672,30 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String journalSaidCalza(String name) {
-    return '$name a demandé calza.';
+    return '$name a crié Calza.';
   }
 
   @override
-  String get seatOutStatus => 'À l\'eau';
+  String get seatOutStatus => 'Éliminé';
 
   @override
   String get seatYourTurn => 'à toi';
 
   @override
-  String get seatThinking => 'réfléchit';
+  String get seatThinking => 'prépare son coup';
 
   @override
-  String get seatPlaying => 'en jeu';
+  String get seatPlaying => 'en lice';
 
   @override
   String seatSemantics(String name, int count, String status) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dés restants',
-      one: '$count dé restant',
+      other: '$count dés',
+      one: '$count dé',
     );
-    return '$name, $_temp0, $status';
+    return '$name, encore $_temp0, $status';
   }
 
   @override
@@ -700,32 +713,32 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get trayAcesPlain => 'paco simples';
+  String get trayAcesPlain => 'pacos sans pouvoir';
 
   @override
-  String get trayAcesWild => 'paco joker';
+  String get trayAcesWild => 'pacos maîtres des faces';
 
   @override
   String traySemantics(String hand) {
-    return 'Ta main : $hand';
+    return 'Tes dés : $hand';
   }
 
   @override
   String get palificoSemantics =>
-      'Manche palifico : une seule face imposée, paco non jokers';
+      'Manche palifico : une seule face imposée, les pacos ne sont pas jokers.';
 
   @override
-  String get salonBackToTavern => 'Retour à la taverne';
+  String get salonBackToTavern => 'Rentrer au port';
 
   @override
   String get salonHeader => 'MULTIJOUEUR';
 
   @override
-  String get salonHomeTitle => 'Un salon, cinq gobelets';
+  String get salonHomeTitle => 'Joue avec tes amis';
 
   @override
   String get salonHomeHint =>
-      'Les amis entrent avec un code à six caractères. L\'hôte distribue les pirates IA, le salon communique en direct.';
+      'Un code, six caractères, et vous voilà à la même table. L\'hôte complète l\'équipage avec des pirates IA.';
 
   @override
   String get salonCreateCta => 'Créer un salon';
@@ -734,20 +747,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get salonJoinCta => 'Rejoindre un salon';
 
   @override
-  String get salonBack => 'Retour';
+  String get salonBack => 'Retour au port';
 
   @override
   String get salonCreateHeader => 'CRÉER UN SALON';
 
   @override
-  String get salonCreateTitle => 'Tu arrives premier';
+  String get salonCreateTitle => 'Tu hisses le pavillon';
 
   @override
   String get salonCreateHint =>
-      'Choisis ton matelot et combien de pirates IA viendront mentir avec toi.';
+      'Choisis ton nom de flibustier et combien de forbans IA rejoindront ton équipage.';
 
   @override
-  String get salonNameLabel => 'Ton nom de pirate';
+  String get salonNameLabel => 'Ton nom de flibustier';
 
   @override
   String get salonBotsSection => 'Pirates IA';
@@ -756,36 +769,38 @@ class AppLocalizationsFr extends AppLocalizations {
   String get salonCreateSubmit => 'Créer le salon';
 
   @override
-  String get salonDefaultName => 'Barman';
+  String get salonDefaultName => 'La Vigie';
 
   @override
-  String get salonCreateFailed => 'La création du salon a échoué.';
+  String get salonCreateFailed =>
+      'La taverne n\'a pas ouvert ses portes. Réessaie dans un moment.';
 
   @override
   String get salonJoinHeader => 'REJOINDRE UN SALON';
 
   @override
-  String get salonJoinTitle => 'Le code fait foi';
+  String get salonJoinTitle => 'Entre le code du salon';
 
   @override
   String get salonJoinHint =>
-      'Entre les six caractères que l\'hôte t\'a envoyés. Sur le salon, ton nom est tout ce que tu peux changer.';
+      'Entre le code du capitaine, puis choisis le nom sous lequel tu embarques.';
 
   @override
   String get salonCodeLabel => 'Code du salon';
 
   @override
   String get salonPasteHint =>
-      'Rentrer en frais — via SMS, mail, WhatsApp, Signal ou n\'importe où ailleurs, c\'est juste mieux.';
+      'Tu as trouvé une bouteille à la mer. Elle contient un code : entre-le pour rejoindre le navire.';
 
   @override
-  String get salonJoinNameLabel => 'Ton nom (tu peux encore le changer)';
+  String get salonJoinNameLabel => 'Ton nom de pirate';
 
   @override
-  String get salonJoinSubmit => 'Rejoindre';
+  String get salonJoinSubmit => 'Rejoindre le salon';
 
   @override
-  String get salonJoinFailed => 'Salon injoignable pour l\'instant.';
+  String get salonJoinFailed =>
+      'Impossible de rejoindre ce salon. Vérifie le code et réessaie.';
 
   @override
   String get salonLeaveSemantic => 'Quitter le salon';
@@ -796,68 +811,69 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get salonHostRole => 'Tu reines sur ce salon';
+  String get salonHostRole => 'Tu tiens la barre de ce salon';
 
   @override
-  String get salonGuestRole => 'Invité de l\'hôte';
+  String get salonGuestRole => 'Matelot à bord';
 
   @override
-  String get salonCopySemantic => 'Copier le code';
+  String get salonCopySemantic => 'Mettre le code en bouteille';
 
   @override
-  String get salonCopied => 'Code copié dans le presse-papier.';
+  String get salonCopied => 'Le code est dans ta bouteille.';
 
   @override
-  String get salonStartRound => 'Lancer la manche';
+  String get salonStartRound => 'Démarrer la partie';
 
   @override
-  String get salonRoundPreparing => 'La manche se prépare…';
+  String get salonRoundPreparing => 'L\'équipage prend place…';
 
   @override
-  String get salonWaitingHost => 'En attente que l\'hôte lance la manche…';
+  String get salonWaitingHost => 'L\'équipage attend le signal du capitaine…';
 
   @override
   String get salonHostGoneHint =>
-      'L\'hôte est à l\'eau — la manche reprend dès son retour.';
+      'L\'hôte a quitté la manche. La partie reprendra à son retour.';
 
   @override
-  String get salonFeedSection => 'Le fil du salon';
+  String get salonFeedSection => 'Le journal de bord';
 
   @override
-  String get salonStartFailed => 'La manche n\'a pas pu démarrer. Réessaie.';
+  String get salonStartFailed =>
+      'Impossible de lancer la manche. Vérifie ta connexion et réessaie.';
 
   @override
   String get salonShareSemantic => 'Partager le code';
 
   @override
-  String get salonShareSmsSemantic => 'Envoyer par SMS';
+  String get salonShareSmsSemantic => 'Envoyer le code par SMS';
 
   @override
-  String get salonShareMailSemantic => 'Envoyer par mail';
+  String get salonShareMailSemantic => 'Envoyer le code par mail';
 
   @override
-  String get salonShareWhatsappSemantic => 'Envoyer sur WhatsApp';
+  String get salonShareWhatsappSemantic => 'Envoyer le code sur WhatsApp';
 
   @override
   String get salonShareHint =>
-      'WhatsApp, Signal, SMS, mail : chaque app ouvre les bons liens, sinon copie.';
+      'Fais passer le code à l\'équipage, ou copie-le pour le glisser où tu veux.';
 
   @override
   String salonPlayersCount(int count) {
-    return 'À table ($count)';
+    return 'Joueurs ($count)';
   }
 
   @override
-  String get salonBotBadge => 'IA';
+  String get salonBotBadge => 'PIRATE IA';
 
   @override
-  String get salonRemoveBotSemantic => 'Retirer un pirate IA';
+  String get salonRemoveBotSemantic => 'Retirer ce pirate IA';
 
   @override
   String get salonAddBotSemantic => 'Ajouter un pirate IA';
 
   @override
-  String get salonBotDifficultyTitle => 'Difficulté des bots IA';
+  String get salonBotDifficultyTitle => 'Niveau des pirates IA';
 
   @override
   String get salonYouSuffix => '(toi)';
@@ -870,28 +886,34 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get salonLeaveBody =>
-      'Le code deviendra inutilisable pour cette partie.';
+      'Tu largues les amarres et retournes à l\'accueil.';
 
   @override
   String get salonLeaveStay => 'Rester';
 
   @override
-  String get salonLeaveQuit => 'Quitter';
+  String get salonLeaveQuit => 'Quitter le salon';
 
   @override
-  String get reactionHeader => 'RÉAGIR';
+  String get reactionHeader => 'RÉACTIONS';
 
   @override
-  String get speakHeader => 'PARLE';
+  String get speakHeader => 'FAIS PORTER TA VOIX';
 
   @override
   String reactionTargetSummary(String player, int n) {
-    return '$player · mes dés : $n';
+    return 'Je vise $player — $n dés en cale.';
   }
 
   @override
-  String reactionLine1(int n) {
-    return 'Tu n\'es pas obligé de me croire, mais j\'ai $n dés.';
+  String reactionLine1(int count, String face) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dés',
+      one: 'un dé',
+    );
+    return 'Tu n\'es pas obligé de me croire, mais j\'ai $_temp0 de $face.';
   }
 
   @override
@@ -901,114 +923,126 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String reactionLine3(String player) {
-    return 'Le paco, c\'est ta fin, $player.';
+    return 'Ce paco va t\'envoyer par-dessus bord, $player.';
   }
 
   @override
   String reactionLine4(int n) {
-    return 'Je te promets : au plus $n dés sur la table, ils mentent.';
+    return 'Parole de flibustier : pas plus de $n dés. Ce pari est du vent.';
   }
 
   @override
   String reactionLine5(int n, String player) {
-    return 'Regarde mes $n dés, $player, tu es à l\'eau d\'ici ce soir.';
+    return 'J\'ai $n dés, $player. Ton pari ne tiendra pas.';
   }
 
   @override
-  String get reactionLine6 => 'Paco sur paco paco paco.';
+  String get reactionLine6 => 'Paco à bâbord, paco à tribord !';
 
   @override
   String reactionLine7(String player) {
-    return 'Je te crois, $player, te voilà bien détrompé.';
+    return 'Je t\'ai cru, $player. Bien joué, tu m\'as eu.';
   }
 
   @override
-  String get reactionFreeHint => 'Écrire un message libre…';
+  String get reactionDicePrompt => 'Choisis ta fable';
 
   @override
-  String get rulesHeader => 'LES RÈGLES';
+  String get reactionDiceCountLabel => 'Combien de dés ?';
 
   @override
-  String get rulesBack => 'Retour';
+  String get reactionDiceFaceLabel => 'Quel symbole ?';
 
   @override
-  String get rulesHeroTitle => 'Le jeu du mensonge';
+  String get reactionDiceSend => 'Larguer la phrase';
+
+  @override
+  String get reactionFreeHint => 'Faire passer un mot à l\'équipage…';
+
+  @override
+  String get rulesHeader => 'RÈGLES DU JEU';
+
+  @override
+  String get rulesBack => 'Retour à l\'accueil';
+
+  @override
+  String get rulesHeroTitle => 'Les règles du Perudo';
 
   @override
   String get rulesHeroIntro =>
-      'Perudo, Dudo, Cacho… peu importe le nom. Les dés ne mentent pas. Les pirates, si.';
+      'Peu importe le nom : les dés restent muets et les pirates racontent des histoires.';
 
   @override
   String get rulesShowcaseCaption =>
-      'Cinq dés, un paco joker, et aucune raison de dire la vérité.';
+      'Cinq dés, un paco joker, et le bluff au cœur de la partie.';
 
   @override
-  String get rulesGoalTitle => 'Le but';
+  String get rulesGoalTitle => 'Ta mission';
 
   @override
   String get rulesGoalBody =>
-      'Rester le dernier pirate avec au moins un dé. Chaque manche, on parie sur ce que cachent les gobelets. Celui qui se trompe perd un dé.';
+      'Garde au moins un dé jusqu\'à la fin. À chaque manche, pariez sur les dés cachés. Qui se trompe en perd un.';
 
   @override
   String get rulesCupTitle => 'Ton gobelet';
 
   @override
   String get rulesCupBody =>
-      'Chacun reçoit cinq dés et les cache sous son gobelet. Tu regardes les tiens en secret.';
+      'Chaque pirate reçoit cinq dés et les cache sous son gobelet. Tu ne vois que les tiens.';
 
   @override
-  String get rulesPacoTitle => 'Les paco sont jokers';
+  String get rulesPacoTitle => 'Les pacos sont des jokers';
 
   @override
   String get rulesPacoBody =>
-      'Un paco (1) compte pour n\'importe quelle face. Il ne compte que comme un paco quand le pari porte sur les paco. Un paco vaut donc deux dés normaux au moment de surenchérir.';
+      'Un paco (1) compte comme n\'importe quelle face, sauf quand le pari porte sur les pacos : il ne compte alors que comme un paco. Pour passer d\'une face normale aux pacos, il faut au moins la moitié des dés annoncés, arrondie au supérieur. Pour quitter les pacos, il faut doubler la quantité et ajouter un dé.';
 
   @override
-  String get rulesBidTitle => 'Le pari';
+  String get rulesBidTitle => 'Annoncer un pari';
 
   @override
-  String get rulesBidBody =>
-      'Un pari a deux nombres : une quantité et une face.';
+  String get rulesBidBody => 'Tu annonces combien de dés montrent quelle face.';
 
   @override
-  String get rulesBidQuote => '« Il y a au moins 4 dés de 5 sur la table. »';
+  String get rulesBidQuote =>
+      '« Quatre cinq, ou plus, se cachent sous les gobelets. »';
 
   @override
   String get rulesBidExplain =>
-      'Ici, le pirate affirme qu\'il y a au moins quatre dés de valeur 5 sur toute la table. Les paco comptent aussi.';
+      'Le pirate mise sa parole sur quatre dés de 5 ou plus. Les pacos peuvent compléter le compte.';
 
   @override
   String get rulesBidOpeningNote =>
-      'La manche ne s\'ouvre jamais sur les paco : ce sont des jokers, l\'ouverture leur est interdite. Le palifico fait exception.';
+      'Hors palifico, on ne peut pas ouvrir une manche avec des pacos.';
 
   @override
-  String get rulesRaiseTitle => 'Surenchérir';
+  String get rulesRaiseTitle => 'Faire monter le pari';
 
   @override
   String get rulesRaiseIntro =>
-      'Le pari suivant doit toujours être plus fort :';
+      'Chaque nouveau pari doit dépasser le précédent :';
 
   @override
   String get rulesRaiseSameFace =>
-      'Plus de dés sur la même face : 4 dés de 5 → 5 dés de 5.';
+      'Garde la face, fais monter le nombre : 4 dés de 5 → 5 dés de 5.';
 
   @override
   String get rulesRaiseHigherFace =>
-      'Même nombre, face plus haute : 4 dés de 5 → 4 dés de 6.';
+      'Garder la quantité et choisir une face plus haute : 4 dés de 5 → 4 dés de 6.';
 
   @override
   String get rulesRaiseTowardPaco =>
-      'Vers les paco : au moins la moitié, arrondie au-dessus : 4 dés de 5 → 2 paco.';
+      'Cap sur les pacos : annonce au moins la moitié des dés, arrondie au supérieur : 4 dés de 5 → 2 pacos.';
 
   @override
   String get rulesRaiseFromPaco =>
-      'Depuis les paco : le double plus un : 2 paco → 5 dés de n\'importe quelle face.';
+      'Depuis les pacos, double et ajoute un dé : 2 pacos → 5 dés, face au choix.';
 
   @override
   String get rulesConvert45 => '4 dés de 5';
 
   @override
-  String get rulesConvert2Paco => '2 paco';
+  String get rulesConvert2Paco => '2 pacos';
 
   @override
   String get rulesConvert5F2 => '5 dés de 2';
@@ -1017,47 +1051,47 @@ class AppLocalizationsFr extends AppLocalizations {
   String get rulesConvert5F6 => '5 dés de 6';
 
   @override
-  String get rulesConvert3Paco => '3 paco';
+  String get rulesConvert3Paco => '3 pacos';
 
   @override
   String get rulesDudoTitle => 'Dudo !';
 
   @override
   String get rulesDudoBody =>
-      'Au lieu de surenchérir, tu peux douter du dernier pari. Tout le monde soulève son gobelet et on compte.';
+      'Tu cries Dudo et mets le dernier pari à l\'épreuve : tous les gobelets se lèvent, puis on compte.';
 
   @override
   String get rulesDudoHoldsTitle => 'Le pari tient';
 
   @override
-  String get rulesDudoHoldsBody => 'Le douteur perd un dé.';
+  String get rulesDudoHoldsBody => 'Celui qui a contesté le pari perd un dé.';
 
   @override
-  String get rulesDudoWrongTitle => 'Le pari est faux';
+  String get rulesDudoWrongTitle => 'Le pari ne tient pas';
 
   @override
-  String get rulesDudoWrongBody => 'Le parieur perd un dé.';
+  String get rulesDudoWrongBody => 'Le joueur qui a lancé le pari perd un dé.';
 
   @override
-  String get rulesCalzaTitle => 'Calza — optionnel';
+  String get rulesCalzaTitle => 'La calza, à toi de choisir';
 
   @override
   String get rulesCalzaBody =>
-      'Tu peux aussi annoncer que le compte est exactement bon. C\'est la calza.';
+      'Tu peux annoncer que le nombre de dés correspond exactement au pari : c\'est une calza.';
 
   @override
-  String get rulesCalzaAllOrNothing => 'Tout ou rien';
+  String get rulesCalzaAllOrNothing => 'Un dé gagné ou perdu';
 
   @override
   String get rulesCalzaAllOrNothingBody =>
-      'Compte exact : tu gagnes un dé (cinq maximum). Compte faux : tu en perds un. La calza peut être désactivée avant la partie.';
+      'Si le compte est exact, tu gagnes un dé, jusqu\'à cinq. Sinon, tu en perds un. La calza peut être désactivée avant la partie.';
 
   @override
-  String get rulesEndTitle => 'La fin';
+  String get rulesEndTitle => 'Dernier pirate debout';
 
   @override
   String get rulesEndBody =>
-      'Un pirate qui perd son dernier dé est à l\'eau. Le dernier survivant gagne la taverne. Le perdant de la manche ouvre la suivante.';
+      'Plus de dés ? Par-dessus bord ! Le dernier pirate à flot gagne la taverne ; le perdant de la manche ouvre la suivante.';
 
   @override
   String get rulesPalificoTitle => 'Palifico';
@@ -1067,47 +1101,53 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le pirate qui perd son avant-dernier dé déclenche le palifico : la manche suivante se joue entièrement sur une seule face, imposée par l\'ouverture.';
 
   @override
-  String get rulesPalificoFaceTitle => 'Face imposée';
+  String get rulesPalificoFaceTitle => 'Face choisie au premier pari';
 
   @override
   String get rulesPalificoFaceBody =>
-      'Le premier pari choisit la face et ouvre à deux dés minimum. Tous les suivants montent la quantité de cette même face ; impossible de changer de valeur.';
+      'Le premier pari fixe la face et annonce deux dés ou plus. Ensuite, impossible de changer de cap : seule la quantité monte.';
 
   @override
-  String get rulesPalificoPacoTitle => 'Paco sans joker';
+  String get rulesPalificoPacoTitle => 'Les pacos ne sont pas jokers';
 
   @override
   String get rulesPalificoPacoBody =>
-      'Pendant le palifico, les paco ne comptent que comme paco : plus de joker.';
+      'En palifico, le paco perd son pouvoir de joker : il ne vaut que pour lui-même.';
 
   @override
-  String get rulesPalificoOnceTitle => 'Une seule manche';
+  String get rulesPalificoOnceTitle => 'Le palifico dure une manche';
 
   @override
   String get rulesPalificoOnceBody =>
-      'À la manche d\'après, les enchères reprennent la forme normale, même si le pirate reste à un dé. Et si quelqu\'un rechute à un dé plus tard, le palifico se déclenche à nouveau.';
+      'Le palifico ne dure qu\'une manche. Ensuite, les règles normales reprennent, même si un pirate n\'a qu\'un dé. Si un pirate tombe à un dé plus tard, un nouveau palifico commence.';
 
   @override
   String get rulesTipQuote =>
-      'Le meilleur bluff est celui que personne n\'a envie de payer.';
+      'Le meilleur bluff est celui que personne n\'ose contester.';
 
   @override
-  String get rulesUnderstood => 'J\'ai compris';
+  String get rulesUnderstood => 'Compris';
 
   @override
-  String get diceHiddenText => 'Dé caché';
+  String get diceHiddenText => 'Dé sous le gobelet';
 
   @override
-  String get diceAceText => 'As, joker';
+  String get diceAceText => 'Le paco, maître des faces';
 
   @override
   String diceValueText(int value) {
-    return 'Dé de valeur $value';
+    return 'Le dé affiche $value';
   }
 
   @override
   String bidAcesLabel(int count) {
-    return '$count paco';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pacos',
+      one: '1 paco',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1123,7 +1163,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String bidSpokenAces(int count) {
-    return 'au moins $count paco';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'au moins $count pacos',
+      one: 'au moins un paco',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1134,104 +1180,120 @@ class AppLocalizationsFr extends AppLocalizations {
       other: '$count dés',
       one: '$count dé',
     );
-    return 'au moins $_temp0 de valeur $face';
+    return 'au moins $_temp0 montrant $face';
   }
 
   @override
   String bidShortLabel(int quantity, String mark) {
-    return '$quantity×$mark';
+    return '$quantity × $mark';
   }
 
   @override
-  String get temperMousseLabel => 'Mousse';
+  String get temperMousseLabel => 'P\'tit mousse';
 
   @override
-  String get temperMousseBody => 'Timide, prudent, facile à bluffer.';
+  String get temperMousseBody =>
+      'Un matelot craintif, qui mord facilement à l\'hameçon.';
 
   @override
-  String get temperFlibustierLabel => 'Flibustier';
+  String get temperFlibustierLabel => 'Corsaire';
 
   @override
   String get temperFlibustierBody =>
-      'Un adversaire honnête, qui sait sentir le mensonge.';
+      'Un adversaire équilibré, qui repère les bluffs.';
 
   @override
   String get temperCapitaineLabel => 'Capitaine';
 
   @override
   String get temperCapitaineBody =>
-      'Calcule les probabilités et n\'aime pas perdre.';
+      'Il calcule les probabilités et déteste perdre.';
 
   @override
   String get systemPhoneSlept =>
-      'Le téléphone a mis le salon en sommeil — reconnexion…';
+      'Le téléphone sort de veille. Reconnexion au salon…';
 
   @override
   String get systemQuietCut =>
-      'Le salon ne répond plus — je coupe la connexion desséchée et je reprends…';
+      'Le salon ne répond plus. Je rétablis la connexion…';
 
   @override
   String systemCreated(String code) {
-    return 'Salon créé. Code : $code';
+    return 'Ton salon est prêt : $code.';
   }
 
   @override
   String systemConnected(String code) {
-    return 'Connecté au salon $code';
+    return 'À bord du salon $code !';
   }
 
   @override
   String systemRecovered(String code) {
-    return 'Reconnecté au salon $code.';
+    return 'Tu es de retour dans le salon $code.';
   }
 
   @override
   String systemClosed(String reason) {
-    return 'Salon fermé : $reason';
+    return 'La taverne ferme ses portes : $reason.';
   }
 
   @override
   String systemLost(String detail) {
-    return 'Connexion perdue$detail — tentative de reconnexion…';
+    return 'Connexion interrompue$detail. Nouvelle tentative…';
   }
 
   @override
   String systemUnreachableTrack(String reason) {
-    return 'Salon injoignable — $reason Je continue d\'essayer.';
+    return 'Impossible de joindre le salon : $reason. Je réessaie.';
   }
 
   @override
   String systemUnreachableBackoff(String brief) {
-    return 'Salon injoignable — $brief. Je continue d\'essayer en doublant le délai.';
+    return 'Le salon reste inaccessible : $brief. Je réessaierai après un délai plus long.';
   }
 
   @override
   String systemThrottledCreate(int seconds) {
-    return 'Trop de demandes de création — réessaie dans ~$seconds s.';
+    return 'Trop de demandes de création. Réessaie dans $seconds s.';
   }
 
   @override
   String systemCreateFailed(String detail) {
-    return 'Impossible de créer un salon pour l\'instant.$detail';
+    return 'Le salon n\'a pas pu être créé.$detail';
   }
 
   @override
   String systemChatRate(int seconds) {
-    return 'Débit du salon atteint — attends ${seconds}s.';
+    return 'Doucement sur les messages, matelot. Attends $seconds s.';
   }
 
   @override
   String get systemDeadReaction =>
-      'La connexion au salon est lâchée — la réaction ne peut pas partir.';
+      'Tu es déconnecté du salon. Ta réaction n\'a pas été envoyée.';
 
   @override
   String get systemDeadChat =>
-      'La connexion au salon est lâchée — le message ne peut pas partir.';
+      'Tu es déconnecté du salon. Ton message n\'a pas été envoyé.';
 
   @override
   String get systemHostGone =>
-      'L’hôte a quitté la manche — la table attend son retour…';
+      'L\'hôte est déconnecté. La table attend son retour…';
 
   @override
-  String get systemSixChars => 'Le code doit faire six caractères.';
+  String get systemNoServerReply =>
+      'Le serveur n\'a pas répondu après 8 s. Je réessaie.';
+
+  @override
+  String systemNetworkResponse(String status, String body) {
+    return 'Le réseau répond $status : $body.';
+  }
+
+  @override
+  String systemNetworkProbeFailed(String error) {
+    return 'Impossible de vérifier la connexion ($error). Je réessaie.';
+  }
+
+  @override
+  String get systemSixChars =>
+      'Il faut un code de six caractères pour monter à bord.';
 }

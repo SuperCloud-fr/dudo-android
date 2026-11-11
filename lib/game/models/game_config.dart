@@ -2,16 +2,16 @@ import 'package:flutter/foundation.dart';
 
 enum BotDifficulty {
   mousse(
-    label: 'Mousse',
-    description: 'Timide, prudent, facile à bluffer.',
+    label: 'P\'tit mousse',
+    description: 'Un matelot craintif, qui mord facilement à l\'hameçon.',
     challengeThreshold: 0.20,
     raiseConfidence: 0.70,
     bluffChance: 0.20,
     calzaThreshold: 0.46,
   ),
   flibustier(
-    label: 'Flibustier',
-    description: 'Un adversaire honnête, qui sait sentir le mensonge.',
+    label: 'Corsaire',
+    description: 'Un adversaire équilibré, qui repère les bluffs.',
     challengeThreshold: 0.27,
     raiseConfidence: 0.58,
     bluffChance: 0.13,
@@ -19,7 +19,7 @@ enum BotDifficulty {
   ),
   capitaine(
     label: 'Capitaine',
-    description: 'Calcudie les probabilités et n\'aime pas perdre.',
+    description: 'Il calcule les probabilités et déteste perdre.',
     challengeThreshold: 0.33,
     raiseConfidence: 0.53,
     bluffChance: 0.08,

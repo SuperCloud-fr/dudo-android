@@ -24,6 +24,7 @@ class PeekOverlay extends StatefulWidget {
     required this.starterName,
     required this.canBeginBidding,
     required this.onReady,
+    this.chatAction,
   });
 
   final int round;
@@ -33,6 +34,7 @@ class PeekOverlay extends StatefulWidget {
   final String starterName;
   final bool canBeginBidding;
   final VoidCallback onReady;
+  final Widget? chatAction;
 
   @override
   State<PeekOverlay> createState() => _PeekOverlayState();
@@ -113,7 +115,10 @@ class _PeekOverlayState extends State<PeekOverlay>
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SectionLabel(l10n.peekRound(widget.round)),
+                            SectionLabel(
+                              l10n.peekRound(widget.round),
+                              trailing: widget.chatAction,
+                            ),
                             const SizedBox(height: 14),
                             Text(
                               l10n.peekCupTitle,
@@ -208,13 +213,10 @@ class _PeekOverlayState extends State<PeekOverlay>
                                                   Container(
                                                     width: 3,
                                                     height: 3,
-                                                    decoration:
-                                                        BoxDecoration(
-                                                          color: AppColors
-                                                              .brassDim,
-                                                          shape:
-                                                              BoxShape.circle,
-                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors.brassDim,
+                                                      shape: BoxShape.circle,
+                                                    ),
                                                   ),
                                                   const SizedBox(width: 9),
                                                   Flexible(
@@ -464,10 +466,7 @@ class _CupHint extends StatelessWidget {
           icon: const Icon(Icons.vibration, size: 18),
           label: Text(l10n.peekShakeButton),
         ),
-        TextButton(
-          onPressed: onTap,
-          child: Text(l10n.peekTapCupHint),
-        ),
+        TextButton(onPressed: onTap, child: Text(l10n.peekTapCupHint)),
         const SizedBox(height: 2),
         Text(
           l10n.peekTakeTimeHint,

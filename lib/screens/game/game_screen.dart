@@ -15,9 +15,12 @@ import '../../game/models/game_config.dart';
 import '../../game/models/table_event.dart';
 import '../../game/state/game_controller.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../salon/network_salon_session.dart';
+import '../../salon/salon_models.dart';
 import 'widgets/bid_card.dart';
 import 'widgets/bid_sheet.dart';
 import 'widgets/game_over_overlay.dart';
+import 'widgets/in_game_salon_chat_sheet.dart';
 import 'widgets/journal_sheet.dart';
 import 'widgets/peek_overlay.dart';
 import 'widgets/spectator_peek.dart';
@@ -31,10 +34,12 @@ class GameScreen extends StatefulWidget {
     super.key,
     this.config = const GameConfig(),
     this.controller,
+    this.salonSession,
   });
 
   final GameConfig config;
   final GameController? controller;
+  final NetworkSalonSession? salonSession;
 
   @override
   State<GameScreen> createState() => _GameScreenState();
@@ -44,6 +49,9 @@ class _GameScreenState extends State<GameScreen> {
   late final GameController _controller;
   late GamePhase _lastPhase;
   bool _allowPop = false;
+  int _lastObservedSalonMessageCount = 0;
+  int _unreadSalonMessages = 0;
+  bool _salonChatOpen = false;
 
   @override
   void initState() {
@@ -51,12 +59,18 @@ class _GameScreenState extends State<GameScreen> {
     _controller = widget.controller ?? GameController(config: widget.config);
     _lastPhase = _controller.phase;
     _controller.addListener(_onGameChanged);
+    final salon = widget.salonSession;
+    if (salon != null) {
+      _lastObservedSalonMessageCount = salon.messages.length;
+      salon.addListener(_onSalonSessionChanged);
+    }
   }
 
   @override
   void dispose() {
     _controller.removeListener(_onGameChanged);
     _controller.dispose();
+    widget.salonSession?.removeListener(_onSalonSessionChanged);
     super.dispose();
   }
 
@@ -69,6 +83,31 @@ class _GameScreenState extends State<GameScreen> {
       if (phase == GamePhase.gameOver) HapticFeedback.heavyImpact();
     }
     if (mounted) setState(() {});
+  }
+
+  void _onSalonSessionChanged() {
+    final salon = widget.salonSession;
+    if (!mounted || salon == null) return;
+    final messages = salon.messages;
+    if (messages.length < _lastObservedSalonMessageCount) {
+      _lastObservedSalonMessageCount = messages.length;
+      _unreadSalonMessages = 0;
+    } else {
+      for (
+        var index = _lastObservedSalonMessageCount;
+        index < messages.length;
+        index++
+      ) {
+        final message = messages[index];
+        if (!_salonChatOpen &&
+            !message.isMine &&
+            message.kind != SalonMessageKind.system) {
+          _unreadSalonMessages++;
+        }
+      }
+      _lastObservedSalonMessageCount = messages.length;
+    }
+    setState(() {});
   }
 
   @override
@@ -159,6 +198,11 @@ class _GameScreenState extends State<GameScreen> {
               ],
             ),
           ),
+          if (widget.salonSession != null &&
+              _controller.phase == GamePhase.bidding) ...[
+            _buildSalonChatButton(l10n),
+            const SizedBox(width: 6),
+          ],
           RoundIconButton(
             icon: Icons.history,
             semanticLabel: l10n.gameOpenJournal,
@@ -167,6 +211,51 @@ class _GameScreenState extends State<GameScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildSalonChatButton(AppLocalizations l10n) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        RoundIconButton(
+          icon: Icons.chat_bubble_outline,
+          semanticLabel: l10n.gameOpenSalonChat,
+          onPressed: _openSalonChat,
+          size: 48,
+        ),
+        if (_unreadSalonMessages > 0)
+          Positioned(
+            top: -2,
+            right: -2,
+            child: IgnorePointer(
+              child: ExcludeSemantics(
+                child: Container(
+                  constraints: const BoxConstraints(
+                    minWidth: 18,
+                    minHeight: 18,
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: AppColors.bloodBright,
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: AppColors.ink, width: 1.5),
+                  ),
+                  child: Text(
+                    _unreadSalonMessages > 9 ? '9+' : '$_unreadSalonMessages',
+                    key: const ValueKey('salon-chat-unread'),
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: AppColors.parchment,
+                      fontSize: 9,
+                      height: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -434,6 +523,9 @@ class _GameScreenState extends State<GameScreen> {
             palifico: _controller.palifico,
             canBeginBidding: _controller.canBeginBiddingFromPeek,
             onReady: _controller.beginBidding,
+            chatAction: widget.salonSession == null
+                ? null
+                : _buildSalonChatButton(l10n),
           );
         }
         return PeekOverlay(
@@ -445,6 +537,9 @@ class _GameScreenState extends State<GameScreen> {
           starterName: _controller.players[_controller.starter].name,
           canBeginBidding: _controller.canBeginBiddingFromPeek,
           onReady: _controller.beginBidding,
+          chatAction: widget.salonSession == null
+              ? null
+              : _buildSalonChatButton(l10n),
         );
       case GamePhase.reveal:
       case GamePhase.roundOver:
@@ -460,6 +555,9 @@ class _GameScreenState extends State<GameScreen> {
           onContinue: applied
               ? _controller.nextRound
               : _controller.applyOutcome,
+          chatAction: widget.salonSession == null
+              ? null
+              : _buildSalonChatButton(l10n),
         );
       case GamePhase.gameOver:
         final result = _controller.result;
@@ -556,9 +654,6 @@ class _GameScreenState extends State<GameScreen> {
     final bid = _controller.currentBid;
     if (bid == null || !_controller.canHumanCalza) return;
     final l10n = AppLocalizations.of(context)!;
-    final faceWord = bid.face == 1
-        ? l10n.gameFacePaco
-        : l10n.gameWordDiceOfFace(bid.face);
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -570,7 +665,7 @@ class _GameScreenState extends State<GameScreen> {
               color: AppColors.parchment,
             ),
           ),
-          content: Text(l10n.gameCalzaConfirmBody(bid.quantity, faceWord)),
+          content: Text(l10n.gameCalzaConfirmBody(bid.labelLocalized(l10n))),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
@@ -590,6 +685,34 @@ class _GameScreenState extends State<GameScreen> {
     if (confirmed != true || !mounted) return;
     HapticFeedback.heavyImpact();
     _controller.callHumanCalza();
+  }
+
+  Future<void> _openSalonChat() async {
+    final salon = widget.salonSession;
+    if (salon == null) return;
+    _controller.pauseBots();
+    _salonChatOpen = true;
+    _unreadSalonMessages = 0;
+    _lastObservedSalonMessageCount = salon.messages.length;
+    setState(() {});
+    try {
+      await showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        showDragHandle: true,
+        backgroundColor: Colors.transparent,
+        barrierColor: AppColors.ink.withValues(alpha: 0.72),
+        builder: (_) => InGameSalonChatSheet(session: salon),
+      );
+    } finally {
+      _salonChatOpen = false;
+      _lastObservedSalonMessageCount = salon.messages.length;
+      if (mounted) {
+        _controller.resumeBots();
+        setState(() {});
+      }
+    }
   }
 
   Future<void> _openJournal() async {

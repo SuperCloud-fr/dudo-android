@@ -28,6 +28,7 @@ class _ReactionBarState extends State<ReactionBar> {
   static const emojis = ['😂', '🤯', '😈', '😤', '🍺', '🦜'];
 
   final int _diceCount = 2;
+  static const int _defaultClaimFace = 5;
   SalonPlayer? _targetPlayer;
   final _textController = TextEditingController();
 
@@ -64,13 +65,102 @@ class _ReactionBarState extends State<ReactionBar> {
     HapticFeedbackFromPack.vibrate();
   }
 
+  String _faceName(AppLocalizations l10n, int face) =>
+      face == 1 ? l10n.bidUnitPaco : '$face';
+
+  Future<void> _chooseDiceClaim(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) async {
+    var count = _diceCount;
+    var face = _defaultClaimFace;
+    final message = await showModalBottomSheet<String>(
+      context: context,
+      useSafeArea: true,
+      isScrollControlled: true,
+      showDragHandle: true,
+      backgroundColor: AppColors.leatherDeep,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (context, setSheetState) => Padding(
+          padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                l10n.reactionDicePrompt,
+                style: Theme.of(context).textTheme.titleLarge
+                    ?.copyWith(color: AppColors.parchment),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                l10n.reactionDiceCountLabel,
+                style: Theme.of(context).textTheme.labelLarge
+                    ?.copyWith(color: AppColors.brass),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (var value = 1; value <= 5; value++)
+                    ChoiceChip(
+                      label: Text(l10n.trayDiceCount(value)),
+                      selected: count == value,
+                      onSelected: (_) => setSheetState(() => count = value),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.reactionDiceFaceLabel,
+                style: Theme.of(context).textTheme.labelLarge
+                    ?.copyWith(color: AppColors.brass),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (var value = 1; value <= 6; value++)
+                    ChoiceChip(
+                      label: Text(_faceName(l10n, value)),
+                      selected: face == value,
+                      onSelected: (_) => setSheetState(() => face = value),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.reactionLine1(count, _faceName(l10n, face)),
+                style: Theme.of(context).textTheme.bodyLarge
+                    ?.copyWith(color: AppColors.parchment),
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () =>
+                    Navigator.of(sheetContext)
+                        .pop(l10n.reactionLine1(count, _faceName(l10n, face))),
+                child: Text(l10n.reactionDiceSend),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (message != null) _send(message);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     // Canned table-talk, localized; {n}/{player} are filled by the
     // generated accessors.
     final recipes = <String>[
-      l10n.reactionLine1(_diceCount),
+      l10n.reactionLine1(_diceCount, _faceName(l10n, _defaultClaimFace)),
       l10n.reactionLine2(_targetName),
       l10n.reactionLine3(_targetName),
       l10n.reactionLine4(_diceCount),
@@ -154,7 +244,9 @@ class _ReactionBarState extends State<ReactionBar> {
               itemBuilder: (context, index) {
                 final label = recipes[index];
                 return OutlinedButton(
-                  onPressed: () => _send(label),
+                  onPressed: index == 0
+                      ? () => _chooseDiceClaim(context, l10n)
+                      : () => _send(label),
                   child: Text(
                     label,
                     maxLines: 1,

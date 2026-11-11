@@ -33,10 +33,10 @@ class DiceFace extends StatelessWidget {
     final label =
         semanticLabel ??
         (hidden
-            ? (l10n?.diceHiddenText ?? 'Dé caché')
+            ? (l10n?.diceHiddenText ?? 'Dé sous le gobelet')
             : value == 1
-            ? (l10n?.diceAceText ?? 'As, joker')
-            : (l10n?.diceValueText(value) ?? 'Dé de valeur $value'));
+            ? (l10n?.diceAceText ?? 'Le paco, maître des faces')
+            : (l10n?.diceValueText(value) ?? 'Le dé affiche $value'));
     return Semantics(
       label: label,
       image: true,

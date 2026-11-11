@@ -53,17 +53,7 @@ class HomeScreen extends StatelessWidget {
                             mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              SectionLabel(
-                                l10n.homeTavernSection,
-                                trailing: Text(
-                                  l10n.homeSoloBadge,
-                                  style: Theme.of(context).textTheme.labelSmall
-                                      ?.copyWith(
-                                        color: AppColors.brassDim,
-                                        letterSpacing: 1.2,
-                                      ),
-                                ),
-                              ),
+                              SectionLabel(l10n.homeTavernSection),
                               const SizedBox(height: 20),
                               Center(
                                 child: SwayingSign(
@@ -144,10 +134,7 @@ class HomeScreen extends StatelessWidget {
                                     ),
                                   );
                                 },
-                                icon: const Icon(
-                                  Icons.tune_outlined,
-                                  size: 17,
-                                ),
+                                icon: const Icon(Icons.tune_outlined, size: 17),
                                 label: Text(l10n.ctaSettings),
                               ),
                               const SizedBox(height: 14),

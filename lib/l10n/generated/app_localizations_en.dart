@@ -16,20 +16,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeWordmark => 'DUDO';
 
   @override
-  String get homeTavernSection => 'Tavern of the Last Die';
+  String get homeTavernSection => 'Tavern of the Last Pirate';
 
   @override
-  String get homeSoloBadge => 'SOLO · OFFLINE';
+  String get homeTagline => 'Five dice. One cup. Your turn to bluff.';
 
   @override
-  String get homeTagline => 'Five dice. One cup.\nEveryone lies.';
+  String get homeSubtitle => 'Pirate Perudo: face a cunning crew.';
 
   @override
-  String get homeSubtitle =>
-      'Pirates\' Perudo, against a crew that knows how to bluff.';
-
-  @override
-  String get ctaPlay => 'Play';
+  String get ctaPlay => 'Play solo';
 
   @override
   String get ctaSalons => 'Multiplayer salons';
@@ -41,7 +37,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ctaSettings => 'Settings';
 
   @override
-  String get homeVersionBadge => 'v0.1 · 2 to 6 players';
+  String get homeVersionBadge => '2 to 6 players';
 
   @override
   String get settingsTitle => 'SETTINGS';
@@ -51,51 +47,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsAmbienceHint =>
-      'The table never changes. The light does — pick where you lay your dice.';
+      'Choose an ambience: the rules stay the same, only the lighting changes.';
 
   @override
-  String get lookChosen => 'Chosen';
+  String get lookChosen => 'Selected';
 
   @override
-  String get lookPick => 'Tap to choose';
+  String get lookPick => 'Choose this ambience';
 
   @override
-  String get settingsPrivacyPolicy => 'Privacy policy';
+  String get settingsPrivacyPolicy => 'Read the privacy policy';
 
   @override
-  String get commonCancel => 'Cancel';
+  String get commonCancel => 'Cancel action';
 
   @override
-  String get setupBack => 'Back';
+  String get setupBack => 'Back to home';
 
   @override
   String get setupTitle => 'NEW GAME';
 
   @override
-  String get setupCrewTitle => 'The crew';
+  String get setupCrewTitle => 'Who comes aboard?';
 
   @override
-  String get setupCrewHint => 'Pick how many pirates will lie to you tonight.';
+  String get setupCrewHint => 'Choose how many AI pirates you\'ll face.';
 
   @override
-  String get setupBotTemperTitle => 'The temper of the bots';
+  String get setupBotTemperTitle => 'The crew\'s character';
 
   @override
-  String get setupStart => 'Cast off the lines';
+  String get setupStart => 'Start the game';
 
   @override
   String get setupRulesLink => 'Re-read the rules';
 
   @override
-  String get setupTableLabel => 'PIRATES AT YOUR TABLE';
+  String get setupTableLabel => 'WHO COMES ABOARD?';
 
   @override
   String setupPlayersCount(int count) {
-    return '$count players';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pirates aboard',
+      one: '1 pirate aboard',
+    );
+    return '$_temp0';
   }
 
   @override
-  String get setupRemovePirate => 'Remove a pirate';
+  String get setupRemovePirate => 'Remove this pirate';
 
   @override
   String get setupAddPirate => 'Add a pirate';
@@ -104,7 +106,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setupSeatAtTable => 'at the table';
 
   @override
-  String get setupSeatAbsent => 'sitting out';
+  String get setupSeatAbsent => 'resting';
 
   @override
   String setupCrewSummary(int count, String names) {
@@ -114,7 +116,7 @@ class AppLocalizationsEn extends AppLocalizations {
       other: '$count pirates',
       one: '1 pirate',
     );
-    return 'You + $_temp0 : $names';
+    return 'Aboard: you and $_temp0 — $names';
   }
 
   @override
@@ -122,10 +124,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setupCalzaHint =>
-      'Calling the exact count wins you a die. Optional, but ferocious.';
+      'Call the exact count to gain a die (up to five). This rule is optional.';
 
   @override
-  String get gameQuitTable => 'Leave the game';
+  String get gameQuitTable => 'Leave the table';
 
   @override
   String gameRound(int round) {
@@ -138,13 +140,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get gameOpenJournal => 'Open the table log';
+  String get gameOpenJournal => 'Open the ship\'s log';
 
   @override
-  String get gameOpenPrompt => 'Open the hostilities.';
+  String get gameOpenSalonChat => 'Open salon chat';
 
   @override
-  String get gameYourTurnPrompt => 'Your turn to talk.';
+  String get gameOpenPrompt => 'You\'re up to make the first bid.';
+
+  @override
+  String get gameYourTurnPrompt => 'Your turn to play.';
 
   @override
   String get gameCalzaAsk => 'CALZA?';
@@ -156,24 +161,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameRaise => 'Raise the bid';
 
   @override
-  String get gameOpenBid => 'Open';
+  String get gameOpenBid => 'Open hostilities';
 
   @override
   String gameBotThinking(String name) {
-    return '$name is thinking';
+    return '$name is plotting…';
   }
 
   @override
-  String get gameTableListens => 'the table listens';
+  String get gameTableListens => 'The whole crew holds its breath.';
 
   @override
-  String get gameLiftCupPrompt => 'Lift your cup.';
+  String get gameLiftCupPrompt => 'Lift your cup to reveal the dice.';
 
   @override
   String get gameTableHoldsBreath => 'The table holds its breath.';
 
   @override
-  String get gameBidInvalid => 'That bid no longer stands.';
+  String get gameBidInvalid => 'That bid is no longer valid. Choose another.';
 
   @override
   String get gameDudoConfirmTitle => 'Dudo?';
@@ -188,14 +193,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String gameDudoConfirmBody(String accused, String bid) {
-    return 'You think $accused about “$bid”. If the bid holds, you lose a die.';
+    return 'You\'re challenging this claim: $accused about “$bid”. If the count meets the bid, you lose a die.';
   }
 
   @override
-  String get gameDudoConfirm => 'DUDO!';
+  String get gameDudoConfirm => 'Confirm Dudo';
 
   @override
-  String get gameCalzaConfirmTitle => 'Calza?';
+  String get gameCalzaConfirmTitle => 'Exact count?';
 
   @override
   String get gameFacePaco => 'paco';
@@ -206,37 +211,36 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String gameCalzaConfirmBody(int count, String faceWord) {
-    return 'You think there are exactly $count $faceWord on the table. Exact count: you win a die. Otherwise you lose one.';
+  String gameCalzaConfirmBody(String bid) {
+    return 'You announce $bid. If the count is exact, you gain a die (up to five). Otherwise, you lose one.';
   }
 
   @override
-  String get gameCalzaConfirm => 'CALZA';
+  String get gameCalzaConfirm => 'Confirm Calza';
 
   @override
-  String get gameQuitTitle => 'Leave the table?';
+  String get gameQuitTitle => 'Abandon the game?';
 
   @override
-  String get gameQuitBody =>
-      'The game in play will be lost. The pirates will not remember you.';
+  String get gameQuitBody => 'The game will end and can\'t be resumed.';
 
   @override
-  String get gameQuitStay => 'Stay';
+  String get gameQuitStay => 'Continue the game';
 
   @override
-  String get gameQuitLeave => 'Leave';
+  String get gameQuitLeave => 'Leave the game';
 
   @override
-  String get bidOpenHostilities => 'Open the hostilities';
+  String get bidOpenHostilities => 'The first cannon shot';
 
   @override
-  String get bidRaiseSection => 'Your raise';
+  String get bidRaiseSection => 'Your turn to raise the bid';
 
   @override
   String get bidRaisePrompt => 'Your turn to raise.';
 
   @override
-  String get bidLastBid => 'Last bid: ';
+  String get bidLastBid => 'Previous bid: ';
 
   @override
   String get bidPalificoFaceLabel => 'LOCKED FACE';
@@ -246,12 +250,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String bidSummaryAces(int count) {
-    return 'I wager there are at least $count paco on the table.';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pacos',
+      one: 'one paco',
+    );
+    return 'There are at least $_temp0 on the table.';
   }
 
   @override
   String bidSummary(int count, String faceWord) {
-    return 'I wager there are at least $count $faceWord on the table.';
+    return 'There are at least $count $faceWord on the table.';
   }
 
   @override
@@ -266,23 +276,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get bidPalificoFaceHint => 'Locked face: palifico round.';
+  String get bidPalificoFaceHint => 'In palifico, the face is locked.';
 
   @override
   String get bidPalificoOpenHint =>
-      'Palifico: the opening face stands for the whole round.';
+      'In palifico, the first bid\'s face applies for the whole round.';
 
   @override
-  String get bidAcesOnlyHint => 'Only paco count.';
+  String get bidAcesOnlyHint => 'Only pacos count.';
 
   @override
-  String get bidPacoWildHint => 'Paco count as wild for this face.';
+  String get bidPacoWildHint => 'Pacos count as wild for this face.';
 
   @override
   String get bidAnnounce => 'Call it';
 
   @override
-  String get bidIllegalRaise => 'That amount is not a legal raise.';
+  String get bidIllegalRaise =>
+      'That bid doesn\'t follow the raising rules. Try another combination.';
 
   @override
   String get bidDecreaseQty => 'Decrease the quantity';
@@ -310,45 +321,45 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get bidAceSemantics => 'Paco, the joker';
+  String get bidAceSemantics => 'Paco, face 1 and wild';
 
   @override
   String bidFaceSemantics(int face) {
-    return 'Value $face';
+    return 'The die shows $face';
   }
 
   @override
   String cardEmptySemantics(String name) {
-    return 'No bid yet. $name opens the hostilities.';
+    return 'The table is clear. $name makes the first bid.';
   }
 
   @override
   String cardFilledSemantics(String spoken, String bidder, int total) {
-    return 'Bid on the table: $spoken, called by $bidder. $total dice in play.';
+    return '$bidder bid $spoken. $total dice in play.';
   }
 
   @override
   String get cardFilledTitle => 'BID ON THE TABLE';
 
   @override
-  String get cardDiceUnit => 'DICE';
+  String get cardDiceUnit => 'DICE IN PLAY';
 
   @override
-  String get cardPalificoHint => 'Palifico round: paco do not count';
+  String get cardPalificoHint => 'In palifico, pacos aren\'t wild.';
 
   @override
-  String get cardAcesOnlyHint => 'Only paco count';
+  String get cardAcesOnlyHint => 'Only pacos count.';
 
   @override
-  String get cardPacoWildHint => 'Paco count as wild for this face';
+  String get cardPacoWildHint => 'Pacos count as this face.';
 
   @override
   String cardDiceCount(int count) {
-    return '$count dice';
+    return '$count dice in play';
   }
 
   @override
-  String get cardTableWaits => 'THE TABLE WAITS';
+  String get cardTableWaits => 'THE WHOLE CREW HOLDS ITS BREATH';
 
   @override
   String get cardYouOpen => 'Your opening';
@@ -369,7 +380,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get peekCupTitle => 'Your cup';
+  String get peekCupTitle => 'Your dice';
 
   @override
   String get peekSecretHint =>
@@ -377,10 +388,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peekShakeHint =>
-      'Shake the phone like on a real bar top: the leather lifts, and only you see your dice.';
+      'Shake your phone to roll your dice. Only you can see them.';
 
   @override
-  String get peekPalificoHint => 'Palifico round: a single face for every bid.';
+  String get peekPalificoHint => 'In palifico, every bid uses the same face.';
 
   @override
   String peekDiceInHand(int count) {
@@ -401,17 +412,17 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count paco',
+      other: '$count pacos',
       one: '1 paco',
     );
     return '$_temp0';
   }
 
   @override
-  String get peekPalificoWildHint => 'Palifico round: paco count only as paco.';
+  String get peekPalificoWildHint => 'In palifico, pacos count only as pacos.';
 
   @override
-  String get peekWildHint => 'Paco count as wild for every face.';
+  String get peekWildHint => 'Pacos count as wild for every face.';
 
   @override
   String peekPlayerOpens(String name) {
@@ -420,43 +431,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peekOnlyHostStarts =>
-      'Only the host can start bidding. You can look at your dice while you wait.';
+      'The captain starts the round; while you wait, take a look at your dice.';
 
   @override
   String get peekLiftCupSemantics => 'Lift the cup to see your dice';
 
   @override
-  String get peekShakeButton => 'Shake the phone to stir your dice';
+  String get peekShakeButton => 'Shake to roll the dice';
 
   @override
   String get peekTapCupHint => '… or tap the cup to lift it';
 
   @override
-  String get peekTakeTimeHint =>
-      'Take your time. The other pirates are waiting.';
+  String get peekTakeTimeHint => 'Take your time; the others are waiting.';
 
   @override
-  String get peekSpectatorTitle => 'You\'re out';
+  String get peekSpectatorTitle => 'Overboard';
 
   @override
   String get peekSpectatorBody =>
-      'The round plays without you: watch the pirates still standing bluff each other, and plot your comeback.';
+      'Out of dice? Watch the crew play on and plot your comeback.';
 
   @override
   String get peekSpectatorCta => 'Watch the round';
 
   @override
-  String get peekSpectatorWait =>
-      'The round starts as soon as the host waves it in.';
+  String get peekSpectatorWait => 'Waiting for the captain\'s signal…';
 
   @override
   String revealDudoLine(String caller, String bidder) {
-    return '$caller doubted $bidder.';
+    return '$caller challenged $bidder\'s bid.';
   }
 
   @override
   String revealCalzaLine(String caller) {
-    return '$caller called the exact count.';
+    return '$caller went for a calza.';
   }
 
   @override
@@ -466,7 +475,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get revealLiar => 'Lies!';
 
   @override
-  String get revealExactCount => 'Exact count.';
+  String get revealExactCount => 'Exact count, matey!';
 
   @override
   String get revealMissed => 'Missed.';
@@ -486,30 +495,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String revealOnTable(int count) {
-    return 'on the table · $count announced';
+    return 'On the table: $count dice called.';
   }
 
   @override
-  String get revealTableHoldsBreath => 'The table holds its breath…';
+  String get revealTableHoldsBreath => 'Everyone holds their breath…';
 
   @override
-  String get revealCountInOpen => 'The count lies under every eye…';
+  String get revealCountInOpen => 'Let\'s reveal the dice…';
 
   @override
   String get revealCapYou =>
-      'You already had five dice. The exact count is noted, but nothing to take back.';
+      'You already have five dice, the maximum. You can\'t gain another.';
 
   @override
   String revealCapPlayer(String name) {
-    return '$name already had five dice. The exact count is noted, but nothing to take back.';
+    return '$name already has five dice, the maximum. They can\'t gain another.';
   }
 
   @override
-  String get revealWinYou => 'Exact count: you take a die back.';
+  String get revealWinYou => 'You gain a die.';
 
   @override
   String revealWinPlayer(String name) {
-    return '$name takes a die back.';
+    return '$name gains a die.';
   }
 
   @override
@@ -532,72 +541,72 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String revealPlayerRemaining(int count) {
+  String revealPlayerRemaining(String name, int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
       other: '$count dice',
       one: '$count die',
     );
-    return ' They still have $_temp0.';
+    return ' $name still has $_temp0.';
   }
 
   @override
-  String get revealYouSunk => ' You’re overboard.';
+  String get revealYouSunk => ' Overboard!';
 
   @override
-  String get revealPlayerSunk => ' They’re overboard.';
+  String get revealPlayerSunk => ' Out of dice: out of play.';
 
   @override
-  String get revealNoLoser => 'The round ends with no loser.';
+  String get revealNoLoser => 'No one loses a die this round.';
 
   @override
-  String get revealNextRound => 'Next round';
+  String get revealNextRound => 'Continue';
 
   @override
-  String get revealSeeMore => 'See the outcome';
+  String get revealSeeMore => 'Uncover the verdict';
 
   @override
-  String get revealRoleBidder => 'bid it';
+  String get revealRoleBidder => 'made the bid';
 
   @override
-  String get revealRoleCaller => 'doubted';
+  String get revealRoleCaller => 'challenged the bid';
 
   @override
   String get revealRoleWaiter => 'watched';
 
   @override
-  String get overWonSection => 'The tavern is yours';
+  String get overWonSection => 'You won';
 
   @override
-  String get overLostSection => 'The end of the voyage';
+  String get overLostSection => 'Game lost';
 
   @override
-  String get overWonTitle => 'YOU RULE';
+  String get overWonTitle => 'VICTORY';
 
   @override
-  String get overLostTitle => 'OVERBOARD';
+  String get overLostTitle => 'YOU\'RE ELIMINATED';
 
   @override
   String get overWonBody =>
-      'The crew has laid down its arms. The last tankard is yours.';
+      'The crew has struck their colors. The last tankard is yours.';
 
   @override
   String overLostBody(String name) {
-    return 'The pirates had you. $name keeps a hand on the barrel.';
+    return 'The pirates knocked you out. $name wins the tavern.';
   }
 
   @override
-  String get overStatRounds => 'rounds';
+  String get overStatRounds => 'rounds played';
 
   @override
-  String get overStatDiceLeft => 'dice left';
+  String get overStatDiceLeft => 'dice in play';
 
   @override
   String get overLastWord => 'THE LAST WORD';
 
   @override
-  String get overRematch => 'Play again';
+  String get overRematch => 'Run it back';
 
   @override
   String get overStandingOut => 'overboard';
@@ -610,17 +619,17 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count dice',
-      one: '$count die',
+      other: '$count dice left',
+      one: '$count die left',
     );
     return '$_temp0';
   }
 
   @override
-  String get journalTitle => 'The table log';
+  String get journalTitle => 'Game history';
 
   @override
-  String get journalSubtitle => 'Everything that was said.';
+  String get journalSubtitle => 'Bids, Dudos, and Calzas from every round.';
 
   @override
   String journalRoundBadge(int round) {
@@ -628,7 +637,8 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get journalEmpty => 'The log is still blank. The bids will rain down.';
+  String get journalEmpty =>
+      'Nothing here yet. Bids will appear as they\'re made.';
 
   @override
   String journalRoundWords(int count) {
@@ -642,7 +652,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get journalClose => 'Close the log';
+  String get journalClose => 'Close';
 
   @override
   String journalSaidBid(String name, String bid) {
@@ -656,20 +666,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String journalSaidCalza(String name) {
-    return '$name called for calza.';
+    return '$name called Calza.';
   }
 
   @override
-  String get seatOutStatus => 'overboard';
+  String get seatOutStatus => 'eliminated';
 
   @override
   String get seatYourTurn => 'yours';
 
   @override
-  String get seatThinking => 'thinking';
+  String get seatThinking => 'plotting';
 
   @override
-  String get seatPlaying => 'in the game';
+  String get seatPlaying => 'in the running';
 
   @override
   String seatSemantics(String name, int count, String status) {
@@ -697,32 +707,32 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get trayAcesPlain => 'plain paco';
+  String get trayAcesPlain => 'pacos without power';
 
   @override
-  String get trayAcesWild => 'paco, wild';
+  String get trayAcesWild => 'pacos, masters of all faces';
 
   @override
   String traySemantics(String hand) {
-    return 'Your hand: $hand';
+    return 'Your dice: $hand';
   }
 
   @override
   String get palificoSemantics =>
-      'Palifico round: one forced face, paco no longer wild';
+      'Palifico: one forced face; pacos aren\'t wild.';
 
   @override
-  String get salonBackToTavern => 'Back to the tavern';
+  String get salonBackToTavern => 'Return to port';
 
   @override
   String get salonHeader => 'MULTIPLAYER';
 
   @override
-  String get salonHomeTitle => 'One code, five cups';
+  String get salonHomeTitle => 'Play with your friends';
 
   @override
   String get salonHomeHint =>
-      'Friends walk in with a six-character code. The host pours the AI pirates, the table talks live.';
+      'One code, six characters, and you\'re at the same table. The host fills out the crew with AI pirates.';
 
   @override
   String get salonCreateCta => 'Create a code';
@@ -731,20 +741,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salonJoinCta => 'Join with a code';
 
   @override
-  String get salonBack => 'Back';
+  String get salonBack => 'Back to port';
 
   @override
   String get salonCreateHeader => 'CREATE A SALON';
 
   @override
-  String get salonCreateTitle => 'You\'re the first';
+  String get salonCreateTitle => 'Raise the flag';
 
   @override
   String get salonCreateHint =>
-      'Pick your cabin name and how many AI pirates will lie with you.';
+      'Choose your pirate name and how many AI rogues will join your crew.';
 
   @override
-  String get salonNameLabel => 'Your pirate name';
+  String get salonNameLabel => 'Your buccaneer name';
 
   @override
   String get salonBotsSection => 'AI pirates';
@@ -753,36 +763,38 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salonCreateSubmit => 'Open the salon';
 
   @override
-  String get salonDefaultName => 'Tavern Keeper';
+  String get salonDefaultName => 'The Lookout';
 
   @override
-  String get salonCreateFailed => 'The salon could not be created.';
+  String get salonCreateFailed =>
+      'The tavern wouldn\'t open. Try again in a moment.';
 
   @override
   String get salonJoinHeader => 'JOIN A SALON';
 
   @override
-  String get salonJoinTitle => 'The code is the bond';
+  String get salonJoinTitle => 'Enter the salon code';
 
   @override
   String get salonJoinHint =>
-      'Type the six characters the host sent you. On the table, your name is the only thing you can change.';
+      'Enter the captain\'s code, then choose the name you\'ll sail under.';
 
   @override
   String get salonCodeLabel => 'Salon code';
 
   @override
   String get salonPasteHint =>
-      'Sharing fresh — SMS, mail, WhatsApp, Signal or anywhere else — just works better.';
+      'You found a message in a bottle. It holds a code: enter it to join the ship.';
 
   @override
-  String get salonJoinNameLabel => 'Your name (still editable here)';
+  String get salonJoinNameLabel => 'Your pirate name';
 
   @override
-  String get salonJoinSubmit => 'Join';
+  String get salonJoinSubmit => 'Join the salon';
 
   @override
-  String get salonJoinFailed => 'Salon unreachable right now.';
+  String get salonJoinFailed =>
+      'Can\'t join the salon. Check the code and try again.';
 
   @override
   String get salonLeaveSemantic => 'Leave the salon';
@@ -793,68 +805,70 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get salonHostRole => 'You reign over this table';
+  String get salonHostRole => 'You\'re at the helm of this salon';
 
   @override
-  String get salonGuestRole => 'Host\'s guest';
+  String get salonGuestRole => 'Crewmate aboard';
 
   @override
-  String get salonCopySemantic => 'Copy the code';
+  String get salonCopySemantic => 'Bottle the code';
 
   @override
-  String get salonCopied => 'Code copied to the clipboard.';
+  String get salonCopied => 'The code is in your bottle.';
 
   @override
-  String get salonStartRound => 'Start the round';
+  String get salonStartRound => 'Start the game';
 
   @override
-  String get salonRoundPreparing => 'The round is being poured…';
+  String get salonRoundPreparing => 'The crew is coming aboard…';
 
   @override
-  String get salonWaitingHost => 'Waiting for the host to start the round…';
+  String get salonWaitingHost =>
+      'The crew is waiting for the captain\'s signal…';
 
   @override
   String get salonHostGoneHint =>
-      'The host is out — the round resumes as soon as they\'re back.';
+      'The host left the round. The game will resume when they\'re back.';
 
   @override
-  String get salonFeedSection => 'The salon thread';
+  String get salonFeedSection => 'Ship\'s log';
 
   @override
-  String get salonStartFailed => 'The round could not start. Try again.';
+  String get salonStartFailed =>
+      'Couldn\'t start the round. Check your connection and try again.';
 
   @override
   String get salonShareSemantic => 'Share the code';
 
   @override
-  String get salonShareSmsSemantic => 'Send by text';
+  String get salonShareSmsSemantic => 'Send the code by text';
 
   @override
-  String get salonShareMailSemantic => 'Send by email';
+  String get salonShareMailSemantic => 'Email the code';
 
   @override
-  String get salonShareWhatsappSemantic => 'Send on WhatsApp';
+  String get salonShareWhatsappSemantic => 'Send the code on WhatsApp';
 
   @override
   String get salonShareHint =>
-      'WhatsApp, Signal, SMS, mail: each app opens the right links, otherwise copy.';
+      'Pass the code to your crew, or copy it to send wherever you like.';
 
   @override
   String salonPlayersCount(int count) {
-    return 'At the table ($count)';
+    return 'Players ($count)';
   }
 
   @override
-  String get salonBotBadge => 'AI';
+  String get salonBotBadge => 'AI PIRATE';
 
   @override
-  String get salonRemoveBotSemantic => 'Remove an AI pirate';
+  String get salonRemoveBotSemantic => 'Remove this AI pirate';
 
   @override
   String get salonAddBotSemantic => 'Add an AI pirate';
 
   @override
-  String get salonBotDifficultyTitle => 'AI bot difficulty';
+  String get salonBotDifficultyTitle => 'AI pirate difficulty';
 
   @override
   String get salonYouSuffix => '(you)';
@@ -866,28 +880,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salonLeaveTitle => 'Leave the salon?';
 
   @override
-  String get salonLeaveBody => 'The code becomes unusable for this game.';
+  String get salonLeaveBody =>
+      'You\'re casting off and heading back to the tavern.';
 
   @override
   String get salonLeaveStay => 'Stay';
 
   @override
-  String get salonLeaveQuit => 'Leave';
+  String get salonLeaveQuit => 'Leave the salon';
 
   @override
-  String get reactionHeader => 'REACT';
+  String get reactionHeader => 'REACTIONS';
 
   @override
-  String get speakHeader => 'SPEAK';
+  String get speakHeader => 'MAKE YOUR VOICE HEARD';
 
   @override
   String reactionTargetSummary(String player, int n) {
-    return '$player · my dice: $n';
+    return 'I\'m after $player — $n dice below deck.';
   }
 
   @override
-  String reactionLine1(int n) {
-    return 'You don\'t have to believe me, but I\'ve got $n dice.';
+  String reactionLine1(int count, String face) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dice',
+      one: 'one die',
+    );
+    return 'You don\'t have to believe me, but I\'ve got $_temp0 showing $face.';
   }
 
   @override
@@ -897,106 +918,119 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String reactionLine3(String player) {
-    return 'The paco will be your end, $player.';
+    return 'This paco will send you overboard, $player.';
   }
 
   @override
   String reactionLine4(int n) {
-    return 'I swear: at most $n dice on that table, they lie.';
+    return 'On a buccaneer\'s word: no more than $n dice. That bid\'s a bluff.';
   }
 
   @override
   String reactionLine5(int n, String player) {
-    return 'Look at my $n dice, $player — you\'ll sleep with the fishes.';
+    return 'I\'ve got $n dice, $player. Your bid won\'t hold.';
   }
 
   @override
-  String get reactionLine6 => 'Paco on paco, paco, paco...';
+  String get reactionLine6 => 'Paco to port, paco to starboard!';
 
   @override
   String reactionLine7(String player) {
-    return 'I believed you, $player — freshly fooled, aren\'t you.';
+    return 'I believed you, $player. Nicely played, you fooled me.';
   }
 
   @override
-  String get reactionFreeHint => 'Type a free message…';
+  String get reactionDicePrompt => 'Choose your tall tale';
 
   @override
-  String get rulesHeader => 'THE RULES';
+  String get reactionDiceCountLabel => 'How many dice?';
 
   @override
-  String get rulesBack => 'Back';
+  String get reactionDiceFaceLabel => 'Which symbol?';
 
   @override
-  String get rulesHeroTitle => 'The game of lies';
+  String get reactionDiceSend => 'Send it sailing';
+
+  @override
+  String get reactionFreeHint => 'Pass a note to the crew…';
+
+  @override
+  String get rulesHeader => 'RULES OF THE GAME';
+
+  @override
+  String get rulesBack => 'Back to home';
+
+  @override
+  String get rulesHeroTitle => 'Perudo rules';
 
   @override
   String get rulesHeroIntro =>
-      'Perudo, Dudo, Cacho… call it what you like. The dice don\'t lie. The pirates do.';
+      'Whatever you call it, the dice stay quiet and the pirates tell tales.';
 
   @override
   String get rulesShowcaseCaption =>
-      'Five dice, one wild paco, and no reason to tell the truth.';
+      'Five dice, one wild paco, and bluffing at the heart of it.';
 
   @override
-  String get rulesGoalTitle => 'The goal';
+  String get rulesGoalTitle => 'Your mission';
 
   @override
   String get rulesGoalBody =>
-      'Be the last pirate standing with at least one die. Each round you bet on what the cups hide. Whoever gets it wrong loses a die.';
+      'Keep at least one die until the end. Each round, bid on the hidden dice. Whoever is wrong loses one.';
 
   @override
   String get rulesCupTitle => 'Your cup';
 
   @override
   String get rulesCupBody =>
-      'Everyone gets five dice and hides them under the cup. You may only look at your own.';
+      'Each pirate gets five dice and hides them under their cup. You only see your own.';
 
   @override
-  String get rulesPacoTitle => 'Pacos are jokers';
+  String get rulesPacoTitle => 'Pacos are wild';
 
   @override
   String get rulesPacoBody =>
-      'A paco (1) counts as any face. It only counts as a paco when the bid is about pacos. So a paco is worth two plain dice when raising.';
+      'A paco (1) counts as any face unless the bid is on pacos, when it only counts as a paco. To raise from a regular face to pacos, bid at least half the quantity, rounded up. To raise from pacos, double the quantity and add one die.';
 
   @override
-  String get rulesBidTitle => 'The bid';
+  String get rulesBidTitle => 'Make a bid';
 
   @override
-  String get rulesBidBody => 'A bid is two numbers: a quantity and a face.';
+  String get rulesBidBody => 'You announce how many dice show which face.';
 
   @override
-  String get rulesBidQuote => '\"There are at least 4 fives on the table.\"';
+  String get rulesBidQuote =>
+      '\"Four fives or more are hiding under the cups.\"';
 
   @override
   String get rulesBidExplain =>
-      'Here the pirate claims at least four dice of value 5 across the whole table. The pacos count too.';
+      'The pirate stakes their word on at least four fives. Pacos can help make up the count.';
 
   @override
   String get rulesBidOpeningNote =>
-      'A round never opens on pacos: they are wild, so the opening bid can\'t use them. Palifico rounds are the exception.';
+      'Outside palifico, you can\'t open a round with pacos.';
 
   @override
-  String get rulesRaiseTitle => 'Raising';
+  String get rulesRaiseTitle => 'Raise the bid';
 
   @override
-  String get rulesRaiseIntro => 'The next bid must always be stronger:';
+  String get rulesRaiseIntro => 'Each new bid must beat the previous one:';
 
   @override
   String get rulesRaiseSameFace =>
-      'More dice on the same face: 4 fives → 5 fives.';
+      'Keep the face, raise the count: 4 fives → 5 fives.';
 
   @override
   String get rulesRaiseHigherFace =>
-      'Same count, higher face: 4 fives → 4 sixes.';
+      'Keep the quantity and choose a higher face: 4 fives → 4 sixes.';
 
   @override
   String get rulesRaiseTowardPaco =>
-      'Toward the pacos: at least half, rounded up: 4 fives → 2 pacos.';
+      'Head for pacos: bid at least half the dice, rounded up: 4 fives → 2 pacos.';
 
   @override
   String get rulesRaiseFromPaco =>
-      'From the pacos: double plus one: 2 pacos → 5 dice of any face.';
+      'From pacos, double the quantity and add one die: 2 pacos → 5 dice, any face.';
 
   @override
   String get rulesConvert45 => '4 fives';
@@ -1018,40 +1052,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rulesDudoBody =>
-      'Instead of raising, you may call the last bid a lie. Everyone lifts the cup and you count.';
+      'Call Dudo to challenge the last bid: everyone lifts their cup, then you count.';
 
   @override
   String get rulesDudoHoldsTitle => 'The bid stands';
 
   @override
-  String get rulesDudoHoldsBody => 'The doubter loses a die.';
+  String get rulesDudoHoldsBody =>
+      'The player who challenged the bid loses a die.';
 
   @override
-  String get rulesDudoWrongTitle => 'The bid is wrong';
+  String get rulesDudoWrongTitle => 'The bid doesn\'t hold';
 
   @override
-  String get rulesDudoWrongBody => 'The bidder loses a die.';
+  String get rulesDudoWrongBody => 'The player who made the bid loses a die.';
 
   @override
-  String get rulesCalzaTitle => 'Calza — optional';
+  String get rulesCalzaTitle => 'Calza: your choice';
 
   @override
   String get rulesCalzaBody =>
-      'You may also announce the count is exactly right. That\'s the calza.';
+      'You can call the count exactly right: that\'s a calza.';
 
   @override
-  String get rulesCalzaAllOrNothing => 'All or nothing';
+  String get rulesCalzaAllOrNothing => 'A die gained or lost';
 
   @override
   String get rulesCalzaAllOrNothingBody =>
-      'Exact count: you win a die (up to five). Wrong count: you lose one. Calza can be turned off before the game.';
+      'If the count is exact, you gain a die, up to five. Otherwise, you lose one. Calza can be switched off before the game.';
 
   @override
-  String get rulesEndTitle => 'The end';
+  String get rulesEndTitle => 'Last pirate standing';
 
   @override
   String get rulesEndBody =>
-      'A pirate who loses the last die is overboard. The last survivor wins the tavern. The round\'s loser opens the next round.';
+      'Out of dice? Overboard! The last pirate afloat wins the tavern; the round\'s loser opens the next one.';
 
   @override
   String get rulesPalificoTitle => 'Palifico';
@@ -1061,47 +1096,53 @@ class AppLocalizationsEn extends AppLocalizations {
       'A pirate who loses their second-to-last die triggers palifico: the next round plays on a single face, forced by the opening bid.';
 
   @override
-  String get rulesPalificoFaceTitle => 'Forced face';
+  String get rulesPalificoFaceTitle => 'Face picked by the opening bid';
 
   @override
   String get rulesPalificoFaceBody =>
-      'The first bid picks the face and opens with at least two dice. Every later bid raises the count on that same face; the face can\'t change.';
+      'The first bid sets the face and must be at least two dice. After that, you can\'t change course: only the quantity can go up.';
 
   @override
-  String get rulesPalificoPacoTitle => 'Paco, no jokers';
+  String get rulesPalificoPacoTitle => 'Pacos aren\'t wild';
 
   @override
   String get rulesPalificoPacoBody =>
-      'During palifico, pacos count only as pacos: no wild value.';
+      'In palifico, pacos lose their wild power and count only as pacos.';
 
   @override
-  String get rulesPalificoOnceTitle => 'One round only';
+  String get rulesPalificoOnceTitle => 'Palifico lasts one round';
 
   @override
   String get rulesPalificoOnceBody =>
-      'Next round, bidding returns to normal even if the pirate still holds one die. And if anyone drops to one die later, palifico triggers again.';
+      'Palifico lasts one round. Then the normal rules return, even if a pirate has only one die. If someone drops to one die later, a new palifico begins.';
 
   @override
   String get rulesTipQuote =>
-      'The best bluff is the one nobody wants to pay for.';
+      'The best bluff is the one no one dares to challenge.';
 
   @override
   String get rulesUnderstood => 'Got it';
 
   @override
-  String get diceHiddenText => 'Hidden die';
+  String get diceHiddenText => 'Die under the cup';
 
   @override
-  String get diceAceText => 'Ace, wild';
+  String get diceAceText => 'The paco, master of faces';
 
   @override
   String diceValueText(int value) {
-    return 'Die of value $value';
+    return 'The die shows $value';
   }
 
   @override
   String bidAcesLabel(int count) {
-    return '$count pacos';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pacos',
+      one: '1 paco',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1117,7 +1158,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String bidSpokenAces(int count) {
-    return 'at least $count pacos';
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'at least $count pacos',
+      one: 'at least one paco',
+    );
+    return '$_temp0';
   }
 
   @override
@@ -1128,102 +1175,115 @@ class AppLocalizationsEn extends AppLocalizations {
       other: '$count dice',
       one: '$count die',
     );
-    return 'at least $_temp0 of value $face';
+    return 'at least $_temp0 showing $face';
   }
 
   @override
   String bidShortLabel(int quantity, String mark) {
-    return '$quantity×$mark';
+    return '$quantity × $mark';
   }
 
   @override
-  String get temperMousseLabel => 'Cabin Hand';
+  String get temperMousseLabel => 'Young deckhand';
 
   @override
-  String get temperMousseBody => 'Shy, cautious, easy to bluff.';
+  String get temperMousseBody => 'A timid deckhand who takes the bait easily.';
 
   @override
-  String get temperFlibustierLabel => 'Freebooter';
+  String get temperFlibustierLabel => 'Corsair';
 
   @override
-  String get temperFlibustierBody => 'An honest opponent who can smell a lie.';
+  String get temperFlibustierBody => 'A balanced opponent who spots bluffs.';
 
   @override
   String get temperCapitaineLabel => 'Captain';
 
   @override
-  String get temperCapitaineBody => 'Counts probabilities and hates losing.';
+  String get temperCapitaineBody => 'Calculates the odds and hates losing.';
 
   @override
   String get systemPhoneSlept =>
-      'The phone put the salon to sleep — reconnecting…';
+      'Your phone is back from sleep. Reconnecting to the salon…';
 
   @override
-  String get systemQuietCut =>
-      'The salon has gone quiet — I cut the dessicated flow and reconnect…';
+  String get systemQuietCut => 'The salon stopped responding. Reconnecting…';
 
   @override
   String systemCreated(String code) {
-    return 'Salon created. Code: $code';
+    return 'Your salon is ready: $code.';
   }
 
   @override
   String systemConnected(String code) {
-    return 'In the salon $code';
+    return 'Aboard salon $code!';
   }
 
   @override
   String systemRecovered(String code) {
-    return 'Back in the salon $code.';
+    return 'You\'re back in the salon $code.';
   }
 
   @override
   String systemClosed(String reason) {
-    return 'Salon closed: $reason';
+    return 'The tavern closes its doors: $reason.';
   }
 
   @override
   String systemLost(String detail) {
-    return 'Connection lost$detail — trying to reconnect…';
+    return 'Connection interrupted$detail. Trying again…';
   }
 
   @override
   String systemUnreachableTrack(String reason) {
-    return 'Salon unreachable — $reason I keep trying.';
+    return 'Can\'t reach the salon: $reason. Trying again.';
   }
 
   @override
   String systemUnreachableBackoff(String brief) {
-    return 'Salon unreachable — $brief. I keep trying, backing off each time.';
+    return 'The salon is still unreachable: $brief. I\'ll try again after a longer wait.';
   }
 
   @override
   String systemThrottledCreate(int seconds) {
-    return 'Too many creation requests — try again in ~$seconds s.';
+    return 'Too many salon requests. Try again in $seconds s.';
   }
 
   @override
   String systemCreateFailed(String detail) {
-    return 'No salon could be created right now.$detail';
+    return 'The salon couldn\'t be created.$detail';
   }
 
   @override
   String systemChatRate(int seconds) {
-    return 'The salon is rate-limited — wait ${seconds}s.';
+    return 'Easy on the messages, matey. Wait $seconds s.';
   }
 
   @override
   String get systemDeadReaction =>
-      'The salon connection dropped — the reaction can\'t travel.';
+      'You\'re disconnected from the salon. Your reaction wasn\'t sent.';
 
   @override
   String get systemDeadChat =>
-      'The salon connection dropped — the message can\'t travel.';
+      'You\'re disconnected from the salon. Your message wasn\'t sent.';
 
   @override
   String get systemHostGone =>
-      'The host left the round — the table is waiting for them…';
+      'The host is disconnected. The table is waiting for them…';
 
   @override
-  String get systemSixChars => 'The code must be six characters.';
+  String get systemNoServerReply =>
+      'The server didn\'t respond after 8 s. Trying again.';
+
+  @override
+  String systemNetworkResponse(String status, String body) {
+    return 'The network replied $status: $body.';
+  }
+
+  @override
+  String systemNetworkProbeFailed(String error) {
+    return 'Couldn\'t check the connection ($error). Trying again.';
+  }
+
+  @override
+  String get systemSixChars => 'You need a six-character code to come aboard.';
 }

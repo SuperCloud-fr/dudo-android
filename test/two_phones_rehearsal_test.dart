@@ -96,8 +96,11 @@ Future<void> _vaEtVient() async {
       _driveHost(relay.controller);
       _driveGuest(mirror);
       await Future<void>.delayed(const Duration(milliseconds: 300));
-      expect(_threadFailures(host.messages), isEmpty,
-          reason: 'fil hôte propre avant va-et-vient');
+      expect(
+        _threadFailures(host.messages),
+        isEmpty,
+        reason: 'fil hôte propre avant va-et-vient',
+      );
     }
 
     // ---------- 1) L'invité QUITTE LA PARTIE EN COURS ----------
@@ -112,7 +115,9 @@ Future<void> _vaEtVient() async {
       await Future<void>.delayed(const Duration(milliseconds: 200));
     }
     expect(
-      host.messages.any((m) => (m as dynamic).body.contains('a quitté la table')),
+      host.messages.any(
+        (m) => (m as dynamic).body.contains('a quitté la table'),
+      ),
       isTrue,
       reason: 'l\u2019hôte annonce le départ',
     );
@@ -152,7 +157,11 @@ Future<void> _vaEtVient() async {
         }
         await Future<void>.delayed(const Duration(milliseconds: 300));
       }
-      expect(synced, isTrue, reason: 'le nouveau téléphone a rattrapé la table');
+      expect(
+        synced,
+        isTrue,
+        reason: 'le nouveau téléphone a rattrapé la table',
+      );
       say('invité a récupéré son siège en pleine partie ✓');
     } finally {
       mirror.dispose();
@@ -312,7 +321,8 @@ Future<void> _rehearsal() async {
           expect(
             mirror.players[local].dice,
             engine.players[salonSeat].dice,
-            reason: 'manche ${engine.round} : dés du fauteuil '
+            reason:
+                'manche ${engine.round} : dés du fauteuil '
                 '$salonSeat identiques des deux côtés',
           );
         }
@@ -321,10 +331,16 @@ Future<void> _rehearsal() async {
       _driveHost(engine);
       _driveGuest(mirror);
 
-      expect(_threadFailures(host.messages), isEmpty,
-          reason: 'fil hôte propre (manche ${engine.round})');
-      expect(_threadFailures(guest.messages), isEmpty,
-          reason: 'fil invité propre (manche ${engine.round})');
+      expect(
+        _threadFailures(host.messages),
+        isEmpty,
+        reason: 'fil hôte propre (manche ${engine.round})',
+      );
+      expect(
+        _threadFailures(guest.messages),
+        isEmpty,
+        reason: 'fil invité propre (manche ${engine.round})',
+      );
 
       // The guest's own tray may never show dice it has not derived — the
       // DiceTray paints an empty hand as five pacos, so an empty list with
@@ -335,32 +351,30 @@ Future<void> _rehearsal() async {
           mirror.round >= 1 &&
           mirror.round == engine.round) {
         final me = mirror.players.first;
-        if (me.diceCount > 0 && mirror.phase == engine.phase &&
-            (mirror.phase == GamePhase.peek || mirror.phase == GamePhase.bidding)) {
+        if (me.diceCount > 0 &&
+            mirror.phase == engine.phase &&
+            (mirror.phase == GamePhase.peek ||
+                mirror.phase == GamePhase.bidding)) {
           expect(
             me.dice,
             isNotEmpty,
-            reason: 'manche ${mirror.round} phase ${mirror.phase.name} : '
+            reason:
+                'manche ${mirror.round} phase ${mirror.phase.name} : '
                 'la main du miroir est dérivée '
                 '(snapshots=${mirror.debugSnapshotCount} '
                 'dernièreGraine=${mirror.debugLastSeed} '
                 'sansGraine=${mirror.debugSeedNullCount} '
-                'diceMirror=${[
-                  for (final p in mirror.players) p.dice.length,
-                ]} '
-                'countsMirror=${[
-                  for (final p in mirror.players) p.diceCount,
-                ]} '
+                'diceMirror=${[for (final p in mirror.players) p.dice.length]} '
+                'countsMirror=${[for (final p in mirror.players) p.diceCount]} '
                 'derived=${mirror.debugDerivedLens} '
                 'countsAtDerive=${mirror.debugAppliedCounts} '
-                'diceHôte=${[
-                  for (final p in engine.players) p.dice.length,
-                ]})',
+                'diceHôte=${[for (final p in engine.players) p.dice.length]})',
           );
           expect(
             me.diceCount,
             engine.players[(0 + guest.you) % engine.players.length].diceCount,
-            reason: 'le nombre de dés du miroir suit l\'hôte '
+            reason:
+                'le nombre de dés du miroir suit l\'hôte '
                 '(roundMiroir=${mirror.round} roundHôte=${engine.round} '
                 'phaseM=${mirror.phase.name} phaseH=${engine.phase.name} '
                 'countsMirror=${[for (final p in mirror.players) p.diceCount]} '
@@ -438,8 +452,7 @@ void _driveHost(dynamic engine) {
       if (!engine.outcomeApplied) engine.applyOutcome();
     case GamePhase.bidding:
       if (!engine.isHumanTurn) return;
-      if ((engine.currentBid?.quantity ?? 0) >= 4 &&
-          engine.canHumanChallenge) {
+      if ((engine.currentBid?.quantity ?? 0) >= 4 && engine.canHumanChallenge) {
         engine.callHumanDudo();
         return;
       }
@@ -479,7 +492,12 @@ void _driveGuest(dynamic mirror) {
 
 /// Les messages système qui décrivent une panne au lieu d'une info.
 List<String> _threadFailures(dynamic messages) {
-  const patterns = ['injoignable', 'Connexion perdue', 'Salon fermé', 'lâchée'];
+  const patterns = [
+    'inaccessible',
+    'Connexion interrompue',
+    'taverne ferme',
+    'déconnecté',
+  ];
   return [
     for (final message in messages.where(
       (m) => patterns.any((pattern) => (m as dynamic).body.contains(pattern)),

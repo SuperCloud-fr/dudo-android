@@ -1,5 +1,6 @@
 import 'package:dudo/l10n/generated/app_localizations.dart';
 import 'package:dudo/game/models/game_config.dart';
+import 'package:dudo/game/state/game_controller.dart';
 import 'package:dudo/game/widgets/bot_difficulty_option.dart';
 import 'package:dudo/salon/network_salon_session.dart';
 import 'package:dudo/salon/salon_models.dart';
@@ -10,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'salon_test_helpers.dart'
-    show FakeWebSocketChannel, framesOf, salonFrame;
+    show FakeWebSocketChannel, framesOf, salonFrame, untilOneSent;
 
 void main() {
   testWidgets('la barre de réactions supporte un salon vide', (tester) async {
@@ -29,7 +30,55 @@ void main() {
       ),
     );
     expect(tester.takeException(), isNull);
-    expect(find.text('RÉAGIR'), findsOneWidget);
+    expect(find.text('RÉACTIONS'), findsOneWidget);
+  });
+
+  testWidgets('la réaction à dés permet de choisir quantité et face', (
+    tester,
+  ) async {
+    final sent = <String>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: ReactionBar(
+            players: const <SalonPlayer>[
+              SalonPlayer(
+                seat: 0,
+                name: 'Cap Hôte',
+                isHost: true,
+                isBot: false,
+              ),
+              SalonPlayer(seat: 1, name: 'Anne', isHost: false, isBot: false),
+            ],
+            onSendReaction: (_) {},
+            onSendChat: sent.add,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(
+      find.text("Tu n'es pas obligé de me croire, mais j'ai 2 dés de 5."),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Choisis ta fable'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(ChoiceChip, '3 dés'));
+    await tester.tap(find.widgetWithText(ChoiceChip, '6'));
+    await tester.pump();
+    expect(
+      find.text("Tu n'es pas obligé de me croire, mais j'ai 3 dés de 6."),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Larguer la phrase'));
+    await tester.pumpAndSettle();
+    expect(sent, <String>[
+      "Tu n'es pas obligé de me croire, mais j'ai 3 dés de 6.",
+    ]);
   });
 
   testWidgets('le lobby tient debout avec un salon encore vide', (
@@ -111,9 +160,9 @@ void main() {
     await creating;
 
     // First start: the frame goes out, the Worker confirms, the table opens.
-    await tester.ensureVisible(find.text('LANCER LA MANCHE'));
+    await tester.ensureVisible(find.text('DÉMARRER LA PARTIE'));
     await tester.pump();
-    await tester.tap(find.text('LANCER LA MANCHE'));
+    await tester.tap(find.text('DÉMARRER LA PARTIE'));
     await tester.pump();
     expect(framesOf(channel.sent, 'start'), hasLength(1));
     channel.serverSends(const <String, dynamic>{'type': 'started'});
@@ -126,12 +175,101 @@ void main() {
     channel.serverSends(salonFrame(you: 0, players: crew, started: false));
     await tester.pump(); // fold: the table route pops
     await tester.pump(const Duration(milliseconds: 500)); // pop transition
-    expect(find.text('LANCER LA MANCHE'), findsOneWidget);
+    expect(find.text('DÉMARRER LA PARTIE'), findsOneWidget);
 
     // Second start must go through: the local `_starting` flag was reset.
-    await tester.tap(find.text('LANCER LA MANCHE'));
+    await tester.tap(find.text('DÉMARRER LA PARTIE'));
     await tester.pump();
     expect(framesOf(channel.sent, 'start'), hasLength(2));
+    session.dispose();
+  });
+
+  testWidgets('le chat et les réactions restent accessibles en pleine partie', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 3;
+    tester.view.physicalSize = const Size(1080, 2400);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final channels = <FakeWebSocketChannel>[];
+    final session = NetworkSalonSession(
+      createSalonCode: (_, _) async => 'S99FTH',
+      channelFactory: (uri) {
+        final channel = FakeWebSocketChannel.confirmed(uri);
+        channels.add(channel);
+        return channel;
+      },
+    );
+    late FakeWebSocketChannel channel;
+    await tester.runAsync(() async {
+      final creating = session.createSalon('Cap Hôte', 0);
+      for (var attempt = 0; attempt < 200 && channels.isEmpty; attempt++) {
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+      }
+      channel = channels.single;
+      await untilOneSent(channel);
+      channel.serverSends(
+        salonFrame(
+          you: 0,
+          players: <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+            {'seat': 1, 'name': 'Anne', 'bot': false},
+          ],
+        ),
+      );
+      await creating;
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('fr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: GameScreen(
+          controller: GameController(
+            config: const GameConfig(opponentCount: 1),
+          ),
+          salonSession: session,
+        ),
+      ),
+    );
+    final chatButton = find.bySemanticsLabel('Ouvrir le chat du salon');
+    expect(chatButton, findsOneWidget);
+    await tester.tap(chatButton);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('LE JOURNAL DE BORD'), findsOneWidget);
+    expect(find.text('RÉACTIONS'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'Salut depuis la partie');
+    await tester.testTextInput.receiveAction(TextInputAction.send);
+    await tester.pump();
+    expect(framesOf(channel.sent, 'chat'), hasLength(1));
+
+    await tester.tap(find.bySemanticsLabel('Fermer'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    channel.serverSends({
+      'type': 'chat',
+      'chat': {
+        'seat': 1,
+        'name': 'Anne',
+        'text': 'Je te vois, Capitaine !',
+        'clientId': 'incoming-1',
+      },
+    });
+    await tester.pump();
+    expect(find.byKey(const ValueKey('salon-chat-unread')), findsOneWidget);
+
+    await tester.tap(chatButton);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Je te vois, Capitaine !'), findsOneWidget);
+    expect(find.byKey(const ValueKey('salon-chat-unread')), findsNothing);
+
+    await tester.pumpWidget(const SizedBox());
+    await tester.pump();
     session.dispose();
   });
 
@@ -185,13 +323,15 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 3));
     expect(
-      find.text('L’hôte a quitté la manche — la table attend son retour…'),
+      find.text('L\'hôte est déconnecté. La table attend son retour…'),
       findsOneWidget,
     );
     await tester.pump(const Duration(seconds: 12));
     await tester.pump(const Duration(milliseconds: 500));
     expect(
-      find.text('L\'hôte est à l\'eau — la manche reprend dès son retour.'),
+      find.text(
+        'L\'hôte a quitté la manche. La partie reprendra à son retour.',
+      ),
       findsOneWidget,
     );
 
@@ -202,7 +342,9 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 400));
     expect(
-      find.text('L\'hôte est à l\'eau — la manche reprend dès son retour.'),
+      find.text(
+        'L\'hôte a quitté la manche. La partie reprendra à son retour.',
+      ),
       findsNothing,
     );
     session.dispose();

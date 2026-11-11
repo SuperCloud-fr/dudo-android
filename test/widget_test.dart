@@ -36,20 +36,20 @@ void main() {
     await pumpApp(tester);
 
     expect(find.text('DUDO'), findsOneWidget);
-    expect(find.text('JOUER'), findsOneWidget);
+    expect(find.text('JOUER EN SOLO'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text('JOUER'));
+    await tester.tap(find.text('JOUER EN SOLO'));
     await settleRoute(tester);
-    expect(find.text('L\'équipage'), findsOneWidget);
-    expect(find.text('LARGUER LES AMARRES'), findsOneWidget);
+    expect(find.text('Qui monte à bord ?'), findsOneWidget);
+    expect(find.text('COMMENCER LA PARTIE'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
-    await tester.ensureVisible(find.text('LARGUER LES AMARRES'));
+    await tester.ensureVisible(find.text('COMMENCER LA PARTIE'));
     await tester.pump(const Duration(milliseconds: 200));
-    await tester.tap(find.text('LARGUER LES AMARRES'));
+    await tester.tap(find.text('COMMENCER LA PARTIE'));
     await settleRoute(tester);
-    expect(find.text('Ton gobelet'), findsOneWidget);
+    expect(find.text('Tes dés'), findsOneWidget);
     expect(find.byType(LeatherCup), findsOneWidget);
     expect(tester.takeException(), isNull);
 
@@ -57,27 +57,27 @@ void main() {
     await tester.pump(const Duration(milliseconds: 200));
     await tester.tap(find.byType(LeatherCup));
     await tester.pump(const Duration(milliseconds: 1000));
-    await tester.ensureVisible(find.text('OUVRIR LES HOSTILITÉS'));
+    await tester.ensureVisible(find.text('LE PREMIER COUP DE CANON'));
     await tester.pump(const Duration(milliseconds: 200));
-    expect(find.text('OUVRIR LES HOSTILITÉS'), findsOneWidget);
+    expect(find.text('LE PREMIER COUP DE CANON'), findsOneWidget);
 
-    await tester.tap(find.text('OUVRIR LES HOSTILITÉS'));
+    await tester.tap(find.text('LE PREMIER COUP DE CANON'));
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pump(const Duration(milliseconds: 400));
     expect(find.byType(LeatherCup), findsNothing);
-    expect(find.text('OUVRIR'), findsOneWidget);
+    expect(find.text('OUVRIR LES HOSTILITÉS'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
-    await tester.tap(find.text('OUVRIR'));
+    await tester.tap(find.text('OUVRIR LES HOSTILITÉS'));
     await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('ANNONCER'), findsOneWidget);
-    expect(find.text('À toi de parler.'), findsOneWidget);
+    expect(find.text('À toi de jouer.'), findsOneWidget);
 
     await tester.ensureVisible(find.text('ANNONCER'));
     await tester.pump(const Duration(milliseconds: 250));
     await tester.tap(find.text('ANNONCER'));
     await tester.pump(const Duration(milliseconds: 600));
-    expect(find.text('Barbe-Noire réfléchit'), findsOneWidget);
+    expect(find.text('Barbe-Noire prépare son coup…'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     // Dispose the route before the scheduled bot timer fires.
@@ -100,15 +100,15 @@ void main() {
     }
     expect(exc, isNull);
 
-    await tester.tap(find.text('JOUER'));
+    await tester.tap(find.text('JOUER EN SOLO'));
     await settleRoute(tester);
     expect(tester.takeException(), isNull);
 
-    await tester.ensureVisible(find.text('LARGUER LES AMARRES'));
+    await tester.ensureVisible(find.text('COMMENCER LA PARTIE'));
     await tester.pump(const Duration(milliseconds: 200));
-    await tester.tap(find.text('LARGUER LES AMARRES'));
+    await tester.tap(find.text('COMMENCER LA PARTIE'));
     await settleRoute(tester);
-    expect(find.text('Ton gobelet'), findsOneWidget);
+    expect(find.text('Tes dés'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await tester.pumpWidget(const SizedBox());
@@ -120,9 +120,9 @@ void main() {
     await tester.tap(find.text('Comment jouer ?'));
     await settleRoute(tester);
 
-    expect(find.text('Le jeu du mensonge'), findsOneWidget);
-    expect(find.text('LES RÈGLES'), findsOneWidget);
-    expect(find.text('J\'AI COMPRIS'), findsOneWidget);
+    expect(find.text('Les règles du Perudo'), findsOneWidget);
+    expect(find.text('RÈGLES DU JEU'), findsOneWidget);
+    expect(find.text('COMPRIS'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     await tester.pumpWidget(const SizedBox());

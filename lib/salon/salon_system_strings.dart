@@ -12,45 +12,55 @@ abstract final class SalonSystem {
 
   static String get phoneSlept =>
       _words?.systemPhoneSlept ??
-      'Le téléphone a mis le salon en sommeil — reconnexion…';
+      'Le téléphone sort de veille. Reconnexion au salon…';
   static String get watchdogCut =>
       _words?.systemQuietCut ??
-      'Le salon ne répond plus — je coupe la connexion desséchée et je reprends…';
+      'Le salon ne répond plus. Je rétablis la connexion…';
   static String created(String code) =>
-      _words?.systemCreated(code) ?? 'Salon créé. Code : $code';
+      _words?.systemCreated(code) ?? 'Ton salon est prêt : $code.';
   static String connectedTab(String code) =>
-      _words?.systemConnected(code) ?? 'Connecté au salon $code';
+      _words?.systemConnected(code) ?? 'À bord du salon $code !';
   static String recovered(String code) =>
-      _words?.systemRecovered(code) ?? 'Reconnecté au salon $code.';
+      _words?.systemRecovered(code) ?? 'Tu es de retour dans le salon $code.';
   static String closed(String reason) =>
-      _words?.systemClosed(reason) ?? 'Salon fermé : $reason';
+      _words?.systemClosed(reason) ?? 'La taverne ferme ses portes : $reason.';
   static String lost([String detail = '']) =>
       _words?.systemLost(detail) ??
-      'Connexion perdue$detail — tentative de reconnexion…';
+      'Connexion interrompue$detail. Nouvelle tentative…';
   static String unreachableTrack(String reason) =>
       _words?.systemUnreachableTrack(reason) ??
-      'Salon injoignable — $reason Je continue d\u2019essayer.';
+      'Impossible de joindre le salon : $reason. Je réessaie.';
   static String unreachableBackoff(String brief) =>
       _words?.systemUnreachableBackoff(brief) ??
-      'Salon injoignable — $brief. Je continue d\u2019essayer en doublant le délai.';
+      'Le salon reste inaccessible : $brief. Je réessaierai après un délai plus long.';
   static String throttledCreate(int seconds) =>
       _words?.systemThrottledCreate(seconds) ??
-      'Trop de demandes de création — réessaie dans ~$seconds s.';
+      'Trop de demandes de création. Réessaie dans $seconds s.';
   static String createFailed([String detail = '']) =>
       _words?.systemCreateFailed(detail) ??
-      'Impossible de créer un salon pour l\u2019instant.$detail';
+      'Le salon n\'a pas pu être créé.$detail';
   static String chatRate(int seconds) =>
       _words?.systemChatRate(seconds) ??
-      'Débit du salon atteint — attends ${seconds}s.';
+      'Doucement sur les messages, matelot. Attends $seconds s.';
   static String get deadReaction =>
       _words?.systemDeadReaction ??
-      'La connexion au salon est lâchée — la réaction ne peut pas partir.';
+      'Tu es déconnecté du salon. Ta réaction n\'a pas été envoyée.';
   static String get deadChat =>
       _words?.systemDeadChat ??
-      'La connexion au salon est lâchée — le message ne peut pas partir.';
+      'Tu es déconnecté du salon. Ton message n\'a pas été envoyé.';
   static String get hostGone =>
       _words?.systemHostGone ??
-      'L\u2019hôte a quitté la manche — la table attend son retour…';
+      'L\'hôte est déconnecté. La table attend son retour…';
+  static String get noServerReply =>
+      _words?.systemNoServerReply ??
+      'Le serveur n\'a pas répondu après 8 s. Je réessaie.';
+  static String networkResponse(String status, String body) =>
+      _words?.systemNetworkResponse(status, body) ??
+      'Le réseau répond $status : $body.';
+  static String networkProbeFailed(String error) =>
+      _words?.systemNetworkProbeFailed(error) ??
+      'Impossible de vérifier la connexion ($error). Je réessaie.';
   static String get sixChars =>
-      _words?.systemSixChars ?? 'Le code doit faire six caractères.';
+      _words?.systemSixChars ??
+      'Il faut un code de six caractères pour monter à bord.';
 }

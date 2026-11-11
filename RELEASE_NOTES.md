@@ -1,4 +1,10 @@
-# Dudo 0.2.0 — bêta 25 : l'hôte revient, la table reprend
+# Dudo 0.2.0 — bêta 26 : le chat rejoint la table
+
+- **Le chat et les réactions restent disponibles pendant une manche en réseau** : une icône ouvre le journal de bord en feuille redimensionnable, avec messages en direct, réactions rapides et saisie libre. Un badge signale les nouveaux messages ; les joueurs peuvent aussi choisir quantité et face dans une réaction pour bluffer.
+- **Les textes de l'application ont été relus** : 325 chaînes françaises passées en QCM, traduction anglaise harmonisée, faute « tu reines » corrigée et règles/pacos clarifiés.
+- Le Worker n'a pas changé : il relayait déjà chat et réactions pendant les parties.
+
+## Bêta 25 : l'hôte revient, la table reprend
 
 - **L'hôte disparaît en pleine manche ?** Les invités voient une alerte après 3 s ; 12 s plus tard, si l'hôte n'est toujours pas revenu, la table figée se replie vers le lobby. S'il récupère son siège avant, la partie reprend sans repli.
 - **L'hôte peut relancer après une partie** : le retour au lobby dépile maintenant la table et réarme le bouton « Lancer la manche », au lieu de le laisser grisé sur « La manche se prépare ».

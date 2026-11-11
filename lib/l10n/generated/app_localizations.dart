@@ -113,31 +113,25 @@ abstract class AppLocalizations {
   /// No description provided for @homeTavernSection.
   ///
   /// In fr, this message translates to:
-  /// **'Taverne du dernier dé'**
+  /// **'La taverne du dernier pirate'**
   String get homeTavernSection;
-
-  /// No description provided for @homeSoloBadge.
-  ///
-  /// In fr, this message translates to:
-  /// **'SOLO · HORS LIGNE'**
-  String get homeSoloBadge;
 
   /// No description provided for @homeTagline.
   ///
   /// In fr, this message translates to:
-  /// **'Cinq dés. Un gobelet.\nTout le monde ment.'**
+  /// **'Cinq dés. Un gobelet. À toi de bluffer.'**
   String get homeTagline;
 
   /// No description provided for @homeSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Le Perudo des pirates, contre un équipage qui sait bluffer.'**
+  /// **'Le Perudo en version pirate : affronte un équipage rusé.'**
   String get homeSubtitle;
 
   /// No description provided for @ctaPlay.
   ///
   /// In fr, this message translates to:
-  /// **'Jouer'**
+  /// **'Jouer en solo'**
   String get ctaPlay;
 
   /// No description provided for @ctaSalons.
@@ -155,19 +149,19 @@ abstract class AppLocalizations {
   /// No description provided for @ctaSettings.
   ///
   /// In fr, this message translates to:
-  /// **'Réglages'**
+  /// **'Paramètres'**
   String get ctaSettings;
 
   /// No description provided for @homeVersionBadge.
   ///
   /// In fr, this message translates to:
-  /// **'v0.1 · 2 à 6 joueurs'**
+  /// **'2 à 6 joueurs'**
   String get homeVersionBadge;
 
   /// No description provided for @settingsTitle.
   ///
   /// In fr, this message translates to:
-  /// **'RÉGLAGES'**
+  /// **'PARAMÈTRES'**
   String get settingsTitle;
 
   /// No description provided for @settingsAmbienceTitle.
@@ -179,37 +173,37 @@ abstract class AppLocalizations {
   /// No description provided for @settingsAmbienceHint.
   ///
   /// In fr, this message translates to:
-  /// **'La table ne change pas. La lumière, si — choisis l\'endroit où tu couches tes dés.'**
+  /// **'Choisis une ambiance : les règles restent les mêmes, seule la lumière change.'**
   String get settingsAmbienceHint;
 
   /// No description provided for @lookChosen.
   ///
   /// In fr, this message translates to:
-  /// **'Choisi'**
+  /// **'Sélectionnée'**
   String get lookChosen;
 
   /// No description provided for @lookPick.
   ///
   /// In fr, this message translates to:
-  /// **'Toucher pour choisir'**
+  /// **'Choisir cette ambiance'**
   String get lookPick;
 
   /// No description provided for @settingsPrivacyPolicy.
   ///
   /// In fr, this message translates to:
-  /// **'Politique de confidentialité'**
+  /// **'Lire la politique de confidentialité'**
   String get settingsPrivacyPolicy;
 
   /// No description provided for @commonCancel.
   ///
   /// In fr, this message translates to:
-  /// **'Annuler'**
+  /// **'Annuler l\'action'**
   String get commonCancel;
 
   /// No description provided for @setupBack.
   ///
   /// In fr, this message translates to:
-  /// **'Retour'**
+  /// **'Retour à l\'accueil'**
   String get setupBack;
 
   /// No description provided for @setupTitle.
@@ -221,25 +215,25 @@ abstract class AppLocalizations {
   /// No description provided for @setupCrewTitle.
   ///
   /// In fr, this message translates to:
-  /// **'L\'équipage'**
+  /// **'Qui monte à bord ?'**
   String get setupCrewTitle;
 
   /// No description provided for @setupCrewHint.
   ///
   /// In fr, this message translates to:
-  /// **'Choisis combien de pirates vont te mentir ce soir.'**
+  /// **'Choisis combien de pirates IA t\'affronteront.'**
   String get setupCrewHint;
 
   /// No description provided for @setupBotTemperTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Le tempérament des bots'**
+  /// **'Le caractère de l\'équipage'**
   String get setupBotTemperTitle;
 
   /// No description provided for @setupStart.
   ///
   /// In fr, this message translates to:
-  /// **'Larguer les amarres'**
+  /// **'Commencer la partie'**
   String get setupStart;
 
   /// No description provided for @setupRulesLink.
@@ -251,19 +245,19 @@ abstract class AppLocalizations {
   /// No description provided for @setupTableLabel.
   ///
   /// In fr, this message translates to:
-  /// **'PIRATES À TA TABLE'**
+  /// **'QUI EMBARQUE ?'**
   String get setupTableLabel;
 
   /// No description provided for @setupPlayersCount.
   ///
   /// In fr, this message translates to:
-  /// **'{count} joueurs'**
+  /// **'{count, plural, =1{1 pirate à bord} other{{count} pirates à bord}}'**
   String setupPlayersCount(int count);
 
   /// No description provided for @setupRemovePirate.
   ///
   /// In fr, this message translates to:
-  /// **'Retirer un pirate'**
+  /// **'Retirer ce pirate'**
   String get setupRemovePirate;
 
   /// No description provided for @setupAddPirate.
@@ -275,19 +269,19 @@ abstract class AppLocalizations {
   /// No description provided for @setupSeatAtTable.
   ///
   /// In fr, this message translates to:
-  /// **'à table'**
+  /// **'présent'**
   String get setupSeatAtTable;
 
   /// No description provided for @setupSeatAbsent.
   ///
   /// In fr, this message translates to:
-  /// **'absent'**
+  /// **'au repos'**
   String get setupSeatAbsent;
 
   /// No description provided for @setupCrewSummary.
   ///
   /// In fr, this message translates to:
-  /// **'Toi + {count, plural, =1{1 pirate} other{{count} pirates}} : {names}'**
+  /// **'À bord : toi et {count, plural, =1{1 pirate} other{{count} pirates}} — {names}'**
   String setupCrewSummary(int count, String names);
 
   /// No description provided for @setupCalzaTitle.
@@ -299,13 +293,13 @@ abstract class AppLocalizations {
   /// No description provided for @setupCalzaHint.
   ///
   /// In fr, this message translates to:
-  /// **'Annoncer le compte exact rapporte un dé. Optionnel, mais féroce.'**
+  /// **'Annonce le compte exact pour gagner un dé (cinq maximum). Cette règle est facultative.'**
   String get setupCalzaHint;
 
   /// No description provided for @gameQuitTable.
   ///
   /// In fr, this message translates to:
-  /// **'Quitter la partie'**
+  /// **'Quitter la table'**
   String get gameQuitTable;
 
   /// No description provided for @gameRound.
@@ -323,19 +317,25 @@ abstract class AppLocalizations {
   /// No description provided for @gameOpenJournal.
   ///
   /// In fr, this message translates to:
-  /// **'Ouvrir le journal de la table'**
+  /// **'Consulter le journal de bord'**
   String get gameOpenJournal;
+
+  /// No description provided for @gameOpenSalonChat.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ouvrir le chat du salon'**
+  String get gameOpenSalonChat;
 
   /// No description provided for @gameOpenPrompt.
   ///
   /// In fr, this message translates to:
-  /// **'Ouvre les hostilités.'**
+  /// **'À toi de faire le premier pari.'**
   String get gameOpenPrompt;
 
   /// No description provided for @gameYourTurnPrompt.
   ///
   /// In fr, this message translates to:
-  /// **'À toi de parler.'**
+  /// **'À toi de jouer.'**
   String get gameYourTurnPrompt;
 
   /// No description provided for @gameCalzaAsk.
@@ -359,25 +359,25 @@ abstract class AppLocalizations {
   /// No description provided for @gameOpenBid.
   ///
   /// In fr, this message translates to:
-  /// **'Ouvrir'**
+  /// **'Ouvrir les hostilités'**
   String get gameOpenBid;
 
   /// No description provided for @gameBotThinking.
   ///
   /// In fr, this message translates to:
-  /// **'{name} réfléchit'**
+  /// **'{name} prépare son coup…'**
   String gameBotThinking(String name);
 
   /// No description provided for @gameTableListens.
   ///
   /// In fr, this message translates to:
-  /// **'la table écoute'**
+  /// **'Tout le bord retient son souffle.'**
   String get gameTableListens;
 
   /// No description provided for @gameLiftCupPrompt.
   ///
   /// In fr, this message translates to:
-  /// **'Soulève ton gobelet.'**
+  /// **'Soulève ton gobelet pour révéler les dés.'**
   String get gameLiftCupPrompt;
 
   /// No description provided for @gameTableHoldsBreath.
@@ -389,7 +389,7 @@ abstract class AppLocalizations {
   /// No description provided for @gameBidInvalid.
   ///
   /// In fr, this message translates to:
-  /// **'Ce pari n\'est plus valable.'**
+  /// **'Ce pari n\'est plus valable. Choisis-en un autre.'**
   String get gameBidInvalid;
 
   /// No description provided for @gameDudoConfirmTitle.
@@ -413,19 +413,19 @@ abstract class AppLocalizations {
   /// No description provided for @gameDudoConfirmBody.
   ///
   /// In fr, this message translates to:
-  /// **'Tu penses que {accused} sur « {bid} ». Si le pari tient, tu perds un dé.'**
+  /// **'Tu contestes l\'affirmation suivante : {accused} sur « {bid} ». Si le compte atteint le pari, tu perds un dé.'**
   String gameDudoConfirmBody(String accused, String bid);
 
   /// No description provided for @gameDudoConfirm.
   ///
   /// In fr, this message translates to:
-  /// **'DUDO !'**
+  /// **'Confirmer le Dudo'**
   String get gameDudoConfirm;
 
   /// No description provided for @gameCalzaConfirmTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Calza ?'**
+  /// **'Compte exact ?'**
   String get gameCalzaConfirmTitle;
 
   /// No description provided for @gameFacePaco.
@@ -443,49 +443,49 @@ abstract class AppLocalizations {
   /// No description provided for @gameCalzaConfirmBody.
   ///
   /// In fr, this message translates to:
-  /// **'Tu penses qu\'il y a exactement {count} {faceWord} sur la table. Compte exact : tu gagnes un dé. Sinon, tu en perds un.'**
-  String gameCalzaConfirmBody(int count, String faceWord);
+  /// **'Tu annonces {bid}. Si le compte est exact, tu gagnes un dé (cinq maximum). Sinon, tu en perds un.'**
+  String gameCalzaConfirmBody(String bid);
 
   /// No description provided for @gameCalzaConfirm.
   ///
   /// In fr, this message translates to:
-  /// **'CALZA'**
+  /// **'Confirmer la calza'**
   String get gameCalzaConfirm;
 
   /// No description provided for @gameQuitTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Quitter la table ?'**
+  /// **'Abandonner la partie ?'**
   String get gameQuitTitle;
 
   /// No description provided for @gameQuitBody.
   ///
   /// In fr, this message translates to:
-  /// **'La partie en cours sera perdue. Les pirates ne se souviendront pas de toi.'**
+  /// **'La partie s\'arrêtera et ne pourra pas être reprise.'**
   String get gameQuitBody;
 
   /// No description provided for @gameQuitStay.
   ///
   /// In fr, this message translates to:
-  /// **'Rester'**
+  /// **'Continuer la partie'**
   String get gameQuitStay;
 
   /// No description provided for @gameQuitLeave.
   ///
   /// In fr, this message translates to:
-  /// **'Quitter'**
+  /// **'Quitter la partie'**
   String get gameQuitLeave;
 
   /// No description provided for @bidOpenHostilities.
   ///
   /// In fr, this message translates to:
-  /// **'Ouvrir les hostilités'**
+  /// **'Le premier coup de canon'**
   String get bidOpenHostilities;
 
   /// No description provided for @bidRaiseSection.
   ///
   /// In fr, this message translates to:
-  /// **'Ta surenchère'**
+  /// **'À toi de faire monter le pari'**
   String get bidRaiseSection;
 
   /// No description provided for @bidRaisePrompt.
@@ -497,7 +497,7 @@ abstract class AppLocalizations {
   /// No description provided for @bidLastBid.
   ///
   /// In fr, this message translates to:
-  /// **'Dernier pari : '**
+  /// **'Pari précédent : '**
   String get bidLastBid;
 
   /// No description provided for @bidPalificoFaceLabel.
@@ -515,13 +515,13 @@ abstract class AppLocalizations {
   /// No description provided for @bidSummaryAces.
   ///
   /// In fr, this message translates to:
-  /// **'Je parie qu\'il y a au moins {count} as sur la table.'**
+  /// **'Il y a au moins {count, plural, =1{un paco} other{{count} pacos}} sur la table.'**
   String bidSummaryAces(int count);
 
   /// No description provided for @bidSummary.
   ///
   /// In fr, this message translates to:
-  /// **'Je parie qu\'il y a au moins {count} {faceWord} sur la table.'**
+  /// **'Il y a au moins {count} {faceWord} sur la table.'**
   String bidSummary(int count, String faceWord);
 
   /// No description provided for @bidFaceWord.
@@ -533,25 +533,25 @@ abstract class AppLocalizations {
   /// No description provided for @bidPalificoFaceHint.
   ///
   /// In fr, this message translates to:
-  /// **'Face imposée : manche palifico.'**
+  /// **'En palifico, la face est imposée.'**
   String get bidPalificoFaceHint;
 
   /// No description provided for @bidPalificoOpenHint.
   ///
   /// In fr, this message translates to:
-  /// **'Palifico : la face ouverte vaut pour toute la manche.'**
+  /// **'En palifico, la face du premier pari s\'applique toute la manche.'**
   String get bidPalificoOpenHint;
 
   /// No description provided for @bidAcesOnlyHint.
   ///
   /// In fr, this message translates to:
-  /// **'Seuls les paco comptent.'**
+  /// **'Seuls les pacos comptent.'**
   String get bidAcesOnlyHint;
 
   /// No description provided for @bidPacoWildHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les paco comptent pour cette face.'**
+  /// **'Les pacos comptent pour cette face.'**
   String get bidPacoWildHint;
 
   /// No description provided for @bidAnnounce.
@@ -563,7 +563,7 @@ abstract class AppLocalizations {
   /// No description provided for @bidIllegalRaise.
   ///
   /// In fr, this message translates to:
-  /// **'Ce montant n\'est pas une surenchère valable.'**
+  /// **'Ce pari ne respecte pas les règles de surenchère. Essaie une autre combinaison.'**
   String get bidIllegalRaise;
 
   /// No description provided for @bidDecreaseQty.
@@ -599,25 +599,25 @@ abstract class AppLocalizations {
   /// No description provided for @bidAceSemantics.
   ///
   /// In fr, this message translates to:
-  /// **'Paco, joker'**
+  /// **'Paco, face 1 et joker'**
   String get bidAceSemantics;
 
   /// No description provided for @bidFaceSemantics.
   ///
   /// In fr, this message translates to:
-  /// **'Valeur {face}'**
+  /// **'Le dé montre {face}'**
   String bidFaceSemantics(int face);
 
   /// No description provided for @cardEmptySemantics.
   ///
   /// In fr, this message translates to:
-  /// **'Aucun pari. {name} ouvre les hostilités.'**
+  /// **'La table est vierge. {name} lance le premier pari.'**
   String cardEmptySemantics(String name);
 
   /// No description provided for @cardFilledSemantics.
   ///
   /// In fr, this message translates to:
-  /// **'Pari en cours : {spoken}, annoncé par {bidder}. {total} dés en jeu.'**
+  /// **'{bidder} a annoncé {spoken}. Il y a {total} dés en jeu.'**
   String cardFilledSemantics(String spoken, String bidder, int total);
 
   /// No description provided for @cardFilledTitle.
@@ -629,37 +629,37 @@ abstract class AppLocalizations {
   /// No description provided for @cardDiceUnit.
   ///
   /// In fr, this message translates to:
-  /// **'DÉS'**
+  /// **'DÉS EN JEU'**
   String get cardDiceUnit;
 
   /// No description provided for @cardPalificoHint.
   ///
   /// In fr, this message translates to:
-  /// **'Manche palifico : les paco ne comptent pas'**
+  /// **'En palifico, les pacos ne sont pas jokers.'**
   String get cardPalificoHint;
 
   /// No description provided for @cardAcesOnlyHint.
   ///
   /// In fr, this message translates to:
-  /// **'Seuls les paco comptent'**
+  /// **'Seuls les pacos comptent.'**
   String get cardAcesOnlyHint;
 
   /// No description provided for @cardPacoWildHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les paco comptent pour cette face'**
+  /// **'Les pacos comptent comme cette face.'**
   String get cardPacoWildHint;
 
   /// No description provided for @cardDiceCount.
   ///
   /// In fr, this message translates to:
-  /// **'{count} dés'**
+  /// **'{count} dés en jeu'**
   String cardDiceCount(int count);
 
   /// No description provided for @cardTableWaits.
   ///
   /// In fr, this message translates to:
-  /// **'LA TABLE ATTEND'**
+  /// **'TOUT LE BORD RETIENT SON SOUFFLE'**
   String get cardTableWaits;
 
   /// No description provided for @cardYouOpen.
@@ -689,7 +689,7 @@ abstract class AppLocalizations {
   /// No description provided for @peekCupTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Ton gobelet'**
+  /// **'Tes dés'**
   String get peekCupTitle;
 
   /// No description provided for @peekSecretHint.
@@ -701,13 +701,13 @@ abstract class AppLocalizations {
   /// No description provided for @peekShakeHint.
   ///
   /// In fr, this message translates to:
-  /// **'Secoue le téléphone comme au vrai comptoir : le cuir se soulève, et toi seul vois tes dés.'**
+  /// **'Secoue le téléphone pour lancer tes dés. Toi seul peux les voir.'**
   String get peekShakeHint;
 
   /// No description provided for @peekPalificoHint.
   ///
   /// In fr, this message translates to:
-  /// **'Manche palifico : une seule face pour tous les paris.'**
+  /// **'En palifico, tous les paris portent sur la même face.'**
   String get peekPalificoHint;
 
   /// No description provided for @peekDiceInHand.
@@ -725,19 +725,19 @@ abstract class AppLocalizations {
   /// No description provided for @peekPacoCount.
   ///
   /// In fr, this message translates to:
-  /// **'{count, plural, =1{1 paco} other{{count} paco}}'**
+  /// **'{count, plural, =1{1 paco} other{{count} pacos}}'**
   String peekPacoCount(int count);
 
   /// No description provided for @peekPalificoWildHint.
   ///
   /// In fr, this message translates to:
-  /// **'Manche palifico : les paco ne comptent que comme paco.'**
+  /// **'En palifico, les pacos ne valent que comme pacos.'**
   String get peekPalificoWildHint;
 
   /// No description provided for @peekWildHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les paco comptent pour toutes les faces.'**
+  /// **'Les pacos comptent pour toutes les faces.'**
   String get peekWildHint;
 
   /// No description provided for @peekPlayerOpens.
@@ -749,7 +749,7 @@ abstract class AppLocalizations {
   /// No description provided for @peekOnlyHostStarts.
   ///
   /// In fr, this message translates to:
-  /// **'Seul le maître de la partie peut lancer les enchères. Tu peux déjà regarder tes dés.'**
+  /// **'Le capitaine lance la manche ; en attendant, jette un œil à tes dés.'**
   String get peekOnlyHostStarts;
 
   /// No description provided for @peekLiftCupSemantics.
@@ -761,7 +761,7 @@ abstract class AppLocalizations {
   /// No description provided for @peekShakeButton.
   ///
   /// In fr, this message translates to:
-  /// **'Secoue le téléphone pour brasser tes dés'**
+  /// **'Secouer pour lancer les dés'**
   String get peekShakeButton;
 
   /// No description provided for @peekTapCupHint.
@@ -773,43 +773,43 @@ abstract class AppLocalizations {
   /// No description provided for @peekTakeTimeHint.
   ///
   /// In fr, this message translates to:
-  /// **'Prends ton temps. Les autres pirates attendent.'**
+  /// **'Prends ton temps : les autres attendent.'**
   String get peekTakeTimeHint;
 
   /// No description provided for @peekSpectatorTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Tu es à l\'eau'**
+  /// **'Par-dessus bord'**
   String get peekSpectatorTitle;
 
   /// No description provided for @peekSpectatorBody.
   ///
   /// In fr, this message translates to:
-  /// **'Ta manche se joue sans toi : regarde les pirates debout se mentir, et prépare ta revanche.'**
+  /// **'Plus de dés pour toi : regarde l\'équipage poursuivre la manche et prépare ta revanche.'**
   String get peekSpectatorBody;
 
   /// No description provided for @peekSpectatorCta.
   ///
   /// In fr, this message translates to:
-  /// **'Voir la manche'**
+  /// **'Regarder la manche'**
   String get peekSpectatorCta;
 
   /// No description provided for @peekSpectatorWait.
   ///
   /// In fr, this message translates to:
-  /// **'La manche démarre dès que l\'hôte la lance.'**
+  /// **'En attente du signal du capitaine…'**
   String get peekSpectatorWait;
 
   /// No description provided for @revealDudoLine.
   ///
   /// In fr, this message translates to:
-  /// **'{caller} a douté de {bidder}.'**
+  /// **'{caller} a contesté le pari de {bidder}.'**
   String revealDudoLine(String caller, String bidder);
 
   /// No description provided for @revealCalzaLine.
   ///
   /// In fr, this message translates to:
-  /// **'{caller} a annoncé le compte exact.'**
+  /// **'{caller} a tenté une calza.'**
   String revealCalzaLine(String caller);
 
   /// No description provided for @revealBidHeld.
@@ -827,7 +827,7 @@ abstract class AppLocalizations {
   /// No description provided for @revealExactCount.
   ///
   /// In fr, this message translates to:
-  /// **'Compte exact.'**
+  /// **'Compte exact, matelot !'**
   String get revealExactCount;
 
   /// No description provided for @revealMissed.
@@ -857,43 +857,43 @@ abstract class AppLocalizations {
   /// No description provided for @revealOnTable.
   ///
   /// In fr, this message translates to:
-  /// **'sur la table · {count} annoncés'**
+  /// **'Sur la table : {count} dés annoncés.'**
   String revealOnTable(int count);
 
   /// No description provided for @revealTableHoldsBreath.
   ///
   /// In fr, this message translates to:
-  /// **'La table retient son souffle…'**
+  /// **'Tout le monde retient son souffle…'**
   String get revealTableHoldsBreath;
 
   /// No description provided for @revealCountInOpen.
   ///
   /// In fr, this message translates to:
-  /// **'Le compte est sous les yeux de tous…'**
+  /// **'Révélons les dés…'**
   String get revealCountInOpen;
 
   /// No description provided for @revealCapYou.
   ///
   /// In fr, this message translates to:
-  /// **'Tu avais déjà cinq dés. Le compte exact est noté, mais rien à reprendre.'**
+  /// **'Tu as déjà cinq dés, le maximum. Tu ne peux pas en gagner un de plus.'**
   String get revealCapYou;
 
   /// No description provided for @revealCapPlayer.
   ///
   /// In fr, this message translates to:
-  /// **'{name} avait déjà cinq dés. Le compte exact est noté, mais rien à reprendre.'**
+  /// **'{name} a déjà cinq dés, le maximum. Impossible d\'en gagner un de plus.'**
   String revealCapPlayer(String name);
 
   /// No description provided for @revealWinYou.
   ///
   /// In fr, this message translates to:
-  /// **'Compte exact : tu reprends un dé.'**
+  /// **'Tu gagnes un dé.'**
   String get revealWinYou;
 
   /// No description provided for @revealWinPlayer.
   ///
   /// In fr, this message translates to:
-  /// **'{name} reprend un dé.'**
+  /// **'{name} gagne un dé.'**
   String revealWinPlayer(String name);
 
   /// No description provided for @revealYouLoseDie.
@@ -911,55 +911,55 @@ abstract class AppLocalizations {
   /// No description provided for @revealYouRemaining.
   ///
   /// In fr, this message translates to:
-  /// **' Il te reste {count, plural, =1{{count} dé} other{{count} dés}}.'**
+  /// **' Tu as encore {count, plural, =1{{count} dé} other{{count} dés}}.'**
   String revealYouRemaining(int count);
 
   /// No description provided for @revealPlayerRemaining.
   ///
   /// In fr, this message translates to:
-  /// **' Il lui reste {count, plural, =1{{count} dé} other{{count} dés}}.'**
-  String revealPlayerRemaining(int count);
+  /// **' {name} a encore {count, plural, =1{{count} dé} other{{count} dés}}.'**
+  String revealPlayerRemaining(String name, int count);
 
   /// No description provided for @revealYouSunk.
   ///
   /// In fr, this message translates to:
-  /// **' Tu es à l\'eau.'**
+  /// **' Par-dessus bord !'**
   String get revealYouSunk;
 
   /// No description provided for @revealPlayerSunk.
   ///
   /// In fr, this message translates to:
-  /// **' Il est à l\'eau.'**
+  /// **' Plus de dés : hors jeu.'**
   String get revealPlayerSunk;
 
   /// No description provided for @revealNoLoser.
   ///
   /// In fr, this message translates to:
-  /// **'La manche se termine sans perdant.'**
+  /// **'Personne ne perd de dé cette manche.'**
   String get revealNoLoser;
 
   /// No description provided for @revealNextRound.
   ///
   /// In fr, this message translates to:
-  /// **'Manche suivante'**
+  /// **'Continuer'**
   String get revealNextRound;
 
   /// No description provided for @revealSeeMore.
   ///
   /// In fr, this message translates to:
-  /// **'Voir la suite'**
+  /// **'Découvrir le verdict'**
   String get revealSeeMore;
 
   /// No description provided for @revealRoleBidder.
   ///
   /// In fr, this message translates to:
-  /// **'a parié'**
+  /// **'a annoncé le pari'**
   String get revealRoleBidder;
 
   /// No description provided for @revealRoleCaller.
   ///
   /// In fr, this message translates to:
-  /// **'a douté'**
+  /// **'a contesté le pari'**
   String get revealRoleCaller;
 
   /// No description provided for @revealRoleWaiter.
@@ -971,49 +971,49 @@ abstract class AppLocalizations {
   /// No description provided for @overWonSection.
   ///
   /// In fr, this message translates to:
-  /// **'La taverne est à toi'**
+  /// **'Tu as gagné'**
   String get overWonSection;
 
   /// No description provided for @overLostSection.
   ///
   /// In fr, this message translates to:
-  /// **'Fin de l\'aventure'**
+  /// **'Partie perdue'**
   String get overLostSection;
 
   /// No description provided for @overWonTitle.
   ///
   /// In fr, this message translates to:
-  /// **'TU RÈGNES'**
+  /// **'VICTOIRE'**
   String get overWonTitle;
 
   /// No description provided for @overLostTitle.
   ///
   /// In fr, this message translates to:
-  /// **'PAR-DESSUS BORD'**
+  /// **'TU ES ÉLIMINÉ'**
   String get overLostTitle;
 
   /// No description provided for @overWonBody.
   ///
   /// In fr, this message translates to:
-  /// **'L\'équipage a rendu les armes. La dernière chope est pour toi.'**
+  /// **'L\'équipage a baissé pavillon. La dernière chope est pour toi.'**
   String get overWonBody;
 
   /// No description provided for @overLostBody.
   ///
   /// In fr, this message translates to:
-  /// **'Les pirates t\'ont eu. {name} garde la main sur le tonneau.'**
+  /// **'Les pirates t\'ont éliminé. {name} remporte la taverne.'**
   String overLostBody(String name);
 
   /// No description provided for @overStatRounds.
   ///
   /// In fr, this message translates to:
-  /// **'manches'**
+  /// **'manches jouées'**
   String get overStatRounds;
 
   /// No description provided for @overStatDiceLeft.
   ///
   /// In fr, this message translates to:
-  /// **'dés restants'**
+  /// **'dés encore en jeu'**
   String get overStatDiceLeft;
 
   /// No description provided for @overLastWord.
@@ -1025,7 +1025,7 @@ abstract class AppLocalizations {
   /// No description provided for @overRematch.
   ///
   /// In fr, this message translates to:
-  /// **'Rejouer'**
+  /// **'Remettre ça'**
   String get overRematch;
 
   /// No description provided for @overStandingOut.
@@ -1043,19 +1043,19 @@ abstract class AppLocalizations {
   /// No description provided for @overStandingDice.
   ///
   /// In fr, this message translates to:
-  /// **'{count, plural, =1{{count} dé} other{{count} dés}}'**
+  /// **'{count, plural, =1{{count} dé restant} other{{count} dés restants}}'**
   String overStandingDice(int count);
 
   /// No description provided for @journalTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Journal de la table'**
+  /// **'Historique de la partie'**
   String get journalTitle;
 
   /// No description provided for @journalSubtitle.
   ///
   /// In fr, this message translates to:
-  /// **'Tout ce qui s\'est dit.'**
+  /// **'Les paris, les dudos et les calzas de chaque manche.'**
   String get journalSubtitle;
 
   /// No description provided for @journalRoundBadge.
@@ -1067,7 +1067,7 @@ abstract class AppLocalizations {
   /// No description provided for @journalEmpty.
   ///
   /// In fr, this message translates to:
-  /// **'Le journal est encore vierge. Les paris vont pleuvoir.'**
+  /// **'Aucune action pour l\'instant. Les paris apparaîtront ici.'**
   String get journalEmpty;
 
   /// No description provided for @journalRoundWords.
@@ -1079,7 +1079,7 @@ abstract class AppLocalizations {
   /// No description provided for @journalClose.
   ///
   /// In fr, this message translates to:
-  /// **'Fermer le journal'**
+  /// **'Fermer'**
   String get journalClose;
 
   /// No description provided for @journalSaidBid.
@@ -1097,13 +1097,13 @@ abstract class AppLocalizations {
   /// No description provided for @journalSaidCalza.
   ///
   /// In fr, this message translates to:
-  /// **'{name} a demandé calza.'**
+  /// **'{name} a crié Calza.'**
   String journalSaidCalza(String name);
 
   /// No description provided for @seatOutStatus.
   ///
   /// In fr, this message translates to:
-  /// **'À l\'eau'**
+  /// **'Éliminé'**
   String get seatOutStatus;
 
   /// No description provided for @seatYourTurn.
@@ -1115,19 +1115,19 @@ abstract class AppLocalizations {
   /// No description provided for @seatThinking.
   ///
   /// In fr, this message translates to:
-  /// **'réfléchit'**
+  /// **'prépare son coup'**
   String get seatThinking;
 
   /// No description provided for @seatPlaying.
   ///
   /// In fr, this message translates to:
-  /// **'en jeu'**
+  /// **'en lice'**
   String get seatPlaying;
 
   /// No description provided for @seatSemantics.
   ///
   /// In fr, this message translates to:
-  /// **'{name}, {count, plural, =1{{count} dé restant} other{{count} dés restants}}, {status}'**
+  /// **'{name}, encore {count, plural, =1{{count} dé} other{{count} dés}}, {status}'**
   String seatSemantics(String name, int count, String status);
 
   /// No description provided for @trayTitle.
@@ -1145,31 +1145,31 @@ abstract class AppLocalizations {
   /// No description provided for @trayAcesPlain.
   ///
   /// In fr, this message translates to:
-  /// **'paco simples'**
+  /// **'pacos sans pouvoir'**
   String get trayAcesPlain;
 
   /// No description provided for @trayAcesWild.
   ///
   /// In fr, this message translates to:
-  /// **'paco joker'**
+  /// **'pacos maîtres des faces'**
   String get trayAcesWild;
 
   /// No description provided for @traySemantics.
   ///
   /// In fr, this message translates to:
-  /// **'Ta main : {hand}'**
+  /// **'Tes dés : {hand}'**
   String traySemantics(String hand);
 
   /// No description provided for @palificoSemantics.
   ///
   /// In fr, this message translates to:
-  /// **'Manche palifico : une seule face imposée, paco non jokers'**
+  /// **'Manche palifico : une seule face imposée, les pacos ne sont pas jokers.'**
   String get palificoSemantics;
 
   /// No description provided for @salonBackToTavern.
   ///
   /// In fr, this message translates to:
-  /// **'Retour à la taverne'**
+  /// **'Rentrer au port'**
   String get salonBackToTavern;
 
   /// No description provided for @salonHeader.
@@ -1181,13 +1181,13 @@ abstract class AppLocalizations {
   /// No description provided for @salonHomeTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Un salon, cinq gobelets'**
+  /// **'Joue avec tes amis'**
   String get salonHomeTitle;
 
   /// No description provided for @salonHomeHint.
   ///
   /// In fr, this message translates to:
-  /// **'Les amis entrent avec un code à six caractères. L\'hôte distribue les pirates IA, le salon communique en direct.'**
+  /// **'Un code, six caractères, et vous voilà à la même table. L\'hôte complète l\'équipage avec des pirates IA.'**
   String get salonHomeHint;
 
   /// No description provided for @salonCreateCta.
@@ -1205,7 +1205,7 @@ abstract class AppLocalizations {
   /// No description provided for @salonBack.
   ///
   /// In fr, this message translates to:
-  /// **'Retour'**
+  /// **'Retour au port'**
   String get salonBack;
 
   /// No description provided for @salonCreateHeader.
@@ -1217,19 +1217,19 @@ abstract class AppLocalizations {
   /// No description provided for @salonCreateTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Tu arrives premier'**
+  /// **'Tu hisses le pavillon'**
   String get salonCreateTitle;
 
   /// No description provided for @salonCreateHint.
   ///
   /// In fr, this message translates to:
-  /// **'Choisis ton matelot et combien de pirates IA viendront mentir avec toi.'**
+  /// **'Choisis ton nom de flibustier et combien de forbans IA rejoindront ton équipage.'**
   String get salonCreateHint;
 
   /// No description provided for @salonNameLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Ton nom de pirate'**
+  /// **'Ton nom de flibustier'**
   String get salonNameLabel;
 
   /// No description provided for @salonBotsSection.
@@ -1247,13 +1247,13 @@ abstract class AppLocalizations {
   /// No description provided for @salonDefaultName.
   ///
   /// In fr, this message translates to:
-  /// **'Barman'**
+  /// **'La Vigie'**
   String get salonDefaultName;
 
   /// No description provided for @salonCreateFailed.
   ///
   /// In fr, this message translates to:
-  /// **'La création du salon a échoué.'**
+  /// **'La taverne n\'a pas ouvert ses portes. Réessaie dans un moment.'**
   String get salonCreateFailed;
 
   /// No description provided for @salonJoinHeader.
@@ -1265,13 +1265,13 @@ abstract class AppLocalizations {
   /// No description provided for @salonJoinTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Le code fait foi'**
+  /// **'Entre le code du salon'**
   String get salonJoinTitle;
 
   /// No description provided for @salonJoinHint.
   ///
   /// In fr, this message translates to:
-  /// **'Entre les six caractères que l\'hôte t\'a envoyés. Sur le salon, ton nom est tout ce que tu peux changer.'**
+  /// **'Entre le code du capitaine, puis choisis le nom sous lequel tu embarques.'**
   String get salonJoinHint;
 
   /// No description provided for @salonCodeLabel.
@@ -1283,25 +1283,25 @@ abstract class AppLocalizations {
   /// No description provided for @salonPasteHint.
   ///
   /// In fr, this message translates to:
-  /// **'Rentrer en frais — via SMS, mail, WhatsApp, Signal ou n\'importe où ailleurs, c\'est juste mieux.'**
+  /// **'Tu as trouvé une bouteille à la mer. Elle contient un code : entre-le pour rejoindre le navire.'**
   String get salonPasteHint;
 
   /// No description provided for @salonJoinNameLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Ton nom (tu peux encore le changer)'**
+  /// **'Ton nom de pirate'**
   String get salonJoinNameLabel;
 
   /// No description provided for @salonJoinSubmit.
   ///
   /// In fr, this message translates to:
-  /// **'Rejoindre'**
+  /// **'Rejoindre le salon'**
   String get salonJoinSubmit;
 
   /// No description provided for @salonJoinFailed.
   ///
   /// In fr, this message translates to:
-  /// **'Salon injoignable pour l\'instant.'**
+  /// **'Impossible de rejoindre ce salon. Vérifie le code et réessaie.'**
   String get salonJoinFailed;
 
   /// No description provided for @salonLeaveSemantic.
@@ -1319,61 +1319,61 @@ abstract class AppLocalizations {
   /// No description provided for @salonHostRole.
   ///
   /// In fr, this message translates to:
-  /// **'Tu reines sur ce salon'**
+  /// **'Tu tiens la barre de ce salon'**
   String get salonHostRole;
 
   /// No description provided for @salonGuestRole.
   ///
   /// In fr, this message translates to:
-  /// **'Invité de l\'hôte'**
+  /// **'Matelot à bord'**
   String get salonGuestRole;
 
   /// No description provided for @salonCopySemantic.
   ///
   /// In fr, this message translates to:
-  /// **'Copier le code'**
+  /// **'Mettre le code en bouteille'**
   String get salonCopySemantic;
 
   /// No description provided for @salonCopied.
   ///
   /// In fr, this message translates to:
-  /// **'Code copié dans le presse-papier.'**
+  /// **'Le code est dans ta bouteille.'**
   String get salonCopied;
 
   /// No description provided for @salonStartRound.
   ///
   /// In fr, this message translates to:
-  /// **'Lancer la manche'**
+  /// **'Démarrer la partie'**
   String get salonStartRound;
 
   /// No description provided for @salonRoundPreparing.
   ///
   /// In fr, this message translates to:
-  /// **'La manche se prépare…'**
+  /// **'L\'équipage prend place…'**
   String get salonRoundPreparing;
 
   /// No description provided for @salonWaitingHost.
   ///
   /// In fr, this message translates to:
-  /// **'En attente que l\'hôte lance la manche…'**
+  /// **'L\'équipage attend le signal du capitaine…'**
   String get salonWaitingHost;
 
   /// No description provided for @salonHostGoneHint.
   ///
   /// In fr, this message translates to:
-  /// **'L\'hôte est à l\'eau — la manche reprend dès son retour.'**
+  /// **'L\'hôte a quitté la manche. La partie reprendra à son retour.'**
   String get salonHostGoneHint;
 
   /// No description provided for @salonFeedSection.
   ///
   /// In fr, this message translates to:
-  /// **'Le fil du salon'**
+  /// **'Le journal de bord'**
   String get salonFeedSection;
 
   /// No description provided for @salonStartFailed.
   ///
   /// In fr, this message translates to:
-  /// **'La manche n\'a pas pu démarrer. Réessaie.'**
+  /// **'Impossible de lancer la manche. Vérifie ta connexion et réessaie.'**
   String get salonStartFailed;
 
   /// No description provided for @salonShareSemantic.
@@ -1385,43 +1385,43 @@ abstract class AppLocalizations {
   /// No description provided for @salonShareSmsSemantic.
   ///
   /// In fr, this message translates to:
-  /// **'Envoyer par SMS'**
+  /// **'Envoyer le code par SMS'**
   String get salonShareSmsSemantic;
 
   /// No description provided for @salonShareMailSemantic.
   ///
   /// In fr, this message translates to:
-  /// **'Envoyer par mail'**
+  /// **'Envoyer le code par mail'**
   String get salonShareMailSemantic;
 
   /// No description provided for @salonShareWhatsappSemantic.
   ///
   /// In fr, this message translates to:
-  /// **'Envoyer sur WhatsApp'**
+  /// **'Envoyer le code sur WhatsApp'**
   String get salonShareWhatsappSemantic;
 
   /// No description provided for @salonShareHint.
   ///
   /// In fr, this message translates to:
-  /// **'WhatsApp, Signal, SMS, mail : chaque app ouvre les bons liens, sinon copie.'**
+  /// **'Fais passer le code à l\'équipage, ou copie-le pour le glisser où tu veux.'**
   String get salonShareHint;
 
   /// No description provided for @salonPlayersCount.
   ///
   /// In fr, this message translates to:
-  /// **'À table ({count})'**
+  /// **'Joueurs ({count})'**
   String salonPlayersCount(int count);
 
   /// No description provided for @salonBotBadge.
   ///
   /// In fr, this message translates to:
-  /// **'IA'**
+  /// **'PIRATE IA'**
   String get salonBotBadge;
 
   /// No description provided for @salonRemoveBotSemantic.
   ///
   /// In fr, this message translates to:
-  /// **'Retirer un pirate IA'**
+  /// **'Retirer ce pirate IA'**
   String get salonRemoveBotSemantic;
 
   /// No description provided for @salonAddBotSemantic.
@@ -1433,7 +1433,7 @@ abstract class AppLocalizations {
   /// No description provided for @salonBotDifficultyTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Difficulté des bots IA'**
+  /// **'Niveau des pirates IA'**
   String get salonBotDifficultyTitle;
 
   /// No description provided for @salonYouSuffix.
@@ -1457,7 +1457,7 @@ abstract class AppLocalizations {
   /// No description provided for @salonLeaveBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le code deviendra inutilisable pour cette partie.'**
+  /// **'Tu largues les amarres et retournes à l\'accueil.'**
   String get salonLeaveBody;
 
   /// No description provided for @salonLeaveStay.
@@ -1469,32 +1469,32 @@ abstract class AppLocalizations {
   /// No description provided for @salonLeaveQuit.
   ///
   /// In fr, this message translates to:
-  /// **'Quitter'**
+  /// **'Quitter le salon'**
   String get salonLeaveQuit;
 
   /// No description provided for @reactionHeader.
   ///
   /// In fr, this message translates to:
-  /// **'RÉAGIR'**
+  /// **'RÉACTIONS'**
   String get reactionHeader;
 
   /// No description provided for @speakHeader.
   ///
   /// In fr, this message translates to:
-  /// **'PARLE'**
+  /// **'FAIS PORTER TA VOIX'**
   String get speakHeader;
 
   /// No description provided for @reactionTargetSummary.
   ///
   /// In fr, this message translates to:
-  /// **'{player} · mes dés : {n}'**
+  /// **'Je vise {player} — {n} dés en cale.'**
   String reactionTargetSummary(String player, int n);
 
   /// No description provided for @reactionLine1.
   ///
   /// In fr, this message translates to:
-  /// **'Tu n\'es pas obligé de me croire, mais j\'ai {n} dés.'**
-  String reactionLine1(int n);
+  /// **'Tu n\'es pas obligé de me croire, mais j\'ai {count, plural, =1{un dé} other{{count} dés}} de {face}.'**
+  String reactionLine1(int count, String face);
 
   /// No description provided for @reactionLine2.
   ///
@@ -1505,79 +1505,103 @@ abstract class AppLocalizations {
   /// No description provided for @reactionLine3.
   ///
   /// In fr, this message translates to:
-  /// **'Le paco, c\'est ta fin, {player}.'**
+  /// **'Ce paco va t\'envoyer par-dessus bord, {player}.'**
   String reactionLine3(String player);
 
   /// No description provided for @reactionLine4.
   ///
   /// In fr, this message translates to:
-  /// **'Je te promets : au plus {n} dés sur la table, ils mentent.'**
+  /// **'Parole de flibustier : pas plus de {n} dés. Ce pari est du vent.'**
   String reactionLine4(int n);
 
   /// No description provided for @reactionLine5.
   ///
   /// In fr, this message translates to:
-  /// **'Regarde mes {n} dés, {player}, tu es à l\'eau d\'ici ce soir.'**
+  /// **'J\'ai {n} dés, {player}. Ton pari ne tiendra pas.'**
   String reactionLine5(int n, String player);
 
   /// No description provided for @reactionLine6.
   ///
   /// In fr, this message translates to:
-  /// **'Paco sur paco paco paco.'**
+  /// **'Paco à bâbord, paco à tribord !'**
   String get reactionLine6;
 
   /// No description provided for @reactionLine7.
   ///
   /// In fr, this message translates to:
-  /// **'Je te crois, {player}, te voilà bien détrompé.'**
+  /// **'Je t\'ai cru, {player}. Bien joué, tu m\'as eu.'**
   String reactionLine7(String player);
+
+  /// No description provided for @reactionDicePrompt.
+  ///
+  /// In fr, this message translates to:
+  /// **'Choisis ta fable'**
+  String get reactionDicePrompt;
+
+  /// No description provided for @reactionDiceCountLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Combien de dés ?'**
+  String get reactionDiceCountLabel;
+
+  /// No description provided for @reactionDiceFaceLabel.
+  ///
+  /// In fr, this message translates to:
+  /// **'Quel symbole ?'**
+  String get reactionDiceFaceLabel;
+
+  /// No description provided for @reactionDiceSend.
+  ///
+  /// In fr, this message translates to:
+  /// **'Larguer la phrase'**
+  String get reactionDiceSend;
 
   /// No description provided for @reactionFreeHint.
   ///
   /// In fr, this message translates to:
-  /// **'Écrire un message libre…'**
+  /// **'Faire passer un mot à l\'équipage…'**
   String get reactionFreeHint;
 
   /// No description provided for @rulesHeader.
   ///
   /// In fr, this message translates to:
-  /// **'LES RÈGLES'**
+  /// **'RÈGLES DU JEU'**
   String get rulesHeader;
 
   /// No description provided for @rulesBack.
   ///
   /// In fr, this message translates to:
-  /// **'Retour'**
+  /// **'Retour à l\'accueil'**
   String get rulesBack;
 
   /// No description provided for @rulesHeroTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Le jeu du mensonge'**
+  /// **'Les règles du Perudo'**
   String get rulesHeroTitle;
 
   /// No description provided for @rulesHeroIntro.
   ///
   /// In fr, this message translates to:
-  /// **'Perudo, Dudo, Cacho… peu importe le nom. Les dés ne mentent pas. Les pirates, si.'**
+  /// **'Peu importe le nom : les dés restent muets et les pirates racontent des histoires.'**
   String get rulesHeroIntro;
 
   /// No description provided for @rulesShowcaseCaption.
   ///
   /// In fr, this message translates to:
-  /// **'Cinq dés, un paco joker, et aucune raison de dire la vérité.'**
+  /// **'Cinq dés, un paco joker, et le bluff au cœur de la partie.'**
   String get rulesShowcaseCaption;
 
   /// No description provided for @rulesGoalTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Le but'**
+  /// **'Ta mission'**
   String get rulesGoalTitle;
 
   /// No description provided for @rulesGoalBody.
   ///
   /// In fr, this message translates to:
-  /// **'Rester le dernier pirate avec au moins un dé. Chaque manche, on parie sur ce que cachent les gobelets. Celui qui se trompe perd un dé.'**
+  /// **'Garde au moins un dé jusqu\'à la fin. À chaque manche, pariez sur les dés cachés. Qui se trompe en perd un.'**
   String get rulesGoalBody;
 
   /// No description provided for @rulesCupTitle.
@@ -1589,85 +1613,85 @@ abstract class AppLocalizations {
   /// No description provided for @rulesCupBody.
   ///
   /// In fr, this message translates to:
-  /// **'Chacun reçoit cinq dés et les cache sous son gobelet. Tu regardes les tiens en secret.'**
+  /// **'Chaque pirate reçoit cinq dés et les cache sous son gobelet. Tu ne vois que les tiens.'**
   String get rulesCupBody;
 
   /// No description provided for @rulesPacoTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Les paco sont jokers'**
+  /// **'Les pacos sont des jokers'**
   String get rulesPacoTitle;
 
   /// No description provided for @rulesPacoBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un paco (1) compte pour n\'importe quelle face. Il ne compte que comme un paco quand le pari porte sur les paco. Un paco vaut donc deux dés normaux au moment de surenchérir.'**
+  /// **'Un paco (1) compte comme n\'importe quelle face, sauf quand le pari porte sur les pacos : il ne compte alors que comme un paco. Pour passer d\'une face normale aux pacos, il faut au moins la moitié des dés annoncés, arrondie au supérieur. Pour quitter les pacos, il faut doubler la quantité et ajouter un dé.'**
   String get rulesPacoBody;
 
   /// No description provided for @rulesBidTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Le pari'**
+  /// **'Annoncer un pari'**
   String get rulesBidTitle;
 
   /// No description provided for @rulesBidBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un pari a deux nombres : une quantité et une face.'**
+  /// **'Tu annonces combien de dés montrent quelle face.'**
   String get rulesBidBody;
 
   /// No description provided for @rulesBidQuote.
   ///
   /// In fr, this message translates to:
-  /// **'« Il y a au moins 4 dés de 5 sur la table. »'**
+  /// **'« Quatre cinq, ou plus, se cachent sous les gobelets. »'**
   String get rulesBidQuote;
 
   /// No description provided for @rulesBidExplain.
   ///
   /// In fr, this message translates to:
-  /// **'Ici, le pirate affirme qu\'il y a au moins quatre dés de valeur 5 sur toute la table. Les paco comptent aussi.'**
+  /// **'Le pirate mise sa parole sur quatre dés de 5 ou plus. Les pacos peuvent compléter le compte.'**
   String get rulesBidExplain;
 
   /// No description provided for @rulesBidOpeningNote.
   ///
   /// In fr, this message translates to:
-  /// **'La manche ne s\'ouvre jamais sur les paco : ce sont des jokers, l\'ouverture leur est interdite. Le palifico fait exception.'**
+  /// **'Hors palifico, on ne peut pas ouvrir une manche avec des pacos.'**
   String get rulesBidOpeningNote;
 
   /// No description provided for @rulesRaiseTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Surenchérir'**
+  /// **'Faire monter le pari'**
   String get rulesRaiseTitle;
 
   /// No description provided for @rulesRaiseIntro.
   ///
   /// In fr, this message translates to:
-  /// **'Le pari suivant doit toujours être plus fort :'**
+  /// **'Chaque nouveau pari doit dépasser le précédent :'**
   String get rulesRaiseIntro;
 
   /// No description provided for @rulesRaiseSameFace.
   ///
   /// In fr, this message translates to:
-  /// **'Plus de dés sur la même face : 4 dés de 5 → 5 dés de 5.'**
+  /// **'Garde la face, fais monter le nombre : 4 dés de 5 → 5 dés de 5.'**
   String get rulesRaiseSameFace;
 
   /// No description provided for @rulesRaiseHigherFace.
   ///
   /// In fr, this message translates to:
-  /// **'Même nombre, face plus haute : 4 dés de 5 → 4 dés de 6.'**
+  /// **'Garder la quantité et choisir une face plus haute : 4 dés de 5 → 4 dés de 6.'**
   String get rulesRaiseHigherFace;
 
   /// No description provided for @rulesRaiseTowardPaco.
   ///
   /// In fr, this message translates to:
-  /// **'Vers les paco : au moins la moitié, arrondie au-dessus : 4 dés de 5 → 2 paco.'**
+  /// **'Cap sur les pacos : annonce au moins la moitié des dés, arrondie au supérieur : 4 dés de 5 → 2 pacos.'**
   String get rulesRaiseTowardPaco;
 
   /// No description provided for @rulesRaiseFromPaco.
   ///
   /// In fr, this message translates to:
-  /// **'Depuis les paco : le double plus un : 2 paco → 5 dés de n\'importe quelle face.'**
+  /// **'Depuis les pacos, double et ajoute un dé : 2 pacos → 5 dés, face au choix.'**
   String get rulesRaiseFromPaco;
 
   /// No description provided for @rulesConvert45.
@@ -1679,7 +1703,7 @@ abstract class AppLocalizations {
   /// No description provided for @rulesConvert2Paco.
   ///
   /// In fr, this message translates to:
-  /// **'2 paco'**
+  /// **'2 pacos'**
   String get rulesConvert2Paco;
 
   /// No description provided for @rulesConvert5F2.
@@ -1697,7 +1721,7 @@ abstract class AppLocalizations {
   /// No description provided for @rulesConvert3Paco.
   ///
   /// In fr, this message translates to:
-  /// **'3 paco'**
+  /// **'3 pacos'**
   String get rulesConvert3Paco;
 
   /// No description provided for @rulesDudoTitle.
@@ -1709,7 +1733,7 @@ abstract class AppLocalizations {
   /// No description provided for @rulesDudoBody.
   ///
   /// In fr, this message translates to:
-  /// **'Au lieu de surenchérir, tu peux douter du dernier pari. Tout le monde soulève son gobelet et on compte.'**
+  /// **'Tu cries Dudo et mets le dernier pari à l\'épreuve : tous les gobelets se lèvent, puis on compte.'**
   String get rulesDudoBody;
 
   /// No description provided for @rulesDudoHoldsTitle.
@@ -1721,55 +1745,55 @@ abstract class AppLocalizations {
   /// No description provided for @rulesDudoHoldsBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le douteur perd un dé.'**
+  /// **'Celui qui a contesté le pari perd un dé.'**
   String get rulesDudoHoldsBody;
 
   /// No description provided for @rulesDudoWrongTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Le pari est faux'**
+  /// **'Le pari ne tient pas'**
   String get rulesDudoWrongTitle;
 
   /// No description provided for @rulesDudoWrongBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le parieur perd un dé.'**
+  /// **'Le joueur qui a lancé le pari perd un dé.'**
   String get rulesDudoWrongBody;
 
   /// No description provided for @rulesCalzaTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Calza — optionnel'**
+  /// **'La calza, à toi de choisir'**
   String get rulesCalzaTitle;
 
   /// No description provided for @rulesCalzaBody.
   ///
   /// In fr, this message translates to:
-  /// **'Tu peux aussi annoncer que le compte est exactement bon. C\'est la calza.'**
+  /// **'Tu peux annoncer que le nombre de dés correspond exactement au pari : c\'est une calza.'**
   String get rulesCalzaBody;
 
   /// No description provided for @rulesCalzaAllOrNothing.
   ///
   /// In fr, this message translates to:
-  /// **'Tout ou rien'**
+  /// **'Un dé gagné ou perdu'**
   String get rulesCalzaAllOrNothing;
 
   /// No description provided for @rulesCalzaAllOrNothingBody.
   ///
   /// In fr, this message translates to:
-  /// **'Compte exact : tu gagnes un dé (cinq maximum). Compte faux : tu en perds un. La calza peut être désactivée avant la partie.'**
+  /// **'Si le compte est exact, tu gagnes un dé, jusqu\'à cinq. Sinon, tu en perds un. La calza peut être désactivée avant la partie.'**
   String get rulesCalzaAllOrNothingBody;
 
   /// No description provided for @rulesEndTitle.
   ///
   /// In fr, this message translates to:
-  /// **'La fin'**
+  /// **'Dernier pirate debout'**
   String get rulesEndTitle;
 
   /// No description provided for @rulesEndBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un pirate qui perd son dernier dé est à l\'eau. Le dernier survivant gagne la taverne. Le perdant de la manche ouvre la suivante.'**
+  /// **'Plus de dés ? Par-dessus bord ! Le dernier pirate à flot gagne la taverne ; le perdant de la manche ouvre la suivante.'**
   String get rulesEndBody;
 
   /// No description provided for @rulesPalificoTitle.
@@ -1787,73 +1811,73 @@ abstract class AppLocalizations {
   /// No description provided for @rulesPalificoFaceTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Face imposée'**
+  /// **'Face choisie au premier pari'**
   String get rulesPalificoFaceTitle;
 
   /// No description provided for @rulesPalificoFaceBody.
   ///
   /// In fr, this message translates to:
-  /// **'Le premier pari choisit la face et ouvre à deux dés minimum. Tous les suivants montent la quantité de cette même face ; impossible de changer de valeur.'**
+  /// **'Le premier pari fixe la face et annonce deux dés ou plus. Ensuite, impossible de changer de cap : seule la quantité monte.'**
   String get rulesPalificoFaceBody;
 
   /// No description provided for @rulesPalificoPacoTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Paco sans joker'**
+  /// **'Les pacos ne sont pas jokers'**
   String get rulesPalificoPacoTitle;
 
   /// No description provided for @rulesPalificoPacoBody.
   ///
   /// In fr, this message translates to:
-  /// **'Pendant le palifico, les paco ne comptent que comme paco : plus de joker.'**
+  /// **'En palifico, le paco perd son pouvoir de joker : il ne vaut que pour lui-même.'**
   String get rulesPalificoPacoBody;
 
   /// No description provided for @rulesPalificoOnceTitle.
   ///
   /// In fr, this message translates to:
-  /// **'Une seule manche'**
+  /// **'Le palifico dure une manche'**
   String get rulesPalificoOnceTitle;
 
   /// No description provided for @rulesPalificoOnceBody.
   ///
   /// In fr, this message translates to:
-  /// **'À la manche d\'après, les enchères reprennent la forme normale, même si le pirate reste à un dé. Et si quelqu\'un rechute à un dé plus tard, le palifico se déclenche à nouveau.'**
+  /// **'Le palifico ne dure qu\'une manche. Ensuite, les règles normales reprennent, même si un pirate n\'a qu\'un dé. Si un pirate tombe à un dé plus tard, un nouveau palifico commence.'**
   String get rulesPalificoOnceBody;
 
   /// No description provided for @rulesTipQuote.
   ///
   /// In fr, this message translates to:
-  /// **'Le meilleur bluff est celui que personne n\'a envie de payer.'**
+  /// **'Le meilleur bluff est celui que personne n\'ose contester.'**
   String get rulesTipQuote;
 
   /// No description provided for @rulesUnderstood.
   ///
   /// In fr, this message translates to:
-  /// **'J\'ai compris'**
+  /// **'Compris'**
   String get rulesUnderstood;
 
   /// No description provided for @diceHiddenText.
   ///
   /// In fr, this message translates to:
-  /// **'Dé caché'**
+  /// **'Dé sous le gobelet'**
   String get diceHiddenText;
 
   /// No description provided for @diceAceText.
   ///
   /// In fr, this message translates to:
-  /// **'As, joker'**
+  /// **'Le paco, maître des faces'**
   String get diceAceText;
 
   /// No description provided for @diceValueText.
   ///
   /// In fr, this message translates to:
-  /// **'Dé de valeur {value}'**
+  /// **'Le dé affiche {value}'**
   String diceValueText(int value);
 
   /// No description provided for @bidAcesLabel.
   ///
   /// In fr, this message translates to:
-  /// **'{count} paco'**
+  /// **'{count, plural, =1{1 paco} other{{count} pacos}}'**
   String bidAcesLabel(int count);
 
   /// No description provided for @bidPlainLabel.
@@ -1865,43 +1889,43 @@ abstract class AppLocalizations {
   /// No description provided for @bidSpokenAces.
   ///
   /// In fr, this message translates to:
-  /// **'au moins {count} paco'**
+  /// **'{count, plural, =1{au moins un paco} other{au moins {count} pacos}}'**
   String bidSpokenAces(int count);
 
   /// No description provided for @bidSpokenPlain.
   ///
   /// In fr, this message translates to:
-  /// **'au moins {count, plural, =1{{count} dé} other{{count} dés}} de valeur {face}'**
+  /// **'au moins {count, plural, =1{{count} dé} other{{count} dés}} montrant {face}'**
   String bidSpokenPlain(int count, int face);
 
   /// No description provided for @bidShortLabel.
   ///
   /// In fr, this message translates to:
-  /// **'{quantity}×{mark}'**
+  /// **'{quantity} × {mark}'**
   String bidShortLabel(int quantity, String mark);
 
   /// No description provided for @temperMousseLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Mousse'**
+  /// **'P\'tit mousse'**
   String get temperMousseLabel;
 
   /// No description provided for @temperMousseBody.
   ///
   /// In fr, this message translates to:
-  /// **'Timide, prudent, facile à bluffer.'**
+  /// **'Un matelot craintif, qui mord facilement à l\'hameçon.'**
   String get temperMousseBody;
 
   /// No description provided for @temperFlibustierLabel.
   ///
   /// In fr, this message translates to:
-  /// **'Flibustier'**
+  /// **'Corsaire'**
   String get temperFlibustierLabel;
 
   /// No description provided for @temperFlibustierBody.
   ///
   /// In fr, this message translates to:
-  /// **'Un adversaire honnête, qui sait sentir le mensonge.'**
+  /// **'Un adversaire équilibré, qui repère les bluffs.'**
   String get temperFlibustierBody;
 
   /// No description provided for @temperCapitaineLabel.
@@ -1913,103 +1937,121 @@ abstract class AppLocalizations {
   /// No description provided for @temperCapitaineBody.
   ///
   /// In fr, this message translates to:
-  /// **'Calcule les probabilités et n\'aime pas perdre.'**
+  /// **'Il calcule les probabilités et déteste perdre.'**
   String get temperCapitaineBody;
 
   /// No description provided for @systemPhoneSlept.
   ///
   /// In fr, this message translates to:
-  /// **'Le téléphone a mis le salon en sommeil — reconnexion…'**
+  /// **'Le téléphone sort de veille. Reconnexion au salon…'**
   String get systemPhoneSlept;
 
   /// No description provided for @systemQuietCut.
   ///
   /// In fr, this message translates to:
-  /// **'Le salon ne répond plus — je coupe la connexion desséchée et je reprends…'**
+  /// **'Le salon ne répond plus. Je rétablis la connexion…'**
   String get systemQuietCut;
 
   /// No description provided for @systemCreated.
   ///
   /// In fr, this message translates to:
-  /// **'Salon créé. Code : {code}'**
+  /// **'Ton salon est prêt : {code}.'**
   String systemCreated(String code);
 
   /// No description provided for @systemConnected.
   ///
   /// In fr, this message translates to:
-  /// **'Connecté au salon {code}'**
+  /// **'À bord du salon {code} !'**
   String systemConnected(String code);
 
   /// No description provided for @systemRecovered.
   ///
   /// In fr, this message translates to:
-  /// **'Reconnecté au salon {code}.'**
+  /// **'Tu es de retour dans le salon {code}.'**
   String systemRecovered(String code);
 
   /// No description provided for @systemClosed.
   ///
   /// In fr, this message translates to:
-  /// **'Salon fermé : {reason}'**
+  /// **'La taverne ferme ses portes : {reason}.'**
   String systemClosed(String reason);
 
   /// No description provided for @systemLost.
   ///
   /// In fr, this message translates to:
-  /// **'Connexion perdue{detail} — tentative de reconnexion…'**
+  /// **'Connexion interrompue{detail}. Nouvelle tentative…'**
   String systemLost(String detail);
 
   /// No description provided for @systemUnreachableTrack.
   ///
   /// In fr, this message translates to:
-  /// **'Salon injoignable — {reason} Je continue d\'essayer.'**
+  /// **'Impossible de joindre le salon : {reason}. Je réessaie.'**
   String systemUnreachableTrack(String reason);
 
   /// No description provided for @systemUnreachableBackoff.
   ///
   /// In fr, this message translates to:
-  /// **'Salon injoignable — {brief}. Je continue d\'essayer en doublant le délai.'**
+  /// **'Le salon reste inaccessible : {brief}. Je réessaierai après un délai plus long.'**
   String systemUnreachableBackoff(String brief);
 
   /// No description provided for @systemThrottledCreate.
   ///
   /// In fr, this message translates to:
-  /// **'Trop de demandes de création — réessaie dans ~{seconds} s.'**
+  /// **'Trop de demandes de création. Réessaie dans {seconds} s.'**
   String systemThrottledCreate(int seconds);
 
   /// No description provided for @systemCreateFailed.
   ///
   /// In fr, this message translates to:
-  /// **'Impossible de créer un salon pour l\'instant.{detail}'**
+  /// **'Le salon n\'a pas pu être créé.{detail}'**
   String systemCreateFailed(String detail);
 
   /// No description provided for @systemChatRate.
   ///
   /// In fr, this message translates to:
-  /// **'Débit du salon atteint — attends {seconds}s.'**
+  /// **'Doucement sur les messages, matelot. Attends {seconds} s.'**
   String systemChatRate(int seconds);
 
   /// No description provided for @systemDeadReaction.
   ///
   /// In fr, this message translates to:
-  /// **'La connexion au salon est lâchée — la réaction ne peut pas partir.'**
+  /// **'Tu es déconnecté du salon. Ta réaction n\'a pas été envoyée.'**
   String get systemDeadReaction;
 
   /// No description provided for @systemDeadChat.
   ///
   /// In fr, this message translates to:
-  /// **'La connexion au salon est lâchée — le message ne peut pas partir.'**
+  /// **'Tu es déconnecté du salon. Ton message n\'a pas été envoyé.'**
   String get systemDeadChat;
 
   /// No description provided for @systemHostGone.
   ///
   /// In fr, this message translates to:
-  /// **'L’hôte a quitté la manche — la table attend son retour…'**
+  /// **'L\'hôte est déconnecté. La table attend son retour…'**
   String get systemHostGone;
+
+  /// No description provided for @systemNoServerReply.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le serveur n\'a pas répondu après 8 s. Je réessaie.'**
+  String get systemNoServerReply;
+
+  /// No description provided for @systemNetworkResponse.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le réseau répond {status} : {body}.'**
+  String systemNetworkResponse(String status, String body);
+
+  /// No description provided for @systemNetworkProbeFailed.
+  ///
+  /// In fr, this message translates to:
+  /// **'Impossible de vérifier la connexion ({error}). Je réessaie.'**
+  String systemNetworkProbeFailed(String error);
 
   /// No description provided for @systemSixChars.
   ///
   /// In fr, this message translates to:
-  /// **'Le code doit faire six caractères.'**
+  /// **'Il faut un code de six caractères pour monter à bord.'**
   String get systemSixChars;
 }
 

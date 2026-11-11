@@ -18,6 +18,7 @@ import '../salon_models.dart';
 import '../widgets/reaction_bar.dart';
 import '../widgets/salon_bits.dart';
 import '../widgets/salon_crew_card.dart';
+import '../widgets/salon_message_bubble.dart';
 
 /// "Créer un salon" / "Rejoindre un salon" and the lobby with code sharing,
 /// IA adjustment, live reactions and chat. Works with any [SalonSession]
@@ -613,7 +614,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                             SalonSectionLabel(l10n.salonFeedSection),
                             const SizedBox(height: 8),
                             for (final message in session.messages)
-                              _SalonMessageRow(message: message),
+                              SalonMessageBubble(message: message),
                           ],
                         ),
                       ),
@@ -728,7 +729,8 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       );
       relay.start();
       final route = MaterialPageRoute<void>(
-        builder: (_) => GameScreen(controller: relay.controller),
+        builder: (_) =>
+            GameScreen(controller: relay.controller, salonSession: network),
       );
       // Leaving the table — quit dialog or back after the standings —
       // folds the relay and tells the Worker the round is over.
@@ -747,7 +749,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       names: names,
     );
     final route = MaterialPageRoute<void>(
-      builder: (_) => GameScreen(controller: guest),
+      builder: (_) => GameScreen(controller: guest, salonSession: network),
     );
     // The GameScreen owns and disposes the mirror controller; this callback
     // only restores the lobby's start-button state after its route is gone.
@@ -916,75 +918,6 @@ class _PlayersCard extends StatelessWidget {
               ),
             ),
         ],
-      ),
-    );
-  }
-}
-
-class _SalonMessageRow extends StatelessWidget {
-  const _SalonMessageRow({required this.message});
-
-  final SalonMessage message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: message.isMine ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 320),
-        margin: const EdgeInsets.symmetric(vertical: 3),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: message.isMine
-              ? AppColors.brass.withValues(alpha: 0.16)
-              : message.kind == SalonMessageKind.system
-              ? AppColors.feltDeep.withValues(alpha: 0.6)
-              : AppColors.leather,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: message.kind == SalonMessageKind.system
-                ? AppColors.brassDim.withValues(alpha: 0.4)
-                : message.isMine
-                ? AppColors.brass.withValues(alpha: 0.4)
-                : AppColors.grain,
-          ),
-        ),
-        child: message.kind == SalonMessageKind.emoji
-            ? Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    message.emoji ?? '',
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    message.authorName,
-                    style: Theme.of(context).textTheme.labelSmall
-                        ?.copyWith(color: AppColors.parchmentMuted),
-                  ),
-                ],
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    message.authorName,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: message.isMine
-                          ? AppColors.brassBright
-                          : AppColors.parchmentMuted,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    message.body,
-                    style: Theme.of(context).textTheme.bodyMedium
-                        ?.copyWith(color: AppColors.parchment),
-                  ),
-                ],
-              ),
       ),
     );
   }

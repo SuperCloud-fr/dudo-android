@@ -31,34 +31,26 @@ void main() {
   ) async {
     await tester.pumpWidget(_english(const RulesScreen()));
     await tester.pump();
-    expect(find.text('The game of lies'), findsOneWidget);
-    expect(find.text('Pacos are jokers'), findsOneWidget);
-    expect(find.text('One round only'), findsOneWidget);
+    expect(find.text('Perudo rules'), findsOneWidget);
+    expect(find.text('Pacos are wild'), findsOneWidget);
+    expect(find.text('Palifico lasts one round'), findsOneWidget);
     expect(find.text('GOT IT'), findsOneWidget);
   });
 
-  testWidgets('un dé caché se lit « Hidden die » auprès du lecteur', (
+  testWidgets('un dé caché se lit « Die under the cup » auprès du lecteur', (
     tester,
   ) async {
     await tester.pumpWidget(
-      _english(
-        Scaffold(
-          body: Center(child: DiceFace(value: 3, hidden: true)),
-        ),
-      ),
+      _english(Scaffold(body: Center(child: DiceFace(value: 3, hidden: true)))),
     );
-    expect(find.bySemanticsLabel('Hidden die'), findsOneWidget);
+    expect(find.bySemanticsLabel('Die under the cup'), findsOneWidget);
   });
 
   testWidgets('un dé de valeur porte sa face dans le lecteur', (tester) async {
     await tester.pumpWidget(
-      _english(
-        Scaffold(
-          body: Center(child: DiceFace(value: 5)),
-        ),
-      ),
+      _english(Scaffold(body: Center(child: DiceFace(value: 5)))),
     );
-    expect(find.bySemanticsLabel('Die of value 5'), findsOneWidget);
+    expect(find.bySemanticsLabel('The die shows 5'), findsOneWidget);
   });
 
   testWidgets('un invité voit que seul l’hôte peut lancer les enchères', (
@@ -80,9 +72,7 @@ void main() {
         ),
       ),
     );
-    final l10n = AppLocalizations.of(
-      tester.element(find.byType(PeekOverlay)),
-    )!;
+    final l10n = AppLocalizations.of(tester.element(find.byType(PeekOverlay)))!;
     await tester.tap(find.text(l10n.peekTapCupHint));
     await tester.pumpAndSettle();
 

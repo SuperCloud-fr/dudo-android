@@ -88,13 +88,13 @@ void main() {
       ),
     );
 
-    expect(find.text('TU RÈGNES'), findsOneWidget);
-    expect(find.text('REJOUER'), findsOneWidget);
+    expect(find.text('VICTOIRE'), findsOneWidget);
+    expect(find.text('REMETTRE ÇA'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
-    await tester.ensureVisible(find.text('REJOUER'));
+    await tester.ensureVisible(find.text('REMETTRE ÇA'));
     await tester.pump();
-    await tester.tap(find.text('REJOUER'));
+    await tester.tap(find.text('REMETTRE ÇA'));
     expect(rematched, isTrue);
   });
 
@@ -115,7 +115,7 @@ void main() {
     );
 
     expect(find.text('ANNONCER'), findsOneWidget);
-    expect(find.text('ANNULER'), findsOneWidget);
+    expect(find.text("ANNULER L'ACTION"), findsOneWidget);
     expect(find.text('FACE'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
@@ -210,9 +210,9 @@ void main() {
     );
 
     // No cup, no shake hint — just the elimination notice and the CTA.
-    expect(find.text('Tu es à l\'eau'), findsOneWidget);
+    expect(find.text('Par-dessus bord'), findsOneWidget);
     expect(find.byType(LeatherCup), findsNothing);
-    await tester.tap(find.text('VOIR LA MANCHE'));
+    await tester.tap(find.text('REGARDER LA MANCHE'));
     expect(waved, isTrue);
   });
 }

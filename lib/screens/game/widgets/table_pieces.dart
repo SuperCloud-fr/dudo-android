@@ -63,11 +63,16 @@ class DiceTray extends StatelessWidget {
           children: [
             SectionLabel(
               AppLocalizations.of(context)!.trayTitle,
-              trailing: Text(
-                '${AppLocalizations.of(context)!.trayDiceCount(values.length)} · ${palifico ? AppLocalizations.of(context)!.trayAcesPlain : AppLocalizations.of(context)!.trayAcesWild}',
-                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: AppColors.parchmentMuted,
-                  letterSpacing: 0.4,
+              trailing: Flexible(
+                child: Text(
+                  '${AppLocalizations.of(context)!.trayDiceCount(values.length)} · ${palifico ? AppLocalizations.of(context)!.trayAcesPlain : AppLocalizations.of(context)!.trayAcesWild}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: AppColors.parchmentMuted,
+                    letterSpacing: 0.4,
+                  ),
                 ),
               ),
             ),

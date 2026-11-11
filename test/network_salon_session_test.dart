@@ -54,7 +54,11 @@ void main() {
       harness.session.messages.last,
       isA<SalonMessage>()
           .having((message) => message.kind, 'kind', SalonMessageKind.system)
-          .having((message) => message.body, 'body', contains('Salon créé')),
+          .having(
+            (message) => message.body,
+            'body',
+            contains('Ton salon est prêt'),
+          ),
     );
   });
 
@@ -341,7 +345,7 @@ void main() {
     );
     expect(
       session.messages.first.body,
-      contains('Impossible de créer un salon'),
+      contains('Le salon n\'a pas pu être créé'),
       reason: 'seule la ligne de la nouvelle tentative subsiste',
     );
   });
@@ -356,7 +360,7 @@ void main() {
 
     expect(session.messages, hasLength(1));
     expect(session.messages.first.kind, SalonMessageKind.system);
-    expect(session.messages.first.body, contains('Salon créé'));
+    expect(session.messages.first.body, contains('Ton salon est prêt'));
   });
 
   test(
@@ -480,7 +484,7 @@ void main() {
       expect(created, hasLength(2));
       expect(
         session.messages.any(
-          (message) => message.body.contains('Connexion perdue'),
+          (message) => message.body.contains('Connexion interrompue'),
         ),
         isTrue,
       );
@@ -506,7 +510,9 @@ void main() {
         isTrue,
       );
       expect(
-        session.messages.any((message) => message.body.contains('Reconnecté')),
+        session.messages.any(
+          (message) => message.body.contains('de retour dans le salon'),
+        ),
         isTrue,
       );
       session.dispose();
@@ -656,7 +662,7 @@ void main() {
       await session.createSalon('Cap Hôte', 1);
 
       expect(
-        session.messages.last.body,
+        session.messages.last.body.toLowerCase(),
         contains('réessaie'),
         reason: 'le 429 doit expliquer la pause',
       );
@@ -692,7 +698,7 @@ void main() {
     await harness.session.sendChat('Le quatrième');
     expect(framesOf(channel.sent, 'chat'), hasLength(3));
     expect(
-      harness.session.messages.last.body,
+      harness.session.messages.last.body.toLowerCase(),
       contains('attends'),
       reason: 'le refus local doit être visible',
     );

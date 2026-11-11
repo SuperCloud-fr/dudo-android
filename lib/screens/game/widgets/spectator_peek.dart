@@ -16,6 +16,7 @@ class SpectatorPeekOverlay extends StatelessWidget {
     required this.palifico,
     required this.canBeginBidding,
     required this.onReady,
+    this.chatAction,
   });
 
   final int round;
@@ -25,6 +26,7 @@ class SpectatorPeekOverlay extends StatelessWidget {
   /// host's snapshot flips the phase instead, so a note replaces the button.
   final bool canBeginBidding;
   final VoidCallback onReady;
+  final Widget? chatAction;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +52,7 @@ class SpectatorPeekOverlay extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      SectionLabel(l10n.peekRound(round)),
+                      SectionLabel(l10n.peekRound(round), trailing: chatAction),
                       const SizedBox(height: 14),
                       Text(
                         l10n.peekSpectatorTitle,

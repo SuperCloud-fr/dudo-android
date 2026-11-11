@@ -886,7 +886,7 @@ class NetworkSalonSession extends SalonSession
         return;
       }
       _recoveryFailures++;
-      final reason = result.message ?? 'Aucune réponse du serveur en 8s.';
+      final reason = result.message ?? SalonSystem.noServerReply;
       _threadOnce(SalonSystem.unreachableTrack(reason));
     } catch (error) {
       // On a phone, "why" is everything: DNS, proxy, captive portal. The
@@ -935,9 +935,9 @@ class NetworkSalonSession extends SalonSession
       );
       final body = (await response.transform(utf8.decoder).join()).trim();
       final short = body.length > 22 ? '${body.substring(0, 22)}…' : body;
-      return 'réseau: ${response.statusCode} «$short»';
+      return SalonSystem.networkResponse('${response.statusCode}', short);
     } catch (error) {
-      return 'réseau: la sonde a échoué ($error)';
+      return SalonSystem.networkProbeFailed('$error');
     } finally {
       client.close();
     }
