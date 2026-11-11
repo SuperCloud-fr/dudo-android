@@ -269,6 +269,7 @@
   "salonStartRound": "Start the round",
   "salonRoundPreparing": "The round is being poured…",
   "salonWaitingHost": "Waiting for the host to start the round…",
+  "salonHostGoneHint": "The host is out — the round resumes as soon as they're back.",
   "salonFeedSection": "The salon thread",
   "salonStartFailed": "The round could not start. Try again.",
   "salonShareSemantic": "Share the code",
@@ -405,5 +406,6 @@
   "@systemChatRate": {"placeholders": {"seconds": {"type": "int"}}},
   "systemDeadReaction": "The salon connection dropped — the reaction can't travel.",
   "systemDeadChat": "The salon connection dropped — the message can't travel.",
+  "systemHostGone": "The host left the round — the table is waiting for them…",
   "systemSixChars": "The code must be six characters."
 }

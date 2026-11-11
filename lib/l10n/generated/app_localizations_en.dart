@@ -814,6 +814,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salonWaitingHost => 'Waiting for the host to start the round…';
 
   @override
+  String get salonHostGoneHint =>
+      'The host is out — the round resumes as soon as they\'re back.';
+
+  @override
   String get salonFeedSection => 'The salon thread';
 
   @override
@@ -1215,6 +1219,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get systemDeadChat =>
       'The salon connection dropped — the message can\'t travel.';
+
+  @override
+  String get systemHostGone =>
+      'The host left the round — the table is waiting for them…';
 
   @override
   String get systemSixChars => 'The code must be six characters.';

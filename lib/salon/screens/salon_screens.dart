@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -385,6 +387,15 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   bool _tableOpened = false;
   bool _starting = false;
   BotDifficulty _botDifficulty = BotDifficulty.flibustier;
+  Timer? _hostGoneNotice;
+  Timer? _hostGoneFold;
+  bool _hostGoneNoticeShown = false;
+
+  /// The engine lives on the host's phone: a vanished host freezes every
+  /// mirror. Guests get a clear message after a short silence, then another
+  /// grace delay to let a dozed host come back before the table folds.
+  static const Duration hostGoneNoticeDelay = Duration(seconds: 3);
+  static const Duration hostGoneFoldDelay = Duration(seconds: 12);
 
   @override
   void initState() {
@@ -394,17 +405,70 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
 
   @override
   void dispose() {
+    _hostGoneNotice?.cancel();
+    _hostGoneFold?.cancel();
     widget.session.removeListener(_refresh);
     super.dispose();
+  }
+
+  /// Folds the table route back to the lobby while the host is away.
+  void _foldHostGoneTable() {
+    _hostGoneFold = null;
+    _hostGoneNotice?.cancel();
+    _hostGoneNotice = null;
+    if (_hostGoneNoticeShown && mounted) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      _hostGoneNoticeShown = false;
+    }
+    if (!mounted) return;
+    _tableOpened = false;
+    _starting = false;
+    final current = _tableRoute;
+    if (current != null && current.isCurrent) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
+    _tableRoute = null;
   }
 
   void _refresh() {
     if (!mounted) return;
     setState(() {});
     final isNetwork = widget.session is NetworkSalonSession;
+    final network = isNetwork ? widget.session as NetworkSalonSession : null;
+    // The host vanished mid-game: say it once in the thread, wait out the
+    // grace, then fold the frozen mirror back to the lobby. If the host
+    // comes back (reclaim by name), the hop below reopens the table.
+    if (network != null && network.hostGone && _tableOpened) {
+      if (!_hostGoneNoticeShown && _hostGoneFold == null) {
+        _hostGoneNotice ??= Timer(hostGoneNoticeDelay, () {
+          _hostGoneNotice = null;
+          if (!mounted || !widget.session.hostGone) return;
+          _hostGoneNoticeShown = true;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.systemHostGone),
+              duration: hostGoneFoldDelay,
+            ),
+          );
+          _hostGoneFold ??= Timer(hostGoneFoldDelay, _foldHostGoneTable);
+        });
+      }
+    } else {
+      _hostGoneNotice?.cancel();
+      _hostGoneNotice = null;
+      _hostGoneFold?.cancel();
+      _hostGoneFold = null;
+      if (_hostGoneNoticeShown) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        _hostGoneNoticeShown = false;
+      }
+    }
     // Guests (and any late host) hop to the table as soon as the Worker
     // confirms the round started.
-    if (isNetwork && widget.session.isStarting && !_tableOpened) {
+    if (isNetwork &&
+        widget.session.isStarting &&
+        !_tableOpened &&
+        !(network?.hostGone ?? false)) {
       _tableOpened = true;
       _pushTable(context);
     }
@@ -412,7 +476,12 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
     // table folds back to the tavern lobby so a new phone can join or the
     // table can replay.
     if (isNetwork && _tableOpened && !widget.session.isStarting) {
+      _hostGoneFold?.cancel();
+      _hostGoneFold = null;
       _tableOpened = false;
+      // A finished start attempt must not bury the button: without this,
+      // returning from a game left "la manche se prépare" greyed forever.
+      _starting = false;
       final current = _tableRoute;
       if (current != null && current.isCurrent) {
         Navigator.of(context, rootNavigator: true).pop();
@@ -534,7 +603,11 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                               ),
                             if (!isHost) ...[
                               const SizedBox(height: 8),
-                              SalonHint(l10n.salonWaitingHost),
+                              SalonHint(
+                                widget.session.hostGone
+                                    ? l10n.salonHostGoneHint
+                                    : l10n.salonWaitingHost,
+                              ),
                             ],
                             const SizedBox(height: 18),
                             SalonSectionLabel(l10n.salonFeedSection),
@@ -659,7 +732,12 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       );
       // Leaving the table — quit dialog or back after the standings —
       // folds the relay and tells the Worker the round is over.
-      route.popped.then((_) => relay.dispose());
+      route.popped.then((_) {
+        // The button must be tappable again once the lobby is back.
+        if (mounted) setState(() => _starting = false);
+        relay.dispose();
+      });
+      _tableRoute = route;
       navigator.push(route);
       return;
     }
@@ -671,8 +749,12 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
     final route = MaterialPageRoute<void>(
       builder: (_) => GameScreen(controller: guest),
     );
-    // Same fold for the mirror so nothing keeps listening to the session.
-    route.popped.then((_) => guest.dispose());
+    // The GameScreen owns and disposes the mirror controller; this callback
+    // only restores the lobby's start-button state after its route is gone.
+    route.popped.then((_) {
+      if (mounted) setState(() => _starting = false);
+    });
+    _tableRoute = route;
     navigator.push(route);
   }
 }

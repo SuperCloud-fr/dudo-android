@@ -817,6 +817,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get salonWaitingHost => 'En attente que l\'hôte lance la manche…';
 
   @override
+  String get salonHostGoneHint =>
+      'L\'hôte est à l\'eau — la manche reprend dès son retour.';
+
+  @override
   String get salonFeedSection => 'Le fil du salon';
 
   @override
@@ -1223,6 +1227,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get systemDeadChat =>
       'La connexion au salon est lâchée — le message ne peut pas partir.';
+
+  @override
+  String get systemHostGone =>
+      'L’hôte a quitté la manche — la table attend son retour…';
 
   @override
   String get systemSixChars => 'Le code doit faire six caractères.';

@@ -65,6 +65,11 @@ class RelayedTableMessage {
   final Object? payload;
 }
 
+/// The Worker renames a mid-game dropper to `Name (à l'eau)` and keeps the
+/// seat reclaimable; the app reads this marker to know the engine's owner
+/// is gone. Kept byte-identical to the Worker's string (U+00E0, U+2019).
+const String _awayMarker = ' (\u00e0 l\u2019eau)';
+
 /// Live multiplayer session against the Cloudflare Worker (dudo-worker repo).
 ///
 /// The Worker lobby is authoritative: code generation, seats and crew are
@@ -235,6 +240,7 @@ class NetworkSalonSession extends SalonSession
     code = '';
     players.clear();
     isStarting = false;
+    hostGone = false;
     _gameOverPending = false;
     // A fresh table starts a clean thread, even when no server answers.
     resetThread();
@@ -324,6 +330,7 @@ class NetworkSalonSession extends SalonSession
     code = cleaned;
     players.clear();
     isStarting = false;
+    hostGone = false;
     _gameOverPending = false;
     // A new table starts a clean thread (recovery never goes through here).
     resetThread();
@@ -500,7 +507,7 @@ class NetworkSalonSession extends SalonSession
     if (identical(_startCompleter, completer)) {
       _startCompleter = null;
     }
-    if (confirmed) {
+    if (confirmed && !_disposed) {
       isStarting = true;
       notifyListeners();
     }
@@ -647,6 +654,22 @@ class NetworkSalonSession extends SalonSession
       ])
       ..sort((a, b) => a.seat.compareTo(b.seat));
     botCount = players.where((player) => player.isBot).length;
+    // The engine lives on the host's phone: if the host seat carries the
+    // Worker's "à l'eau" marker while the table is still started, every
+    // guest is staring at a frozen mirror. Say it once, loudly.
+    SalonPlayer? hostPlayer;
+    for (final player in players) {
+      if (player.seat == hostSeat) hostPlayer = player;
+    }
+    final hostAway =
+        isStarting &&
+        hostPlayer != null &&
+        hostPlayer.name.endsWith(_awayMarker);
+    final wasGone = hostGone;
+    hostGone = hostAway;
+    if (hostGone && !wasGone) {
+      pushSystemMessage(SalonSystem.hostGone);
+    }
     notifyListeners();
 
     // The join handshake completes as soon as our seat is in the table.
@@ -967,6 +990,12 @@ class NetworkSalonSession extends SalonSession
     if (join != null && !join.isCompleted) {
       _joinCompleter = null;
       join.complete(const SalonJoinResult(ok: false));
+    }
+    // Same for a start waiting on the Worker: its 8s timeout would
+    // otherwise stay pending and wake up against a dead session.
+    final start = _startCompleter;
+    if (start != null && !start.isCompleted) {
+      start.complete();
     }
     _frames?.cancel();
     final channel = _channel;

@@ -10,9 +10,11 @@ abstract final class SalonSystem {
 
   static void bind(AppLocalizations? words) => _words = words;
 
-  static String get phoneSlept => _words?.systemPhoneSlept ??
+  static String get phoneSlept =>
+      _words?.systemPhoneSlept ??
       'Le téléphone a mis le salon en sommeil — reconnexion…';
-  static String get watchdogCut => _words?.systemQuietCut ??
+  static String get watchdogCut =>
+      _words?.systemQuietCut ??
       'Le salon ne répond plus — je coupe la connexion desséchée et je reprends…';
   static String created(String code) =>
       _words?.systemCreated(code) ?? 'Salon créé. Code : $code';
@@ -22,7 +24,8 @@ abstract final class SalonSystem {
       _words?.systemRecovered(code) ?? 'Reconnecté au salon $code.';
   static String closed(String reason) =>
       _words?.systemClosed(reason) ?? 'Salon fermé : $reason';
-  static String lost([String detail = '']) => _words?.systemLost(detail) ??
+  static String lost([String detail = '']) =>
+      _words?.systemLost(detail) ??
       'Connexion perdue$detail — tentative de reconnexion…';
   static String unreachableTrack(String reason) =>
       _words?.systemUnreachableTrack(reason) ??
@@ -39,10 +42,15 @@ abstract final class SalonSystem {
   static String chatRate(int seconds) =>
       _words?.systemChatRate(seconds) ??
       'Débit du salon atteint — attends ${seconds}s.';
-  static String get deadReaction => _words?.systemDeadReaction ??
+  static String get deadReaction =>
+      _words?.systemDeadReaction ??
       'La connexion au salon est lâchée — la réaction ne peut pas partir.';
-  static String get deadChat => _words?.systemDeadChat ??
+  static String get deadChat =>
+      _words?.systemDeadChat ??
       'La connexion au salon est lâchée — le message ne peut pas partir.';
-  static String get sixChars => _words?.systemSixChars ??
-      'Le code doit faire six caractères.';
+  static String get hostGone =>
+      _words?.systemHostGone ??
+      'L\u2019hôte a quitté la manche — la table attend son retour…';
+  static String get sixChars =>
+      _words?.systemSixChars ?? 'Le code doit faire six caractères.';
 }

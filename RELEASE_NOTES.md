@@ -1,4 +1,10 @@
-# Dudo 0.2.0 — bêta 24 : spectateur tranquille
+# Dudo 0.2.0 — bêta 25 : l'hôte revient, la table reprend
+
+- **L'hôte disparaît en pleine manche ?** Les invités voient une alerte après 3 s ; 12 s plus tard, si l'hôte n'est toujours pas revenu, la table figée se replie vers le lobby. S'il récupère son siège avant, la partie reprend sans repli.
+- **L'hôte peut relancer après une partie** : le retour au lobby dépile maintenant la table et réarme le bouton « Lancer la manche », au lieu de le laisser grisé sur « La manche se prépare ».
+- **APK arm64 seul** : environ 19,5 Mo au lieu des ~50 Mo du paquet multi-architectures.
+
+## Bêta 24 : spectateur tranquille
 
 - **Éliminé, tu ne secoues plus un gobelet vide** : l'écran d'ouverture de manche devient un écran spectateur « Tu es à l'eau » — plus d'invite de secouage, plus de dé fantôme d'avant la défaite.
 - **Quand il ne reste que des PNJ, la table se joue toute seule** : les manches s'enchaînent en automatique (révélation lisible, mais zéro clic) jusqu'au dernier survivant.

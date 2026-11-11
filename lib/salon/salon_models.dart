@@ -104,6 +104,11 @@ abstract class SalonSession extends ChangeNotifier {
   final List<SalonMessage> messages = <SalonMessage>[];
   bool isStarting = false;
 
+  /// Started table whose host seat is away (« à l'eau »): the game engine
+  /// lives on the host's phone, so guests wait for its return instead of
+  /// freezing on a dead mirror. Network sessions only; local stays false.
+  bool hostGone = false;
+
   static const List<String> botNames = [
     'Barbe-Noire',
     'Anne Bonny',

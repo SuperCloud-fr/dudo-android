@@ -1358,6 +1358,12 @@ abstract class AppLocalizations {
   /// **'En attente que l\'hôte lance la manche…'**
   String get salonWaitingHost;
 
+  /// No description provided for @salonHostGoneHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'L\'hôte est à l\'eau — la manche reprend dès son retour.'**
+  String get salonHostGoneHint;
+
   /// No description provided for @salonFeedSection.
   ///
   /// In fr, this message translates to:
@@ -1993,6 +1999,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'La connexion au salon est lâchée — le message ne peut pas partir.'**
   String get systemDeadChat;
+
+  /// No description provided for @systemHostGone.
+  ///
+  /// In fr, this message translates to:
+  /// **'L’hôte a quitté la manche — la table attend son retour…'**
+  String get systemHostGone;
 
   /// No description provided for @systemSixChars.
   ///
