@@ -887,6 +887,15 @@ class NetworkSalonSession extends SalonSession
       }
       _recoveryFailures++;
       final reason = result.message ?? SalonSystem.noServerReply;
+      if (result.message != null) {
+        // The server ANSWERED with a refusal (salon unknown, table started
+        // without a reclaimable seat, name refused). Retrying knocks on a
+        // door that stays shut — the endless "connexion interrompue" loop.
+        // Stop chasing it; the sailor leaves and joins/creates anew.
+        _closedByServer = true;
+        _threadOnce(SalonSystem.salonRefused(reason));
+        return;
+      }
       _threadOnce(SalonSystem.unreachableTrack(reason));
     } catch (error) {
       // On a phone, "why" is everything: DNS, proxy, captive portal. The

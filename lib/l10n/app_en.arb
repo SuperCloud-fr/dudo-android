@@ -402,6 +402,8 @@
   "@systemUnreachableTrack": {"placeholders": {"reason": {"type": "String"}}},
   "systemUnreachableBackoff": "The salon is still unreachable: {brief}. I'll try again after a longer wait.",
   "@systemUnreachableBackoff": {"placeholders": {"brief": {"type": "String"}}},
+  "systemSalonRefused": "The salon refused your return: {reason}. It may have closed — leave the salon, then try again or start a new one.",
+  "@systemSalonRefused": {"placeholders": {"reason": {"type": "String"}}},
   "systemThrottledCreate": "Too many salon requests. Try again in {seconds} s.",
   "@systemThrottledCreate": {"placeholders": {"seconds": {"type": "int"}}},
   "systemCreateFailed": "The salon couldn't be created.{detail}",

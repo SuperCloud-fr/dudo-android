@@ -33,6 +33,9 @@ abstract final class SalonSystem {
   static String unreachableBackoff(String brief) =>
       _words?.systemUnreachableBackoff(brief) ??
       'Le salon reste inaccessible : $brief. Je réessaierai après un délai plus long.';
+  static String salonRefused(String reason) =>
+      _words?.systemSalonRefused(reason) ??
+      'Le salon refuse ton retour : $reason. Il a peut-être fermé — quitte le salon puis réessaie ou crée-en un autre.';
   static String throttledCreate(int seconds) =>
       _words?.systemThrottledCreate(seconds) ??
       'Trop de demandes de création. Réessaie dans $seconds s.';

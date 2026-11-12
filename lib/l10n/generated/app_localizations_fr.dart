@@ -1253,6 +1253,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String systemSalonRefused(String reason) {
+    return 'Le salon refuse ton retour : $reason. Il a peut-être fermé — quitte le salon puis réessaie ou crée-en un autre.';
+  }
+
+  @override
   String systemThrottledCreate(int seconds) {
     return 'Trop de demandes de création. Réessaie dans $seconds s.';
   }

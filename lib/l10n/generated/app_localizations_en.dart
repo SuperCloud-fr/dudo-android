@@ -1244,6 +1244,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String systemSalonRefused(String reason) {
+    return 'The salon refused your return: $reason. It may have closed — leave the salon, then try again or start a new one.';
+  }
+
+  @override
   String systemThrottledCreate(int seconds) {
     return 'Too many salon requests. Try again in $seconds s.';
   }

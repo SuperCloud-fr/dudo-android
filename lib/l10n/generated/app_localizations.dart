@@ -1994,6 +1994,12 @@ abstract class AppLocalizations {
   /// **'Le salon reste inaccessible : {brief}. Je réessaierai après un délai plus long.'**
   String systemUnreachableBackoff(String brief);
 
+  /// No description provided for @systemSalonRefused.
+  ///
+  /// In fr, this message translates to:
+  /// **'Le salon refuse ton retour : {reason}. Il a peut-être fermé — quitte le salon puis réessaie ou crée-en un autre.'**
+  String systemSalonRefused(String reason);
+
   /// No description provided for @systemThrottledCreate.
   ///
   /// In fr, this message translates to:

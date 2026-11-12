@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 27 : chacun sa place
+# Dudo 0.2.0 — bêta 28 : plus de boucle sans issue
+
+- **Un refus du serveur arrête la reconnexion** : salon fermé, « La partie a déjà commencé », nom refusé — l'app affichait en boucle « Connexion interrompue » sans jamais lâcher. Désormais le message annonce clairement que le salon est inaccessible et qu'il faut quitter puis rejoindre ou recréer. Les vraies pannes réseau déclenchent toujours une reconnexion automatique.
+- **Côté serveur (déjà déployé, hors APK)** : le garde-fou anti-flood passait de 4 Ko à 64 Ko — le journal de bord faisait grossir les snapshots au point d'expulser l'hôte en pleine manche et de geler la table.
+
+## Bêta 27 : chacun sa place
 
 - **Le chat descend en bas de l'écran** : le bouton du salon quitte la barre du haut pour un emplacement réservé sous les actions de jeu, à portée de pouce, avec son badge de messages non lus. Il reste proposé en bas des écrans d'ouverture et de révélation.
 - **Les places autour de la table sont tirées au sort à chaque partie** : en solo comme en salon, l'ordre d'assise — et donc l'ordre des tours — change à chaque manche inaugurale. En réseau, l'hôte peut ouvrir depuis n'importe quelle place : chaque téléphone garde son siège salon, les enchères, les dés et les révélations sont re-traduits automatiquement.
