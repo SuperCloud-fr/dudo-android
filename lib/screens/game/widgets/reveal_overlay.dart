@@ -102,11 +102,6 @@ class _RevealOverlayState extends State<RevealOverlay>
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                if (widget.chatAction != null)
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: widget.chatAction,
-                                  ),
                                 _stamp(isDudo, accent),
                                 const SizedBox(height: 14),
                                 Text(
@@ -155,6 +150,13 @@ class _RevealOverlayState extends State<RevealOverlay>
                                   expand: true,
                                   onPressed: widget.onContinue,
                                 ),
+                                if (widget.chatAction != null) ...[
+                                  const SizedBox(height: 8),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: widget.chatAction,
+                                  ),
+                                ],
                               ],
                             );
                           },

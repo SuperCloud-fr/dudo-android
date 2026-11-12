@@ -56,7 +56,9 @@ class _GameScreenState extends State<GameScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = widget.controller ?? GameController(config: widget.config);
+    _controller =
+        widget.controller ??
+        GameController(config: widget.config, shuffleSeats: true);
     _lastPhase = _controller.phase;
     _controller.addListener(_onGameChanged);
     final salon = widget.salonSession;
@@ -140,6 +142,22 @@ class _GameScreenState extends State<GameScreen> {
                             _buildTable(context, compact),
                             _buildPlayerTray(context),
                             _buildActionBar(context, compact),
+                            if (widget.salonSession != null &&
+                                _controller.phase == GamePhase.bidding)
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  12,
+                                  0,
+                                  12,
+                                  6,
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: _buildSalonChatButton(
+                                    AppLocalizations.of(context)!,
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -198,11 +216,6 @@ class _GameScreenState extends State<GameScreen> {
               ],
             ),
           ),
-          if (widget.salonSession != null &&
-              _controller.phase == GamePhase.bidding) ...[
-            _buildSalonChatButton(l10n),
-            const SizedBox(width: 6),
-          ],
           RoundIconButton(
             icon: Icons.history,
             semanticLabel: l10n.gameOpenJournal,
@@ -260,7 +273,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildOpponents(BuildContext context, bool compact) {
-    final bots = _controller.players.skip(1).toList(growable: false);
+    final bots = _controller.tableOrder.skip(1).toList(growable: false);
     final count = bots.length;
     final avatarSize =
         switch (count) {
@@ -533,7 +546,7 @@ class _GameScreenState extends State<GameScreen> {
           round: _controller.round,
           palifico: _controller.palifico,
           dice: _controller.human.dice,
-          humanStarts: _controller.starter == 0,
+          humanStarts: _controller.starter == _controller.humanSeat,
           starterName: _controller.players[_controller.starter].name,
           canBeginBidding: _controller.canBeginBiddingFromPeek,
           onReady: _controller.beginBidding,

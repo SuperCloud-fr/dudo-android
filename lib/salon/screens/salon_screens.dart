@@ -726,6 +726,8 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
           difficulty: _botDifficulty,
         ),
         botSeats: botSeats,
+        // Deal the seats every game: the host may sit anywhere.
+        shuffleSeats: true,
       );
       relay.start();
       final route = MaterialPageRoute<void>(

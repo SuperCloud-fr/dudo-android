@@ -77,7 +77,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 250));
     await tester.tap(find.text('ANNONCER'));
     await tester.pump(const Duration(milliseconds: 600));
-    expect(find.text('Barbe-Noire prépare son coup…'), findsOneWidget);
+    // Seating (and the bot profile on the next seat) is dealt randomly,
+    // so only the shape of the "thinking" line is asserted.
+    expect(find.textContaining('prépare son coup…'), findsOneWidget);
     expect(tester.takeException(), isNull);
 
     // Dispose the route before the scheduled bot timer fires.

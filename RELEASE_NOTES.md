@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 26 : le chat rejoint la table
+# Dudo 0.2.0 — bêta 27 : chacun sa place
+
+- **Le chat descend en bas de l'écran** : le bouton du salon quitte la barre du haut pour un emplacement réservé sous les actions de jeu, à portée de pouce, avec son badge de messages non lus. Il reste proposé en bas des écrans d'ouverture et de révélation.
+- **Les places autour de la table sont tirées au sort à chaque partie** : en solo comme en salon, l'ordre d'assise — et donc l'ordre des tours — change à chaque manche inaugurale. En réseau, l'hôte peut ouvrir depuis n'importe quelle place : chaque téléphone garde son siège salon, les enchères, les dés et les révélations sont re-traduits automatiquement.
+
+## Bêta 26 : le chat rejoint la table
 
 - **Le chat et les réactions restent disponibles pendant une manche en réseau** : une icône ouvre le journal de bord en feuille redimensionnable, avec messages en direct, réactions rapides et saisie libre. Un badge signale les nouveaux messages ; les joueurs peuvent aussi choisir quantité et face dans une réaction pour bluffer.
 - **Les textes de l'application ont été relus** : 325 chaînes françaises passées en QCM, traduction anglaise harmonisée, faute « tu reines » corrigée et règles/pacos clarifiés.

@@ -52,7 +52,7 @@ class SpectatorPeekOverlay extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      SectionLabel(l10n.peekRound(round), trailing: chatAction),
+                      SectionLabel(l10n.peekRound(round)),
                       const SizedBox(height: 14),
                       Text(
                         l10n.peekSpectatorTitle,
@@ -115,6 +115,13 @@ class SpectatorPeekOverlay extends StatelessWidget {
                             ],
                           ),
                         ),
+                      if (chatAction != null) ...[
+                        const SizedBox(height: 12),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: chatAction,
+                        ),
+                      ],
                     ],
                   ),
                 ),

@@ -67,12 +67,16 @@ class TwoPhones {
   HostGameRelay startHostRelay({
     Set<int> botSeats = const <int>{},
     List<String> names = const ['Cap Hôte', 'Anne', 'Bob'],
+    bool shuffleSeats = false,
+    Random? random,
   }) {
     relay = HostGameRelay(
       session: hostHarness.session,
       names: names,
       seedFactory: () => 424242,
       botSeats: botSeats,
+      shuffleSeats: shuffleSeats,
+      random: random,
     );
     relay!.start();
     return relay!;
@@ -338,6 +342,97 @@ void main() {
       expect(guest.currentBid?.quantity, 4);
       // Engine advanced to salon seat 2 → local seat 1.
       expect(guest.currentPlayer, 1);
+
+      guest.dispose();
+      relay.dispose();
+    },
+  );
+
+  test(
+    'le mélange de sièges garde les salons, les dés et les enchères cohérents',
+    () async {
+      // Two seats only: after the host opens, the turn ALWAYS reaches the
+      // guest, whatever deal the shuffle made — the flow below is
+      // deal-agnostic on purpose.
+      final phones = await openTable(
+        seats: const [
+          {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+          {'seat': 1, 'name': 'Anne', 'bot': false},
+        ],
+      );
+      final relay = phones.startHostRelay(
+        names: const ['Cap Hôte', 'Anne'],
+        shuffleSeats: true,
+        random: Random(5),
+      );
+      final host = relay.controller;
+      expect(host.players, hasLength(2));
+      // The host owns the engine seat where the deal put salon seat 0.
+      expect(host.players[host.humanSeat].name, 'Cap Hôte');
+      expect(host.players[host.humanSeat].isHuman, isTrue);
+
+      final guest = GuestGameController(
+        config: const GameConfig(opponentCount: 1),
+        session: phones.guestHarness.session,
+        names: const ['Cap Hôte', 'Anne'],
+      );
+      await phones.forwardHostToGuest();
+
+      // Snapshot seats are salon seats: entry seat s carries salon name s,
+      // and the host opens round 1 wherever she sits.
+      final snapshot = phones.hostSnapshots().last;
+      expect(
+        snapshot['currentPlayer'],
+        0,
+        reason: 'l\u2019hôte ouvre, quel que soit son siège moteur',
+      );
+      for (final raw in snapshot['players'] as List<dynamic>) {
+        final entry = raw as Map<String, dynamic>;
+        expect(entry['name'], const ['Cap Hôte', 'Anne'][entry['seat'] as int]);
+      }
+
+      // The mirror maps every salon seat to the right local seat and dice.
+      for (var salonSeat = 0; salonSeat < 2; salonSeat++) {
+        final local = (salonSeat + 1) % 2; // the guest is salon seat 1
+        expect(
+          guest.players[local].name,
+          const ['Cap Hôte', 'Anne'][salonSeat],
+        );
+        final engineSeat = host.players.indexWhere(
+          (player) => player.name == const ['Cap Hôte', 'Anne'][salonSeat],
+        );
+        expect(
+          guest.players[local].dice,
+          host.players[engineSeat].dice,
+          reason: 'les dés suivent la personne, pas le siège',
+        );
+      }
+
+      // Host opens; the only other seat is the guest, wherever she sits.
+      host.beginBidding();
+      expect(
+        host.submitHumanBid(const Bid(quantity: 2, face: 2, playerSeat: 0)),
+        isTrue,
+      );
+      await phones.forwardHostToGuest();
+      expect(guest.isHumanTurn, isTrue);
+      expect(
+        guest.submitHumanBid(const Bid(quantity: 4, face: 1, playerSeat: 0)),
+        isTrue,
+      );
+      final command = phones
+          .guestSends()
+          .where((candidate) => candidate['kind'] == 'bid')
+          .last;
+      relay.handleTable(
+        RelayedTableMessage(kind: 'game', fromSeat: 1, payload: command),
+      );
+      final anneEngineSeat = host.players.indexWhere(
+        (player) => player.name == 'Anne',
+      );
+      expect(host.currentBid?.playerSeat, anneEngineSeat);
+      await phones.forwardHostToGuest();
+      expect(guest.currentBid?.playerSeat, 0);
 
       guest.dispose();
       relay.dispose();

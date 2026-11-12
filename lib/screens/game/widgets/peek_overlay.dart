@@ -115,10 +115,7 @@ class _PeekOverlayState extends State<PeekOverlay>
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SectionLabel(
-                              l10n.peekRound(widget.round),
-                              trailing: widget.chatAction,
-                            ),
+                            SectionLabel(l10n.peekRound(widget.round)),
                             const SizedBox(height: 14),
                             Text(
                               l10n.peekCupTitle,
@@ -316,6 +313,13 @@ class _PeekOverlayState extends State<PeekOverlay>
                                       onTap: _liftCup,
                                     ),
                             ),
+                            if (widget.chatAction != null) ...[
+                              const SizedBox(height: 12),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: widget.chatAction,
+                              ),
+                            ],
                           ],
                         ),
                       ),

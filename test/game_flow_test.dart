@@ -392,5 +392,53 @@ void main() {
       expect(controller.currentBid!.playerSeat, isNot(1));
       controller.dispose();
     });
+
+    test('le mélange sied le capitaine au hasard, sans casser la table', () {
+      // Several seeds: the human seat must vary, and the engine must hold
+      // its invariants wherever the deal puts the human.
+      final dealtSeats = <int>{};
+      for (var seed = 0; seed < 60; seed++) {
+        final controller = GameController(
+          config: const GameConfig(opponentCount: 3),
+          random: Random(seed),
+          shuffleSeats: true,
+          autoPlayBots: false,
+        );
+        final humanSeat = controller.humanSeat;
+        dealtSeats.add(humanSeat);
+        expect(humanSeat, inInclusiveRange(0, 3), reason: 'graine $seed');
+        expect(controller.human.isHuman, isTrue);
+        expect(controller.human.name, 'Toi');
+        expect(
+          controller.players.where((player) => player.isHuman),
+          hasLength(1),
+        );
+        // Round 1 opens at the human's seat; the seat circle is intact.
+        expect(controller.starter, humanSeat, reason: 'graine $seed');
+        expect(controller.currentPlayer, humanSeat, reason: 'graine $seed');
+        expect(
+          [for (final player in controller.tableOrder) player.seat],
+          [for (var index = 0; index < 4; index++) (humanSeat + index) % 4],
+          reason:
+              'affichage : moi d\u2019abord, puis sens horaire (graine $seed)',
+        );
+        // Three distinct crew names fill the bot seats.
+        expect(
+          controller.players
+              .where((player) => !player.isHuman)
+              .map((player) => player.name)
+              .toSet()
+              .length,
+          3,
+        );
+        controller.dispose();
+      }
+      expect(
+        dealtSeats.length,
+        greaterThan(1),
+        reason:
+            'le tirage doit changer de siège d\u2019une partie à l\u2019autre',
+      );
+    });
   });
 }

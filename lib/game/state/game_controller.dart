@@ -24,10 +24,20 @@ class GameController extends ChangeNotifier {
     this.botSeats = const <int>{},
     this.turnTimeout = const Duration(seconds: 60),
     this.enforceTurnTimeout = true,
-  }) : random = random ?? Random() {
+    int? humanSeat,
+    this.shuffleSeats = false,
+  }) : random = random ?? Random(),
+       humanSeat =
+           humanSeat ??
+           _defaultHumanSeat(
+             shuffleSeats: shuffleSeats,
+             tableNames: tableNames,
+             opponents: config.opponentCount,
+             random: random,
+           ) {
     _buildPlayers();
     if (autoStartRound) {
-      _startRound(starterSeat: 0);
+      _startRound(starterSeat: this.humanSeat);
     }
   }
 
@@ -63,6 +73,29 @@ class GameController extends ChangeNotifier {
   /// a mirror would fight it with its own fallback.
   final bool enforceTurnTimeout;
 
+  /// Engine seat of the local player. Solo tables keep the human at seat
+  /// 0 unless shuffled; on a network table the relay deals the seats, so
+  /// the host phone may own any engine seat. Guest mirrors stay at 0 —
+  /// their local view is re-based ("me" = seat 0) before it ever lands.
+  final int humanSeat;
+
+  /// Solo tables only: deal the human a random seat and shuffle the bot
+  /// crew around them, so the seating (and with it the turn order)
+  /// changes from one game to the next. Network tables shuffle at the
+  /// relay instead, where the salon-seat mapping lives.
+  final bool shuffleSeats;
+
+  /// Seat the solo human gets when shuffled; zero otherwise.
+  static int _defaultHumanSeat({
+    required bool shuffleSeats,
+    required List<String>? tableNames,
+    required int opponents,
+    required Random? random,
+  }) {
+    if (!shuffleSeats || tableNames != null) return 0;
+    return (random ?? Random()).nextInt(opponents + 1);
+  }
+
   final List<Player> players = <Player>[];
   final List<TableEvent> journal = <TableEvent>[];
 
@@ -91,16 +124,25 @@ class GameController extends ChangeNotifier {
   bool _paused = false;
   int _nextStarter = 0;
 
-  Player get human => players.first;
+  Player get human => players[humanSeat];
+
+  /// Players in display order: "me" first, then clockwise (seat order).
+  /// Solo tables and host engines may have the human away from seat 0;
+  /// guest mirrors are already re-based, so this is the identity there.
+  List<Player> get tableOrder => [
+    for (var index = 0; index < players.length; index++)
+      players[(humanSeat + index) % players.length],
+  ];
   BotDifficulty get displayedDifficulty => config.difficulty;
-  bool get isHumanTurn => phase == GamePhase.bidding && currentPlayer == 0;
+  bool get isHumanTurn =>
+      phase == GamePhase.bidding && currentPlayer == humanSeat;
 
   /// Whether this device may advance the private-peek screen into bidding.
   /// In solo play and on the authoritative host this is true; salon guests
   /// wait for the host to start the shared bidding phase.
   bool get canBeginBiddingFromPeek => true;
   bool get canHumanChallenge =>
-      isHumanTurn && currentBid != null && currentBid!.playerSeat != 0;
+      isHumanTurn && currentBid != null && currentBid!.playerSeat != humanSeat;
   bool get canHumanCalza => canHumanChallenge && config.calzaEnabled;
   bool get hasBid => currentBid != null;
 
@@ -115,14 +157,14 @@ class GameController extends ChangeNotifier {
   List<Bid> get humanLegalBids => PerudoRules.legalBids(
     previous: currentBid,
     totalDice: totalDice,
-    playerSeat: 0,
+    playerSeat: humanSeat,
     palifico: palifico,
   );
 
   Bid? get defaultHumanBid => PerudoRules.suggestedRaise(
     previous: currentBid,
     totalDice: totalDice,
-    playerSeat: 0,
+    playerSeat: humanSeat,
     palifico: palifico,
   );
 
@@ -132,16 +174,16 @@ class GameController extends ChangeNotifier {
   void _buildPlayers() {
     if (tableNames != null) {
       // Network table: one seat per salon player, all driven externally.
-      // Only seat 0 reads as "Toi" — the other humans are guests on their
-      // own phones and must keep their names (two "Toi" bug). Bots stay
-      // identified by [botSeats], not by this display flag.
+      // Only the relay-dealt [humanSeat] reads as "Toi" — the other humans
+      // are guests on their own phones and must keep their names (two
+      // "Toi" bug). Bots stay identified by [botSeats], not this flag.
       for (var seat = 0; seat < tableNames!.length; seat++) {
         final profile = crew[seat % crew.length];
         players.add(
           Player(
             seat: seat,
             name: tableNames![seat],
-            isHuman: seat == 0,
+            isHuman: seat == humanSeat,
             sigil: profile.sigil,
             accent: profile.accent,
             nerve: profile.nerve,
@@ -150,21 +192,31 @@ class GameController extends ChangeNotifier {
       }
       return;
     }
-    players.add(
-      Player(
-        seat: 0,
-        name: 'Toi',
-        isHuman: true,
-        sigil: 5,
-        accent: 3,
-        nerve: 0,
-      ),
-    );
-    for (var index = 0; index < config.opponentCount; index++) {
-      final profile = crew[index % crew.length];
+    // Solo table: the human sits at [humanSeat] (seat 0 unless shuffled)
+    // and the bot crew fills the remaining seats, crew order shuffled too
+    // so the whole seating changes from one game to the next.
+    final crewOrder = List.of(crew);
+    if (shuffleSeats) crewOrder.shuffle(random);
+    var botIndex = 0;
+    for (var seat = 0; seat <= config.opponentCount; seat++) {
+      if (seat == humanSeat) {
+        players.add(
+          Player(
+            seat: seat,
+            name: 'Toi',
+            isHuman: true,
+            sigil: 5,
+            accent: 3,
+            nerve: 0,
+          ),
+        );
+        continue;
+      }
+      final profile = crewOrder[botIndex % crewOrder.length];
+      botIndex++;
       players.add(
         Player(
-          seat: index + 1,
+          seat: seat,
           name: profile.name,
           isHuman: false,
           sigil: profile.sigil,
@@ -217,7 +269,7 @@ class GameController extends ChangeNotifier {
 
   bool submitHumanBid(Bid bid) {
     if (!isHumanTurn) return false;
-    return _placeBid(bid);
+    return _placeBid(bid.copyWith(playerSeat: humanSeat));
   }
 
   bool callHumanDudo() {
@@ -480,8 +532,8 @@ class GameController extends ChangeNotifier {
     outcome = null;
     outcomeApplied = false;
     result = null;
-    _nextStarter = 0;
-    _startRound(starterSeat: 0);
+    _nextStarter = humanSeat;
+    _startRound(starterSeat: humanSeat);
   }
 
   void _finishGame() {

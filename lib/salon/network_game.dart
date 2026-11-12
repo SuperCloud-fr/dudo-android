@@ -22,26 +22,33 @@ import 'network_salon_session.dart';
 /// - On each guest, seats are re-based ("me" = local seat 0) so the
 ///   existing [GameScreen] UI works unchanged.
 
-const String networkSnapshotVersion = '1';
+const String networkSnapshotVersion = '2';
 
 // --------------------------------------------------------------- snapshots
 
-/// Compact serialisation of the table. Seats stay in salon order
-/// (0 = host); the guest re-bases them after deserialisation.
-Map<String, dynamic> snapshotOf(GameController controller) {
+/// Compact serialisation of the table. Seats are SALON seats (0 = host) —
+/// the engine may deal any seat to the host phone, so [salonSeatOf]
+/// translates engine seats back before the payload leaves the phone.
+/// The guest re-bases them after deserialisation.
+Map<String, dynamic> snapshotOf(
+  GameController controller, {
+  int Function(int engineSeat)? salonSeatOf,
+}) {
+  int salon(int engineSeat) =>
+      salonSeatOf == null ? engineSeat : salonSeatOf(engineSeat);
   return <String, dynamic>{
     'v': networkSnapshotVersion,
     'difficulty': controller.config.difficulty.name,
     'round': controller.round,
     'phase': controller.phase.name,
     'palifico': controller.palifico,
-    'starter': controller.starter,
-    'currentPlayer': controller.currentPlayer,
+    'starter': salon(controller.starter),
+    'currentPlayer': salon(controller.currentPlayer),
     'seed': controller.lastRoundSeed,
     'players': [
       for (final player in controller.players)
         <String, dynamic>{
-          'seat': player.seat,
+          'seat': salon(player.seat),
           'name': player.name,
           'diceCount': player.diceCount,
         },
@@ -51,13 +58,13 @@ Map<String, dynamic> snapshotOf(GameController controller) {
         : <String, dynamic>{
             'q': controller.currentBid!.quantity,
             'f': controller.currentBid!.face,
-            's': controller.currentBid!.playerSeat,
+            's': salon(controller.currentBid!.playerSeat),
           },
     'journal': [
       for (final event in controller.journal)
         <String, dynamic>{
           'r': event.round,
-          's': event.playerSeat,
+          's': salon(event.playerSeat),
           'k': event.kind.name,
           'b': event.bid == null
               ? null
@@ -73,24 +80,30 @@ Map<String, dynamic> snapshotOf(GameController controller) {
             'bid': <String, dynamic>{
               'q': controller.outcome!.bid.quantity,
               'f': controller.outcome!.bid.face,
-              's': controller.outcome!.bid.playerSeat,
+              's': salon(controller.outcome!.bid.playerSeat),
             },
-            'caller': controller.outcome!.callerSeat,
+            'caller': salon(controller.outcome!.callerSeat),
             'kind': controller.outcome!.kind.name,
             'actual': controller.outcome!.actualCount,
             'exact': controller.outcome!.exact,
             'callerWon': controller.outcome!.callerWon,
-            'loser': controller.outcome!.loserSeat,
-            'gain': controller.outcome!.gainSeat,
+            'loser': controller.outcome!.loserSeat == null
+                ? null
+                : salon(controller.outcome!.loserSeat!),
+            'gain': controller.outcome!.gainSeat == null
+                ? null
+                : salon(controller.outcome!.gainSeat!),
             'gained': controller.outcome!.gainedDie,
             'gainCapped': controller.outcome!.gainCapped,
           },
     'result': controller.result == null
         ? null
         : <String, dynamic>{
-            'winnerSeat': controller.result!.winnerSeat,
+            'winnerSeat': salon(controller.result!.winnerSeat),
             'rounds': controller.result!.rounds,
-            'standings': controller.result!.standings,
+            'standings': [
+              for (final seat in controller.result!.standings) salon(seat),
+            ],
           },
   };
 }
@@ -108,7 +121,23 @@ class HostGameRelay {
     int Function()? seedFactory,
     Set<int> botSeats = const <int>{},
     this.turnTimeout = const Duration(seconds: 60),
+    this.shuffleSeats = false,
+    Random? random,
   }) {
+    final count = names.length;
+    // Deal the salon seats around the engine: engine seat i belongs to
+    // salon seat _engineOrder[i]. Shuffled once per game, so the seating
+    // — and with it the turn order — changes every time, host included.
+    // The identity deal keeps the old "host = seat 0" layout for tests.
+    final engineOrder = List<int>.generate(count, (index) => index);
+    if (shuffleSeats && count > 1) {
+      engineOrder.shuffle(random ?? Random());
+    }
+    _engineSeatOf = <int, int>{
+      for (var engine = 0; engine < count; engine++)
+        engineOrder[engine]: engine,
+    };
+    _salonSeatOf = List<int>.unmodifiable(engineOrder);
     controller = GameController(
       config:
           config ??
@@ -116,8 +145,15 @@ class HostGameRelay {
             opponentCount: names.length - 1,
             calzaEnabled: calzaEnabled,
           ),
-      tableNames: names,
-      botSeats: botSeats,
+      tableNames: [
+        for (var engine = 0; engine < count; engine++)
+          names[engineOrder[engine]],
+      ],
+      botSeats: {
+        for (final salonSeat in botSeats) _engineSeatOf[salonSeat] ?? salonSeat,
+      },
+      // The host phone owns salon seat 0 wherever the deal put it.
+      humanSeat: _engineSeatOf[0] ?? 0,
       // Salon bots play on the host phone and their bids flow through the
       // usual snapshot broadcast; guests stay pure mirrors.
       autoPlayBots: botSeats.isNotEmpty,
@@ -127,6 +163,11 @@ class HostGameRelay {
     controller.addListener(_broadcasting);
     _tableSubscription = session.tableEvents.listen(handleTable);
   }
+
+  /// True: every game deals the salon seats around the engine table.
+  final bool shuffleSeats;
+  late final Map<int, int> _engineSeatOf;
+  late final List<int> _salonSeatOf;
 
   bool _gameOverSent = false;
 
@@ -175,7 +216,13 @@ class HostGameRelay {
   }
 
   void _broadcasting() {
-    final payload = snapshotOf(controller);
+    final payload = snapshotOf(
+      controller,
+      salonSeatOf: (engineSeat) =>
+          engineSeat >= 0 && engineSeat < _salonSeatOf.length
+          ? _salonSeatOf[engineSeat]
+          : engineSeat,
+    );
     final text = '$payload';
     if (text == _lastPayload) return;
     _lastPayload = text;
@@ -184,11 +231,12 @@ class HostGameRelay {
   }
 
   /// Feeds every guest command into the engine; mutations re-broadcast.
+  /// Guests speak in salon seats; the engine speaks in dealt seats.
   void handleTable(RelayedTableMessage message) {
     if (message.kind != 'game') return;
     final payload = message.payload;
     if (payload is! Map<String, dynamic>) return;
-    final seat = message.fromSeat;
+    final seat = _engineSeatOf[message.fromSeat] ?? message.fromSeat;
     switch (payload['kind']) {
       case 'bid':
         controller.seatBid(
@@ -296,12 +344,17 @@ class GuestGameController extends GameController {
     // --- players, salon names preserved, ordering "me first".
     final diceCounts = List<int>.filled(size, 0);
     final playerNames = List<String>.filled(size, '');
+    // Roll order = the snapshot's own order (the host's engine seats):
+    // the host rolled its players list in that order, so the same seed
+    // replayed in the same order yields the same dice on every phone.
+    final salonRollOrder = <int>[];
     for (final raw in salonPlayers) {
       if (raw is! Map<String, dynamic>) continue;
       final salonSeat = (raw['seat'] as num?)?.toInt() ?? -1;
       if (salonSeat < 0 || salonSeat >= size) continue;
       diceCounts[salonSeat] = (raw['diceCount'] as num?)?.toInt() ?? 0;
       playerNames[salonSeat] = '${raw['name'] ?? '?'}';
+      salonRollOrder.add(salonSeat);
     }
     players
       ..clear()
@@ -344,7 +397,12 @@ class GuestGameController extends GameController {
     final seedRaw = snapshot['seed'];
     final roundSeed = seedRaw is num ? seedRaw.toInt() : null;
     if (roundSeed != null) {
-      _deriveDice(roundSeed, salonDiceCounts: diceCounts, salonStart: mySeat);
+      _deriveDice(
+        roundSeed,
+        salonDiceCounts: diceCounts,
+        salonRollOrder: salonRollOrder,
+        salonStart: mySeat,
+      );
       debugLastSeed = roundSeed;
       debugDerivedLens = [for (final p in players) p.dice.length];
       debugAppliedCounts = List<int>.of(diceCounts);
@@ -397,24 +455,25 @@ class GuestGameController extends GameController {
     notifyListeners();
   }
 
-  /// Rolls every seat's dice in SALON-seat order (the host's order), then
-  /// assigns the list to the re-based local seats. Values are kept for the
-  /// reveal overlays; the UI only ever shows "my" dice.
+  /// Rolls every seat's dice in SNAPSHOT order (the host's engine seats),
+  /// then assigns each roll to the re-based local seat. Values are kept
+  /// for the reveal overlays; the UI only ever shows "my" dice.
   void _deriveDice(
     int seed, {
     required List<int> salonDiceCounts,
+    required List<int> salonRollOrder,
     required int salonStart,
   }) {
     final rolling = Random(seed);
-    final salonOrderDice = List<List<int>?>.filled(
+    final diceBySalonSeat = List<List<int>?>.filled(
       salonDiceCounts.length,
       null,
       growable: false,
     );
-    for (var salonSeat = 0; salonSeat < salonDiceCounts.length; salonSeat++) {
+    for (final salonSeat in salonRollOrder) {
       final count = salonDiceCounts[salonSeat];
       if (count <= 0) continue;
-      salonOrderDice[salonSeat] = List<int>.generate(
+      diceBySalonSeat[salonSeat] = List<int>.generate(
         count,
         (_) => 1 + rolling.nextInt(6),
       );
@@ -422,7 +481,7 @@ class GuestGameController extends GameController {
     for (var local = 0; local < players.length; local++) {
       final salonSeat = (local + salonStart) % players.length;
       players[local].dice = List<int>.of(
-        salonOrderDice[salonSeat] ?? const <int>[],
+        diceBySalonSeat[salonSeat] ?? const <int>[],
       );
     }
   }
