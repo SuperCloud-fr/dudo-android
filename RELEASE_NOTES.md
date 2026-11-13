@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 31 : migration d'hôte
+# Dudo 0.2.0 — bêta 32 : sous la barre Android
+
+- **Le bouton « Larguer la phrase » ne se fait plus manger** par la barre de navigation Android (téléphones à 3 boutons) : la feuille « Choisis ta fable », la feuille d'enchère et la barre de réactions prennent désormais leur espace bas depuis l'insert brut du système, que le mode plein écran et les réécritures de marges ne peuvent pas avaler.
+- Même soin pour le fil de discussion en pleine partie et le lobby (défilement qui passe sous la barre).
+
+## Bêta 31 : migration d'hôte
 
 - **La table survit au départ du capitaine** : un hôte qui quitte le salon en pleine manche passe la barre au premier joueur connecté — son téléphone reconstruit le moteur depuis le dernier instantané (dés, mise courante, journal, tour en cours) et la partie continue sans coupure.
 - **L'ancien siège de l'hôte reste « à l'eau »** : couvert par un PNJ jusqu'à la reprise par nom (bêta 29).

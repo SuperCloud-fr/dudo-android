@@ -34,7 +34,10 @@ class InGameSalonChatSheet extends StatelessWidget {
           border: Border.all(color: AppColors.brassDim),
         ),
         child: SafeArea(
+          // The bottom belongs to the ReactionBar (raw view inset): no
+          // double SafeArea padding over the 3-button nav bar.
           top: false,
+          bottom: false,
           child: AnimatedBuilder(
             animation: session,
             builder: (context, _) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../../core/system_insets.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/dice_face.dart';
@@ -169,7 +170,14 @@ class _BidSheetState extends State<BidSheet> {
         child: SafeArea(
           top: false,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 18),
+            // The confirm row must clear the 3-button nav bar even where
+            // the sheet's SafeArea drops the bottom inset.
+            padding: EdgeInsets.fromLTRB(
+              20,
+              10,
+              20,
+              18 + bottomSystemInsetOf(context),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -529,6 +529,10 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       backgroundColor: AppColors.ink,
       body: TavernBackground(
         child: SafeArea(
+          // The bottom belongs to the ReactionBar: it insets itself from
+          // the raw view inset, which survives every SafeArea/MediaQuery
+          // rewrite (the 3-button nav bar overlaps otherwise).
+          bottom: false,
           child: Column(
             children: [
               Padding(
@@ -582,7 +586,14 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     return SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                      // SafeArea bottom is off: this scroll must clear the
+                      // nav bar itself when the ReactionBar is hidden.
+                      padding: EdgeInsets.fromLTRB(
+                        16,
+                        8,
+                        16,
+                        12 + MediaQuery.paddingOf(context).bottom,
+                      ),
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                           minHeight: constraints.maxHeight - 150,

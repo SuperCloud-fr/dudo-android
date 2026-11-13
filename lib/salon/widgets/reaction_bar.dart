@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/system_insets.dart';
 import '../../core/theme/app_colors.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../widgets/salon_bits.dart';
@@ -85,7 +86,14 @@ class _ReactionBarState extends State<ReactionBar> {
       ),
       builder: (sheetContext) => StatefulBuilder(
         builder: (context, setSheetState) => Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 20),
+          // The "Larguer la phrase" button must clear the 3-button nav bar
+          // even where the sheet's SafeArea drops the bottom inset.
+          padding: EdgeInsets.fromLTRB(
+            20,
+            8,
+            20,
+            20 + bottomSystemInsetOf(sheetContext),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -169,6 +177,10 @@ class _ReactionBarState extends State<ReactionBar> {
       l10n.reactionLine7(_targetName),
     ];
     return Container(
+      // Bottom breathing room comes straight from the view's system inset:
+      // on 3-button-nav phones the edge-to-edge nav bar floats OVER this
+      // bar — the host SafeAreas don't always deliver the bottom padding.
+      margin: EdgeInsets.only(bottom: bottomSystemInsetOf(context)),
       padding: const EdgeInsets.fromLTRB(12, 6, 12, 8),
       decoration: BoxDecoration(
         color: AppColors.leatherDeep.withValues(alpha: 0.75),
