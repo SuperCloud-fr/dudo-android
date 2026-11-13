@@ -1,4 +1,12 @@
-# Dudo 0.2.0 — bêta 30 : spectateurs
+# Dudo 0.2.0 — bêta 31 : migration d'hôte
+
+- **La table survit au départ du capitaine** : un hôte qui quitte le salon en pleine manche passe la barre au premier joueur connecté — son téléphone reconstruit le moteur depuis le dernier instantané (dés, mise courante, journal, tour en cours) et la partie continue sans coupure.
+- **L'ancien siège de l'hôte reste « à l'eau »** : couvert par un PNJ jusqu'à la reprise par nom (bêta 29).
+- **Le dialogue de départ prévient** : « Tu quittes définitivement le salon : le premier joueur connecté prend la barre… » — la navigation ramène à l'accueil.
+- Les invités voient passer « X a quitté la table. Y prend la barre. » dans le fil.
+- **Côté serveur (déjà déployé, hors APK)** : siège d'hôte dynamique — `start`, PNJ +/-, instantanés et `gameOver` suivent le porteur de la barre ; audit `host` à chaque passation.
+
+## Bêta 30 : spectateurs
 
 - **Un nouveau venu en pleine partie n'est plus refusé** : il devient spectateur. Table en lecture seule (aucune main « à soi », aucun envoi de jeu), il peut discuter dans le fil du salon.
 - **Il joue la manche suivante** : au `gameOver`, le Worker l'assoit au premier siège libre (jamais le siège de l'hôte ; salon plein → il reste spectateur et réessaiera à la fin d'partie suivante).

@@ -119,6 +119,22 @@ abstract class SalonSession extends ChangeNotifier {
   /// their turns until they reclaim the seat. Empty offline.
   Iterable<int> get awaySeats => const <int>{};
 
+  /// Salon seat of the engine's owner. 0 while the host holds the bar;
+  /// after a mid-game handover the Worker publishes the takeover seat
+  /// here and every phone re-derives its role from it.
+  int hostSeat = 0;
+
+  /// True for exactly one salon frame when this phone inherited the
+  /// engine mid-game (host seat moved to us while the table runs): the
+  /// lobby screen consumes it to rebuild the engine from
+  /// [lastSnapshot] instead of dealing a fresh round.
+  bool hostTakeover = false;
+
+  /// Last full table snapshot the host broadcast while we watched the
+  /// table. Non-null only for guests (the host phone never receives its
+  /// own broadcasts); cleared whenever the salon reopens as a lobby.
+  Map<String, dynamic>? lastSnapshot;
+
   /// True when this phone joined mid-game with no seat to reclaim: the
   /// table renders read-only until the next gameOver seats this sailor.
   /// Network sessions only; local stays false.

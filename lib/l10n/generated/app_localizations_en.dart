@@ -225,6 +225,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameQuitBody => 'The game will end and can\'t be resumed.';
 
   @override
+  String get gameQuitHostBody =>
+      'You leave the salon for good: the first connected player takes over and the game keeps going without you.';
+
+  @override
   String get gameQuitGuestBody =>
       'A pirate will play your hand until the round ends. You can take your seat back from the tavern.';
 

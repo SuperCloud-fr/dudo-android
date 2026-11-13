@@ -464,6 +464,12 @@ abstract class AppLocalizations {
   /// **'La partie s\'arrêtera et ne pourra pas être reprise.'**
   String get gameQuitBody;
 
+  /// No description provided for @gameQuitHostBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu quittes définitivement le salon : le premier joueur connecté prend la barre et la partie continue sans toi.'**
+  String get gameQuitHostBody;
+
   /// No description provided for @gameQuitGuestBody.
   ///
   /// In fr, this message translates to:

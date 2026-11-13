@@ -3,8 +3,6 @@ import 'dart:math';
 
 import '../game/models/bid.dart';
 import '../game/models/game_config.dart';
-import '../game/models/player.dart';
-import '../game/models/table_event.dart';
 import '../game/state/game_controller.dart';
 import 'network_salon_session.dart';
 
@@ -123,14 +121,19 @@ class HostGameRelay {
     this.turnTimeout = const Duration(seconds: 60),
     this.shuffleSeats = false,
     Random? random,
+    int humanSalonSeat = 0,
+    Map<String, dynamic>? initialSnapshot,
   }) {
     final count = names.length;
     // Deal the salon seats around the engine: engine seat i belongs to
     // salon seat _engineOrder[i]. Shuffled once per game, so the seating
     // — and with it the turn order — changes every time, host included.
-    // The identity deal keeps the old "host = seat 0" layout for tests.
+    // The identity deal keeps the old "host = seat 0" layout for tests —
+    // and is MANDATORY for a mid-game handover restore: the takeover
+    // phone rebuilds the engine from a snapshot written in salon seats,
+    // so engine seat == salon seat keeps every number valid.
     final engineOrder = List<int>.generate(count, (index) => index);
-    if (shuffleSeats && count > 1) {
+    if (shuffleSeats && count > 1 && initialSnapshot == null) {
       engineOrder.shuffle(random ?? Random());
     }
     _engineSeatOf = <int, int>{
@@ -152,11 +155,15 @@ class HostGameRelay {
       botSeats: {
         for (final salonSeat in botSeats) _engineSeatOf[salonSeat] ?? salonSeat,
       },
-      // The host phone owns salon seat 0 wherever the deal put it.
-      humanSeat: _engineSeatOf[0] ?? 0,
+      // The takeover phone owns its own salon seat wherever the deal put
+      // it (0 for a fresh host start).
+      humanSeat: _engineSeatOf[humanSalonSeat] ?? humanSalonSeat,
       // Salon bots play on the host phone and their bids flow through the
       // usual snapshot broadcast; guests stay pure mirrors.
       autoPlayBots: botSeats.isNotEmpty,
+      // A restored engine replays the host's snapshot instead of dealing
+      // a fresh round.
+      autoStartRound: initialSnapshot == null,
       roundSeeds: seedFactory ?? _defaultRollSeed,
       turnTimeout: turnTimeout,
     );
@@ -164,6 +171,17 @@ class HostGameRelay {
     _tableSubscription = session.tableEvents.listen(handleTable);
     session.addListener(_onSalonChanged);
     _syncAwaySeats();
+    if (initialSnapshot != null) {
+      // Mid-game handover: rebuild the table exactly where the previous
+      // host left it (identity deal ⇒ mySeat 0, human = this phone's
+      // salon seat), then wake the bot loops and the turn guard.
+      controller.applySnapshotPayload(
+        initialSnapshot,
+        mySeat: 0,
+        humanLocal: humanSalonSeat,
+      );
+      controller.resumeBots();
+    }
   }
 
   /// True: every game deals the salon seats around the engine table.
@@ -192,13 +210,15 @@ class HostGameRelay {
   /// sockets) into the controller's away set.
   final Set<int> _abandoned = <int>{};
 
-  /// Seats the engine must cover while their human is gone. The host seat
-  /// is excluded: if the engine's owner phone vanishes, nobody runs this
-  /// relay anyway — the table waits for the host (step: host migration).
+  /// Seats the engine must cover while their human is gone. This phone's
+  /// own seat is excluded: if the engine's owner phone vanishes, nobody
+  /// runs this relay anyway — the Worker hands the bar to a guest. After
+  /// such a handover the previous host's seat (0) IS covered: its socket
+  /// is gone and nobody reclaims it yet.
   void _syncAwaySeats() {
     final away = <int>{
       for (final salonSeat in session.awaySeats)
-        if (salonSeat != 0) _engineSeatOf[salonSeat] ?? salonSeat,
+        if (salonSeat != session.you) _engineSeatOf[salonSeat] ?? salonSeat,
       for (final salonSeat in _abandoned) _engineSeatOf[salonSeat] ?? salonSeat,
     };
     controller.setAwaySeats(away);
@@ -235,8 +255,11 @@ class HostGameRelay {
     // Abandon: forcing the gameOver here is what revives the lobby —
     // without it `started` stays true on the Worker, `isStarting` stays
     // true on this phone ("la manche se prépare" forever, bot +/- blocked)
-    // and every rejoin gets "La partie a déjà commencé".
-    _announceGameOverIfNeeded(force: true);
+    // and every rejoin gets "La partie a déjà commencé". Mid-game though,
+    // the quit dialog disposes the session first: the socket closes and
+    // the Worker hands the bar to a guest — forcing the gameOver here
+    // would kill the table for everyone instead.
+    _announceGameOverIfNeeded(force: !session.isStarting);
   }
 
   void _broadcasting() {
@@ -329,11 +352,6 @@ class GuestGameController extends GameController {
 
   final NetworkSalonSession _session;
   StreamSubscription<RelayedTableMessage>? _subscription;
-  BotDifficulty? _hostDifficulty;
-
-  @override
-  BotDifficulty get displayedDifficulty =>
-      _hostDifficulty ?? super.displayedDifficulty;
 
   @override
   bool get canBeginBiddingFromPeek => false;
@@ -374,209 +392,40 @@ class GuestGameController extends GameController {
   }
 
   /// Rebuilds the local view from a broadcast snapshot. Sal seats of the
-  /// payload are re-based so "me" is seat 0 on the local mirror.
+  /// payload are re-based so "me" is seat 0 on the local mirror. The core
+  /// lives on [GameController.applySnapshotPayload] — the same code the
+  /// mid-game host handover uses with an identity deal.
   void applySnapshot(Map<String, dynamic> snapshot) {
     final salonPlayers = snapshot['players'] as List<dynamic>? ?? const [];
-    final size = salonPlayers.length;
-    if (size == 0) return;
+    if (salonPlayers.isEmpty) return;
     debugSnapshotCount++;
     // Spectator: no "me" — the snapshot order is kept as-is. With mySeat
     // at 0 every modulo below collapses to the identity mapping, so the
     // same code paths serve both modes.
     final mySeat = spectatorView ? 0 : mySalonSeat;
-    int reb(int salonSeat) => ((salonSeat - mySeat) % size + size) % size;
-
-    // --- players, salon names preserved, ordering "me first".
-    final diceCounts = List<int>.filled(size, 0);
-    final playerNames = List<String>.filled(size, '');
-    // Roll order = the snapshot's own order (the host's engine seats):
-    // the host rolled its players list in that order, so the same seed
-    // replayed in the same order yields the same dice on every phone.
-    final salonRollOrder = <int>[];
-    for (final raw in salonPlayers) {
-      if (raw is! Map<String, dynamic>) continue;
-      final salonSeat = (raw['seat'] as num?)?.toInt() ?? -1;
-      if (salonSeat < 0 || salonSeat >= size) continue;
-      diceCounts[salonSeat] = (raw['diceCount'] as num?)?.toInt() ?? 0;
-      playerNames[salonSeat] = '${raw['name'] ?? '?'}';
-      salonRollOrder.add(salonSeat);
-    }
-    players
-      ..clear()
-      ..addAll([
-        for (var local = 0; local < size; local++)
-          Player(
-            seat: local,
-            name: playerNames[(local + mySeat) % size],
-            // Only "me" is the human at this table. Every other row shows a
-            // real name — marking everyone human made the reveal, the
-            // standings and the journal read "Toi" on every line. A
-            // spectator owns no seat at all.
-            isHuman: local == 0 && !spectatorView,
-            sigil: crew[local % crew.length].sigil,
-            accent: crew[local % crew.length].accent,
-            nerve: crew[local % crew.length].nerve,
-          ),
-      ]);
-    for (var local = 0; local < size; local++) {
-      players[local].diceCount = diceCounts[(local + mySeat) % size];
-    }
-
-    // --- phases and table numbers.
-    final phaseName = '${snapshot['phase'] ?? 'peek'}';
-    phase = GamePhase.values.firstWhere(
-      (phase) => phase.name == phaseName,
-      orElse: () => GamePhase.peek,
+    applySnapshotPayload(
+      snapshot,
+      mySeat: mySeat,
+      humanLocal: spectatorView ? -1 : 0,
     );
-    round = (snapshot['round'] as num?)?.toInt() ?? round;
-    palifico = snapshot['palifico'] as bool? ?? false;
-    starter = reb((snapshot['starter'] as num?)?.toInt() ?? 0);
-    currentPlayer = reb((snapshot['currentPlayer'] as num?)?.toInt() ?? 0);
-
-    // --- deterministic dice for every snapshot that carries a seed. The
-    // derivation is idempotent: the same seed plus the same counts always
-    // yields the same rolls, so we re-derive on EVERY snapshot instead of
-    // only on change — the players list is rebuilt here too, and without
-    // the re-roll the second snapshot would wipe the first one's dice and
-    // leave the guest staring at the empty-tray placeholder (five pacos),
-    // which is exactly what happened on the phones.
+    // Diagnostics for the field investigations during live rehearsals:
+    // the seed the mirror last applied, and how many snapshots arrived
+    // with no seed at all.
     final seedRaw = snapshot['seed'];
-    final roundSeed = seedRaw is num ? seedRaw.toInt() : null;
-    if (roundSeed != null) {
-      _deriveDice(
-        roundSeed,
-        salonDiceCounts: diceCounts,
-        salonRollOrder: salonRollOrder,
-        salonStart: mySeat,
-      );
-      debugLastSeed = roundSeed;
-      debugDerivedLens = [for (final p in players) p.dice.length];
-      debugAppliedCounts = List<int>.of(diceCounts);
+    if (seedRaw is num) {
+      debugLastSeed = seedRaw.toInt();
+      debugDerivedLens = [for (final player in players) player.dice.length];
+      final counts = List<int>.filled(salonPlayers.length, 0);
+      for (final raw in salonPlayers) {
+        if (raw is! Map<String, dynamic>) continue;
+        final seat = (raw['seat'] as num?)?.toInt() ?? -1;
+        if (seat < 0 || seat >= counts.length) continue;
+        counts[seat] = (raw['diceCount'] as num?)?.toInt() ?? 0;
+      }
+      debugAppliedCounts = counts;
     } else {
       debugSeedNullCount++;
     }
-
-    // --- bid, journal, outcome, result.
-    final bidRaw = snapshot['bid'];
-    currentBid = bidRaw is Map<String, dynamic> ? _localBid(bidRaw, reb) : null;
-    journal
-      ..clear()
-      ..addAll([
-        for (final raw in snapshot['journal'] as List<dynamic>? ?? [])
-          if (raw is Map<String, dynamic>) _journalEvent(raw, reb),
-      ]);
-
-    final outcomeRaw = snapshot['outcome'];
-    outcome = outcomeRaw is Map<String, dynamic>
-        ? _outcome(outcomeRaw, reb)
-        : null;
-    outcomeApplied =
-        phase == GamePhase.roundOver || phase == GamePhase.gameOver;
-
-    final resultRaw = snapshot['result'];
-    final difficultyName = snapshot['difficulty'];
-    if (difficultyName is String) {
-      _hostDifficulty = BotDifficulty.values.firstWhere(
-        (difficulty) => difficulty.name == difficultyName,
-        orElse: () => config.difficulty,
-      );
-    }
-    if (resultRaw is Map<String, dynamic>) {
-      final winnerLocal = reb((resultRaw['winnerSeat'] as num?)?.toInt() ?? 0);
-      result = GameResult(
-        humanWon: winnerLocal == 0 && players.first.isAlive,
-        winnerSeat: winnerLocal,
-        rounds: (resultRaw['rounds'] as num?)?.toInt() ?? round,
-        humanDiceLeft: players.first.diceCount,
-        standings: [
-          for (final salonSeat
-              in resultRaw['standings'] as List<dynamic>? ?? [])
-            reb((salonSeat as num).toInt()),
-        ],
-      );
-    } else {
-      result = null;
-    }
-
-    notifyListeners();
-  }
-
-  /// Rolls every seat's dice in SNAPSHOT order (the host's engine seats),
-  /// then assigns each roll to the re-based local seat. Values are kept
-  /// for the reveal overlays; the UI only ever shows "my" dice.
-  void _deriveDice(
-    int seed, {
-    required List<int> salonDiceCounts,
-    required List<int> salonRollOrder,
-    required int salonStart,
-  }) {
-    final rolling = Random(seed);
-    final diceBySalonSeat = List<List<int>?>.filled(
-      salonDiceCounts.length,
-      null,
-      growable: false,
-    );
-    for (final salonSeat in salonRollOrder) {
-      final count = salonDiceCounts[salonSeat];
-      if (count <= 0) continue;
-      diceBySalonSeat[salonSeat] = List<int>.generate(
-        count,
-        (_) => 1 + rolling.nextInt(6),
-      );
-    }
-    for (var local = 0; local < players.length; local++) {
-      final salonSeat = (local + salonStart) % players.length;
-      players[local].dice = List<int>.of(
-        diceBySalonSeat[salonSeat] ?? const <int>[],
-      );
-    }
-  }
-
-  Bid _localBid(Map<String, dynamic> raw, int Function(int salon) rebase) {
-    return Bid(
-      quantity: (raw['q'] as num?)?.toInt() ?? 0,
-      face: (raw['f'] as num?)?.toInt() ?? 1,
-      playerSeat: rebase((raw['s'] as num?)?.toInt() ?? 0),
-    );
-  }
-
-  TableEvent _journalEvent(Map<String, dynamic> raw, int Function(int) reb) {
-    final bidRaw = raw['b'];
-    final callerSeat = reb((raw['s'] as num?)?.toInt() ?? 0);
-    return TableEvent(
-      round: (raw['r'] as num?)?.toInt() ?? 0,
-      playerSeat: callerSeat,
-      kind: raw['k'] == 'dudo'
-          ? TableEventKind.dudo
-          : raw['k'] == 'calza'
-          ? TableEventKind.calza
-          : TableEventKind.bid,
-      bid: bidRaw is Map<String, dynamic>
-          ? Bid(
-              quantity: (bidRaw['q'] as num?)?.toInt() ?? 0,
-              face: (bidRaw['f'] as num?)?.toInt() ?? 1,
-              playerSeat: callerSeat,
-            )
-          : null,
-    );
-  }
-
-  ChallengeOutcome _outcome(Map<String, dynamic> raw, int Function(int) reb) {
-    final bidRaw = (raw['bid'] as Map<String, dynamic>?) ?? const {};
-    return ChallengeOutcome(
-      bid: _localBid(bidRaw, reb),
-      callerSeat: reb((raw['caller'] as num?)?.toInt() ?? 0),
-      kind: raw['kind'] == 'calza' ? ChallengeKind.calza : ChallengeKind.dudo,
-      actualCount: (raw['actual'] as num?)?.toInt() ?? 0,
-      exact: raw['exact'] as bool? ?? false,
-      callerWon: raw['callerWon'] as bool? ?? false,
-      loserSeat: raw['loser'] == null
-          ? null
-          : reb((raw['loser'] as num).toInt()),
-      gainSeat: raw['gain'] == null ? null : reb((raw['gain'] as num).toInt()),
-      gainedDie: raw['gained'] as bool? ?? false,
-      gainCapped: raw['gainCapped'] as bool? ?? false,
-    );
   }
 
   // ------------------------------------------------- outgoing commands

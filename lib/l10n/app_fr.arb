@@ -74,6 +74,7 @@
   "gameCalzaConfirm": "Confirmer la calza",
   "gameQuitTitle": "Abandonner la partie ?",
   "gameQuitBody": "La partie s'arrêtera et ne pourra pas être reprise.",
+  "gameQuitHostBody": "Tu quittes définitivement le salon : le premier joueur connecté prend la barre et la partie continue sans toi.",
   "gameQuitGuestBody": "Un pirate jouera ta place jusqu'à la fin de la manche. Tu pourras reprendre ton siège depuis le salon.",
   "gameQuitStay": "Continuer la partie",
   "gameQuitLeave": "Quitter la partie",

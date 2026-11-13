@@ -423,6 +423,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
     }
     if (!mounted) return;
     _tableOpened = false;
+    _tableIsHost = false;
     _starting = false;
     final current = _tableRoute;
     if (current != null && current.isCurrent) {
@@ -473,6 +474,25 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       _tableOpened = true;
       _pushTable(context);
     }
+    // Mid-game host handover: this phone just inherited the engine (the
+    // Worker moved hostSeat onto its seat). Fold the guest mirror — its
+    // snapshots keep coming but nothing drives the table anymore — and
+    // rebuild the engine from the last picture the host broadcast.
+    if (isNetwork &&
+        _tableOpened &&
+        !_tableIsHost &&
+        (network?.hostTakeover ?? false) &&
+        widget.session.isStarting) {
+      _tableIsHost = true;
+      _tableOpened = false;
+      final stale = _tableRoute;
+      _tableRoute = null;
+      if (stale != null && stale.isCurrent) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+      _tableOpened = true;
+      _pushTable(context);
+    }
     // The game reached its standings: the Worker reopened the salon, the
     // table folds back to the tavern lobby so a new phone can join or the
     // table can replay.
@@ -480,6 +500,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       _hostGoneFold?.cancel();
       _hostGoneFold = null;
       _tableOpened = false;
+      _tableIsHost = false;
       // A finished start attempt must not bury the button: without this,
       // returning from a game left "la manche se prépare" greyed forever.
       _starting = false;
@@ -492,6 +513,11 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   }
 
   Route<void>? _tableRoute;
+
+  /// Whether the open table route runs the host relay (true) or a guest
+  /// mirror (false). The mid-game handover folds the mirror when this
+  /// phone inherits the engine.
+  bool _tableIsHost = false;
 
   bool get isHost => widget.session.role == SalonRole.host;
 
@@ -732,6 +758,19 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
     ];
 
     if (network.role == SalonRole.host) {
+      // Mid-game handover: rebuild the engine from the last picture the
+      // previous host broadcast, identity deal, this phone keeps its own
+      // seat. Fresh start: deal the seats every game.
+      final snapshot = network.lastSnapshot;
+      final restoring = network.hostTakeover && snapshot != null;
+      network.hostTakeover = false;
+      final tableNames = restoring
+          ? [
+              for (final raw
+                  in (snapshot['players'] as List<dynamic>? ?? const []))
+                if (raw is Map<String, dynamic>) '${raw['name'] ?? '?'}',
+            ]
+          : names;
       // Salon bots sit on those seats; the host controller plays them.
       final botSeats = {
         for (final player in network.players)
@@ -739,14 +778,16 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       };
       final relay = HostGameRelay(
         session: network,
-        names: names,
+        names: tableNames,
         config: GameConfig(
-          opponentCount: names.length - 1,
+          opponentCount: tableNames.length - 1,
           difficulty: _botDifficulty,
         ),
         botSeats: botSeats,
         // Deal the seats every game: the host may sit anywhere.
         shuffleSeats: true,
+        humanSalonSeat: network.you,
+        initialSnapshot: restoring ? snapshot : null,
       );
       relay.start();
       final route = MaterialPageRoute<void>(
@@ -760,6 +801,7 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
         if (mounted) setState(() => _starting = false);
         relay.dispose();
       });
+      _tableIsHost = true;
       _tableRoute = route;
       navigator.push(route);
       return;
@@ -782,10 +824,13 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       // Leaving mid-game must not end the game for everyone: the seat
       // stays and the host's engine covers it until this sailor returns.
       // A pop after the standings (Worker already reopened) sends nothing.
-      if (network.isStarting) {
+      // A mid-game handover pops this mirror to replace it with the relay:
+      // the new host must not abandon their own table.
+      if (network.isStarting && network.role != SalonRole.host) {
         network.sendGame(const <String, dynamic>{'kind': 'abandon'});
       }
     });
+    _tableIsHost = false;
     _tableRoute = route;
     navigator.push(route);
   }

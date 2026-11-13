@@ -125,13 +125,14 @@ Map<String, dynamic> salonFrame({
   required List<Map<String, dynamic>> players,
   required int you,
   bool started = false,
+  int hostSeat = 0,
 }) {
   return <String, dynamic>{
     'type': 'salon',
     'salon': <String, dynamic>{
       'code': 'S99FTH',
       'started': started,
-      'hostSeat': 0,
+      'hostSeat': hostSeat,
       'players': players,
       'you': you,
     },

@@ -6,6 +6,7 @@ import 'package:dudo/game/models/game_config.dart';
 import 'package:dudo/game/models/table_event.dart';
 import 'package:dudo/salon/network_game.dart';
 import 'package:dudo/salon/network_salon_session.dart';
+import 'package:dudo/salon/salon_models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'salon_test_helpers.dart';
@@ -780,4 +781,114 @@ void main() {
       spectator.dispose();
     },
   );
+
+  test(
+    "l'hôte parti, l'invité reconstruit le moteur depuis le dernier snapshot",
+    () async {
+      final phones = await openTable();
+
+      // Original engine, identity deal for predictable salon seats.
+      final original = phones.startHostRelay();
+      await phones.forwardHostToGuest();
+      final last = phones.guestHarness.session.lastSnapshot;
+      expect(last, isNotNull);
+
+      // The Worker announces the handover: seat 1 now owns the engine,
+      // and the vanished host's seat wears the "à l'eau" marker.
+      phones.guestChannel().serverSends(
+        salonFrame(
+          you: 1,
+          started: true,
+          hostSeat: 1,
+          players: const <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte (à l’eau)', 'bot': false},
+            {'seat': 1, 'name': 'Anne', 'bot': false},
+            {'seat': 2, 'name': 'Bob', 'bot': false},
+          ],
+        ),
+      );
+      await settle();
+      expect(phones.guestHarness.session.role, SalonRole.host);
+      expect(phones.guestHarness.session.hostTakeover, isTrue);
+
+      final takeover = HostGameRelay(
+        session: phones.guestHarness.session,
+        names: [
+          for (final raw in (last!['players'] as List<dynamic>))
+            if (raw is Map<String, dynamic>) '${raw['name']}',
+        ],
+        config: const GameConfig(opponentCount: 2),
+        humanSalonSeat: 1,
+        initialSnapshot: last,
+      );
+      takeover.start();
+
+      final rebuilt = takeover.controller;
+      // The takeover phone keeps its own seat: "Toi" is still Anne.
+      expect(rebuilt.humanSeat, 1);
+      // Same deal, same dice: the engine picked up exactly where the
+      // previous host stopped.
+      expect(rebuilt.phase, original.controller.phase);
+      expect(rebuilt.round, original.controller.round);
+      expect(rebuilt.currentPlayer, original.controller.currentPlayer);
+      for (var seat = 0; seat < 3; seat++) {
+        expect(
+          rebuilt.players[seat].name,
+          original.controller.players[seat].name,
+        );
+        expect(
+          rebuilt.players[seat].dice,
+          original.controller.players[seat].dice,
+        );
+        expect(
+          rebuilt.players[seat].diceCount,
+          original.controller.players[seat].diceCount,
+        );
+        expect(rebuilt.players[seat].isHuman, seat == 1);
+      }
+
+      // The vanished host's seat is covered while nobody reclaims it.
+      expect(rebuilt.awaySeats, contains(0));
+
+      // Guest commands route to the new engine: Bob asks for a resync and
+      // the takeover engine answers with a fresh snapshot.
+      final before = framesOf(phones.guestChannel().sent, 'snapshot').length;
+      phones.guestChannel().serverSends(const <String, dynamic>{
+        'type': 'game',
+        'from': 2,
+        'payload': {'kind': 'resync'},
+      });
+      await settle();
+      expect(
+        framesOf(phones.guestChannel().sent, 'snapshot').length,
+        greaterThan(before),
+      );
+
+      takeover.dispose();
+      // Losing the bar again (another handover) flips the role back.
+      phones.guestChannel().serverSends(
+        salonFrame(
+          you: 2,
+          started: true,
+          hostSeat: 1,
+          players: TwoPhones.salonJson,
+        ),
+      );
+      await settle();
+      expect(phones.guestHarness.session.role, SalonRole.guest);
+      expect(phones.guestHarness.session.hostTakeover, isFalse);
+      original.dispose();
+    },
+  );
+
+  test('le quit de l’hôte en pleine partie ne clôt pas la manche', () async {
+    final phones = await openTable();
+    phones.hostHarness.session.isStarting = true;
+    final relay = phones.startHostRelay();
+
+    // The quit dialog disposed the session (socket closed → the Worker
+    // migrates the bar): the relay's dispose must stay silent.
+    relay.dispose();
+    expect(framesOf(phones.hostChannel().sent, 'gameOver'), isEmpty);
+  });
 }

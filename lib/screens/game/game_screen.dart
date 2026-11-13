@@ -760,10 +760,16 @@ class _GameScreenState extends State<GameScreen> {
     _controller.pauseBots();
     final l10n = AppLocalizations.of(context)!;
     final salon = widget.salonSession;
-    // Host (or offline table): leaving ends the game for everyone. Guest
-    // mid-game: the seat is covered by a bot until they return, so the
-    // wording must not scare them into thinking they sink the whole table.
-    final body = salon == null || salon.role == SalonRole.host
+    // Mid-game host: the table keeps playing — the first connected guest
+    // inherits the engine, and this phone leaves the salon for good.
+    // Host in the lobby stage / offline table: leaving ends the game for
+    // everyone. Guest mid-game: the seat is covered by a bot until they
+    // return, so the wording must not scare them.
+    final body = salon == null
+        ? l10n.gameQuitBody
+        : salon.isStarting && salon.role == SalonRole.host
+        ? l10n.gameQuitHostBody
+        : salon.role == SalonRole.host
         ? l10n.gameQuitBody
         : l10n.gameQuitGuestBody;
     final quit = await showDialog<bool>(
@@ -796,16 +802,32 @@ class _GameScreenState extends State<GameScreen> {
     );
     if (!mounted) return;
     if (quit == true) {
-      _leaveGame();
+      final hostQuitsMidGame =
+          salon != null && salon.isStarting && salon.role == SalonRole.host;
+      if (hostQuitsMidGame) {
+        // The phone leaves the salon entirely: closing the socket is what
+        // tells the Worker to hand the bar to the first connected guest.
+        // The relay's dispose must NOT force a gameOver — that is the
+        // whole point of the handover.
+        salon.dispose();
+      }
+      _leaveGame(closeSalon: hostQuitsMidGame);
     } else {
       _controller.resumeBots();
     }
   }
 
-  void _leaveGame() {
+  void _leaveGame({bool closeSalon = false}) {
     setState(() => _allowPop = true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) Navigator.of(context).pop();
+      if (!mounted) return;
+      final navigator = Navigator.of(context, rootNavigator: true);
+      navigator.pop();
+      if (closeSalon) {
+        // The salon is gone on the server side: fold the lobby too, back
+        // to the home screen.
+        navigator.pop();
+      }
     });
   }
 }

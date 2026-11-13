@@ -624,6 +624,12 @@ class NetworkSalonSession extends SalonSession
       case 'game':
         _relayTable('game', frame);
       case 'snapshot':
+        final payload = frame['payload'];
+        if (payload is Map<String, dynamic>) {
+          // Keep the last picture the engine owner broadcast: a mid-game
+          // handover to this phone rebuilds the engine from it.
+          lastSnapshot = payload;
+        }
         _relayTable('snapshot', frame);
       default:
         break;
@@ -634,23 +640,33 @@ class NetworkSalonSession extends SalonSession
     final salonCode = '${state['code'] ?? ''}';
     if (salonCode.isNotEmpty) code = salonCode.toUpperCase();
     you = (state['you'] as num?)?.toInt() ?? -1;
-    // Seat 0 is the host seat: whoever holds it after a reconnect — doze,
-    // app killed mid-game, reclaim by name — is the host again. The role
-    // must not stay "guest" just because the join handshake set it first.
-    if (you == 0) role = SalonRole.host;
     isStarting = state['started'] as bool? ?? false;
     // Mid-game join without a seat: the Worker seats the socket at -1.
     // The flag clears as soon as a real seat shows up (gameOver auto-seat).
     isSpectator = you < 0 && isStarting;
+    hostSeat = (state['hostSeat'] as num?)?.toInt() ?? 0;
+    // The role follows the engine's owner seat, not the join handshake:
+    // a mid-game handover flips a guest to host (and an old host who
+    // comes back after losing the bar to a guest, to guest).
+    final wasHost = role == SalonRole.host;
+    role = you >= 0 && you == hostSeat ? SalonRole.host : SalonRole.guest;
     if (!isStarting) {
       // The Worker heard the gameOver: the intent is fulfilled.
       _gameOverPending = false;
+      // The table is a lobby again: a previous game's snapshot must not
+      // be mistaken for the state of the next one.
+      lastSnapshot = null;
+      hostTakeover = false;
     } else if (_gameOverPending) {
       // Still "started" while a quit is pending: our earlier gameOver was
       // lost to a dead socket (doze). Re-announce it; idempotent.
       _sendJson(const <String, dynamic>{'type': 'gameOver'});
+    } else {
+      // Mid-game handover to this phone (guest seat now owns the engine):
+      // one-shot flag consumed by the lobby screen to restore the engine
+      // from [lastSnapshot] instead of dealing a fresh round.
+      hostTakeover = !wasHost && role == SalonRole.host;
     }
-    final hostSeat = (state['hostSeat'] as num?)?.toInt() ?? 0;
     final playerList = state['players'] as List<dynamic>? ?? const [];
     players
       ..clear()

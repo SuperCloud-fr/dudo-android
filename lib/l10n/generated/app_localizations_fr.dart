@@ -228,6 +228,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'La partie s\'arrêtera et ne pourra pas être reprise.';
 
   @override
+  String get gameQuitHostBody =>
+      'Tu quittes définitivement le salon : le premier joueur connecté prend la barre et la partie continue sans toi.';
+
+  @override
   String get gameQuitGuestBody =>
       'Un pirate jouera ta place jusqu\'à la fin de la manche. Tu pourras reprendre ton siège depuis le salon.';
 
