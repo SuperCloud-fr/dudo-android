@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 33 : la fable et le paco
+# Dudo 0.2.0 — bêta 34 : la reprise après bascule d'application
+
+- **Basculer sur une autre application puis revenir ne boucle plus sur les messages d'échec** : deux défauts réels corrigés dans la machine de reconnexion. Une prise qui ne répond jamais (radio morte en pleine négociation) pouvait enfouir la machine à reprendre — plus aucune reconnexion n'était tentée ; les sockets sont désormais coupées avec un garde-fou de 2 s, jamais attendues au point de bloquer.
+- Le fil du salon ne répète plus la même histoire minute après minute : les lignes d'échec de reprise sont dédupliquées par motif (« injoignable », « refusé »), plus par texte exact — l'erreur brute qui varie (DNS, refus, délai) ne duplique plus la ligne.
+
+## Bêta 33 : la fable et le paco
 
 - La feuille « Choisis ta fable » s'ouvre désormais **au-dessus du clavier** (avant, elle démarrait dessous et ne remontait qu'après un premier appui).
 - La fable des pacos retrouve sa langue : « j'ai un paco » / « j'ai deux pacos » au lieu de « j'ai un dé de paco » (idem en anglais).

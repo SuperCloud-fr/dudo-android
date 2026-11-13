@@ -188,6 +188,9 @@ class NetworkSalonSession extends SalonSession
   /// hammering the network; reset on each success.
   int _recoveryFailures = 0;
 
+  /// Last "once" stamp per failure kind, for the keyed thread dedupe.
+  final Map<String, DateTime> _onceStamps = <String, DateTime>{};
+
   /// One retry at a time: both the close event and the failed handshake
   /// can race to schedule the next one, the flag keeps exactly one.
   bool _recoveryScheduled = false;
@@ -252,6 +255,7 @@ class NetworkSalonSession extends SalonSession
     _gameOverPending = false;
     // A fresh table starts a clean thread, even when no server answers.
     resetThread();
+    _onceStamps.clear();
     notifyListeners();
 
     String? lastFailure;
@@ -342,6 +346,7 @@ class NetworkSalonSession extends SalonSession
     _gameOverPending = false;
     // A new table starts a clean thread (recovery never goes through here).
     resetThread();
+    _onceStamps.clear();
     notifyListeners();
 
     String? refusal;
@@ -374,8 +379,10 @@ class NetworkSalonSession extends SalonSession
   Future<SalonJoinResult> _attemptHandshake(String base, String name) async {
     // No stale whispering: any previous listener is cut before the new
     // socket is wired, otherwise a single server frame can arrive twice
-    // (old flow + new flow) — double bubbles, double system lines.
-    await _shutSocket();
+    // (old flow + new flow) — double bubbles, double system lines. The
+    // fields clear synchronously; the close itself is not awaited: a
+    // peer that will never ACK must not delay the new handshake.
+    unawaited(_shutSocket());
     final completer = Completer<SalonJoinResult>();
     _joinCompleter = completer;
     _closedByServer = false;
@@ -406,12 +413,12 @@ class NetworkSalonSession extends SalonSession
       );
       _joinCompleter = null;
       if (!result.ok) {
-        await _shutSocket();
+        unawaited(_shutSocket());
       }
       return result;
     } catch (error) {
       _joinCompleter = null;
-      await _shutSocket();
+      unawaited(_shutSocket());
       rethrow;
     }
   }
@@ -551,7 +558,9 @@ class NetworkSalonSession extends SalonSession
 
   Future<void> _closeChannel(WebSocketChannel channel) async {
     try {
-      await channel.sink.close();
+      // Bounded: a peer that will never ACK (dead radio mid-handshake)
+      // must not hold the recovery machinery forever.
+      await channel.sink.close().timeout(const Duration(seconds: 2));
     } catch (_) {
       // déjà parti
     }
@@ -909,6 +918,8 @@ class NetworkSalonSession extends SalonSession
       final result = await _attemptHandshake(base, myName);
       if (result.ok) {
         _recoveryFailures = 0;
+        // The story may be told again on the NEXT outage: drop the stamps.
+        _onceStamps.clear();
         pushSystemMessage(SalonSystem.recovered(code));
         // Ask the host for a fresh table snapshot (mid-game recovery).
         sendGame(const <String, dynamic>{'kind': 'resync'});
@@ -922,10 +933,10 @@ class NetworkSalonSession extends SalonSession
         // door that stays shut — the endless "connexion interrompue" loop.
         // Stop chasing it; the sailor leaves and joins/creates anew.
         _closedByServer = true;
-        _threadOnce(SalonSystem.salonRefused(reason));
+        _threadOnce(SalonSystem.salonRefused(reason), key: 'refused');
         return;
       }
-      _threadOnce(SalonSystem.unreachableTrack(reason));
+      _threadOnce(SalonSystem.unreachableTrack(reason), key: 'unreachable');
     } catch (error) {
       // On a phone, "why" is everything: DNS, proxy, captive portal. The
       // terse edition goes to the thread; the raw error stays in adb.
@@ -944,7 +955,10 @@ class NetworkSalonSession extends SalonSession
         probe = await _healthProbe(base);
       }
       _recoveryFailures++;
-      _threadOnce(SalonSystem.unreachableBackoff('$brief$probe'));
+      _threadOnce(
+        SalonSystem.unreachableBackoff('$brief$probe'),
+        key: 'unreachable',
+      );
     } finally {
       _recovering = false;
       if (!_disposed) notifyListeners();
@@ -981,19 +995,22 @@ class NetworkSalonSession extends SalonSession
     }
   }
 
-  /// Same sentence twice in a minute reads like spam in the thread; the
-  /// recovery machinery says it once, the reader knows we're still trying.
-  void _threadOnce(String body) {
+  /// Same failure twice in a minute reads like spam in the thread. The
+  /// recovery machinery dedupes by KIND (key), not by exact text: the raw
+  /// error inside the line varies (DNS, refused, timeout…), so a text
+  /// comparison would let the same story repeat minute after minute.
+  void _threadOnce(String body, {String? key}) {
     if (_disposed) return;
-    final messages = this.messages;
-    final lastSystem = messages.isEmpty ? null : messages.last;
-    final repeated =
-        lastSystem != null &&
-        lastSystem.isMine == false &&
-        lastSystem.body == body &&
-        lastSystem.authorSeat == -1 &&
-        DateTime.now().difference(lastSystem.at) < const Duration(seconds: 60);
-    if (repeated) return;
+    final id = key ?? body;
+    final now = DateTime.now();
+    _onceStamps.removeWhere(
+      (_, at) => now.difference(at) >= const Duration(seconds: 60),
+    );
+    final last = _onceStamps[id];
+    if (last != null && now.difference(last) < const Duration(seconds: 60)) {
+      return;
+    }
+    _onceStamps[id] = now;
     pushSystemMessage(body);
   }
 
