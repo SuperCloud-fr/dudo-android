@@ -1370,6 +1370,12 @@ abstract class AppLocalizations {
   /// **'Reprendre ta place à la table'**
   String get salonRejoinTable;
 
+  /// No description provided for @salonSpectatorHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu regardes la partie — tu joueras la prochaine.'**
+  String get salonSpectatorHint;
+
   /// No description provided for @salonHostGoneHint.
   ///
   /// In fr, this message translates to:

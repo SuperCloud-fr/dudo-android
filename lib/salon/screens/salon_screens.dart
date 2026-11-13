@@ -607,13 +607,17 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                               SalonHint(
                                 widget.session.hostGone
                                     ? l10n.salonHostGoneHint
+                                    : session.isSpectator
+                                    ? l10n.salonSpectatorHint
                                     : l10n.salonWaitingHost,
                               ),
                               // Back from a mid-game leave: the table runs
                               // without this sailor — one tap re-takes the
-                              // seat and reopens the mirror.
+                              // seat and reopens the mirror. A spectator
+                              // has no seat to take back.
                               if (session.isStarting &&
                                   _tableOpened &&
+                                  !session.isSpectator &&
                                   !widget.session.hostGone) ...[
                                 const SizedBox(height: 10),
                                 TavernButton(
@@ -636,11 +640,12 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                   },
                 ),
               ),
-              ReactionBar(
-                players: session.players,
-                onSendReaction: session.sendReaction,
-                onSendChat: session.sendChat,
-              ),
+              if (!session.isSpectator)
+                ReactionBar(
+                  players: session.players,
+                  onSendReaction: session.sendReaction,
+                  onSendChat: session.sendChat,
+                ),
             ],
           ),
         ),

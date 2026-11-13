@@ -90,6 +90,7 @@ class _GameScreenState extends State<GameScreen> {
   void _onSalonSessionChanged() {
     final salon = widget.salonSession;
     if (!mounted || salon == null) return;
+    setState(() {});
     final messages = salon.messages;
     if (messages.length < _lastObservedSalonMessageCount) {
       _lastObservedSalonMessageCount = messages.length;
@@ -352,6 +353,8 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildPlayerTray(BuildContext context) {
+    // Spectator: no hand, no tray — the table speaks for itself.
+    if (_isSpectator) return const SizedBox.shrink();
     final human = _controller.human;
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
@@ -523,18 +526,24 @@ class _GameScreenState extends State<GameScreen> {
         .toList(growable: false);
   }
 
+  /// This phone watches the table without a seat (mid-game join): no
+  /// hand, no input, no "Toi" anywhere.
+  bool get _isSpectator => widget.salonSession?.isSpectator ?? false;
+
   Widget _buildOverlay(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     switch (_controller.phase) {
       case GamePhase.peek:
-        if (!_controller.human.isAlive) {
-          // No dice, no cup: the eliminated player watches the round and
-          // (host/solo) waves it in, like the reveal's "Voir la suite".
+        if (_isSpectator || !_controller.human.isAlive) {
+          // No dice, no cup: the eliminated player (or a seatless
+          // spectator) watches the round. The eliminated player keeps
+          // waving the phases in; a spectator never does.
+          final eliminated = !_isSpectator && !_controller.human.isAlive;
           return SpectatorPeekOverlay(
             key: ValueKey('spectator-peek-${_controller.round}'),
             round: _controller.round,
             palifico: _controller.palifico,
-            canBeginBidding: _controller.canBeginBiddingFromPeek,
+            canBeginBidding: eliminated && _controller.canBeginBiddingFromPeek,
             onReady: _controller.beginBidding,
             chatAction: widget.salonSession == null
                 ? null

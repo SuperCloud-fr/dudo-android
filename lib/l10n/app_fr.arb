@@ -271,6 +271,7 @@
   "salonRoundPreparing": "L'équipage prend place…",
   "salonWaitingHost": "L'équipage attend le signal du capitaine…",
   "salonRejoinTable": "Reprendre ta place à la table",
+  "salonSpectatorHint": "Tu regardes la partie — tu joueras la prochaine.",
   "salonHostGoneHint": "L'hôte a quitté la manche. La partie reprendra à son retour.",
   "salonFeedSection": "Le journal de bord",
   "salonStartFailed": "Impossible de lancer la manche. Vérifie ta connexion et réessaie.",

@@ -87,9 +87,14 @@ abstract class SalonBackend {
 
 @immutable
 class SalonJoinResult {
-  const SalonJoinResult({this.ok = true, this.message});
+  const SalonJoinResult({this.ok = true, this.message, this.spectator = false});
   final bool ok;
   final String? message;
+
+  /// True when the salon accepted the join mid-game without a seat to
+  /// reclaim: the newcomer watches the current round and is seated at
+  /// the next one.
+  final bool spectator;
 }
 
 /// Shared state, share actions and session contract for both salon
@@ -113,6 +118,11 @@ abstract class SalonSession extends ChangeNotifier {
   /// a game runs: their socket is gone, so the host engine must cover
   /// their turns until they reclaim the seat. Empty offline.
   Iterable<int> get awaySeats => const <int>{};
+
+  /// True when this phone joined mid-game with no seat to reclaim: the
+  /// table renders read-only until the next gameOver seats this sailor.
+  /// Network sessions only; local stays false.
+  bool isSpectator = false;
 
   static const List<String> botNames = [
     'Barbe-Noire',

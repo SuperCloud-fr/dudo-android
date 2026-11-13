@@ -271,6 +271,7 @@
   "salonRoundPreparing": "The crew is coming aboard…",
   "salonWaitingHost": "The crew is waiting for the captain's signal…",
   "salonRejoinTable": "Take your seat back at the table",
+  "salonSpectatorHint": "You're watching this round — you'll play the next one.",
   "salonHostGoneHint": "The host left the round. The game will resume when they're back.",
   "salonFeedSection": "Ship's log",
   "salonStartFailed": "Couldn't start the round. Check your connection and try again.",

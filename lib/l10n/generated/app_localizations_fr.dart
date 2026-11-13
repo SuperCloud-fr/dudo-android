@@ -839,6 +839,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get salonRejoinTable => 'Reprendre ta place à la table';
 
   @override
+  String get salonSpectatorHint =>
+      'Tu regardes la partie — tu joueras la prochaine.';
+
+  @override
   String get salonHostGoneHint =>
       'L\'hôte a quitté la manche. La partie reprendra à son retour.';
 

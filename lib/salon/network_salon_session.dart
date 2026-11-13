@@ -449,6 +449,7 @@ class NetworkSalonSession extends SalonSession
 
   @override
   Future<void> sendReaction(String emoji) async {
+    if (isSpectator) return;
     if (_channel == null) {
       pushSystemMessage(SalonSystem.deadReaction);
       return;
@@ -638,6 +639,9 @@ class NetworkSalonSession extends SalonSession
     // must not stay "guest" just because the join handshake set it first.
     if (you == 0) role = SalonRole.host;
     isStarting = state['started'] as bool? ?? false;
+    // Mid-game join without a seat: the Worker seats the socket at -1.
+    // The flag clears as soon as a real seat shows up (gameOver auto-seat).
+    isSpectator = you < 0 && isStarting;
     if (!isStarting) {
       // The Worker heard the gameOver: the intent is fulfilled.
       _gameOverPending = false;
@@ -680,11 +684,12 @@ class NetworkSalonSession extends SalonSession
     }
     notifyListeners();
 
-    // The join handshake completes as soon as our seat is in the table.
+    // The join handshake completes as soon as our seat is in the table —
+    // or the Worker seated us as a spectator (you=-1, game running).
     final join = _joinCompleter;
-    if (join != null && !join.isCompleted && you >= 0) {
+    if (join != null && !join.isCompleted && (you >= 0 || isSpectator)) {
       _joinCompleter = null;
-      join.complete(const SalonJoinResult(ok: true));
+      join.complete(SalonJoinResult(ok: true, spectator: isSpectator));
     }
   }
 

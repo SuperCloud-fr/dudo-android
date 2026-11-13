@@ -690,4 +690,94 @@ void main() {
       relay.dispose();
     },
   );
+
+  test(
+    'un join en pleine partie se complète en spectateur côté session',
+    () async {
+      final harness = Harness();
+      final joining = harness.session.joinSalon('S99FTH', 'Bob');
+      await settle();
+      final channel = harness.channel(
+        'wss://dudo.supercloud.fr/api/v1/salons/S99FTH/ws',
+      );
+      await untilOneSent(channel);
+      channel.serverSends(
+        salonFrame(you: -1, started: true, players: TwoPhones.salonJson),
+      );
+      final result = await joining;
+      expect(result.ok, isTrue);
+      expect(result.spectator, isTrue);
+      expect(harness.session.isSpectator, isTrue);
+    },
+  );
+
+  test(
+    'le miroir spectateur garde l’ordre du salon et n’envoie rien',
+    () async {
+      final phones = await openTable();
+
+      // Bob's phone joins mid-game: the Worker seats him at -1.
+      phones.guestChannel().serverSends(
+        salonFrame(you: -1, started: true, players: TwoPhones.salonJson),
+      );
+      await settle();
+      expect(phones.guestHarness.session.isSpectator, isTrue);
+
+      final spectator = GuestGameController(
+        config: const GameConfig(opponentCount: 2),
+        session: phones.guestHarness.session,
+        names: ['Cap Hôte', 'Anne', 'Bob'],
+      );
+      spectator.applySnapshot(const <String, dynamic>{
+        'v': networkSnapshotVersion,
+        'round': 1,
+        'phase': 'bidding',
+        'palifico': false,
+        'starter': 0,
+        'currentPlayer': 1,
+        'seed': 424242,
+        'players': [
+          {'seat': 0, 'name': 'Cap Hôte', 'diceCount': 5},
+          {'seat': 1, 'name': 'Anne', 'diceCount': 5},
+          {'seat': 2, 'name': 'Bob', 'diceCount': 5},
+        ],
+        'bid': {'q': 3, 'f': 4, 's': 1},
+        'journal': [],
+        'outcome': null,
+        'result': null,
+      });
+
+      // No rebase: the snapshot order IS the local order, and nobody owns
+      // a hand.
+      expect(spectator.players[0].name, 'Cap Hôte');
+      expect(spectator.players[1].name, 'Anne');
+      expect(spectator.players[2].name, 'Bob');
+      expect(
+        spectator.players.every((player) => !player.isHuman),
+        isTrue,
+        reason: 'aucun siège n’est « moi »',
+      );
+      expect(spectator.isHumanTurn, isFalse);
+
+      // Reference roll, snapshot order, identity mapping.
+      final rolling = Random(424242);
+      final salonDice = [
+        for (var seat = 0; seat < 3; seat++)
+          [for (var die = 0; die < 5; die++) 1 + rolling.nextInt(6)],
+      ];
+      for (var local = 0; local < 3; local++) {
+        expect(spectator.players[local].dice, salonDice[local]);
+      }
+
+      // Read-only: nothing but the constructor's resync ever leaves.
+      spectator.applyOutcome();
+      spectator.nextRound();
+      spectator.rematch();
+      expect(
+        phones.guestSends().where((payload) => payload['kind'] != 'resync'),
+        isEmpty,
+      );
+      spectator.dispose();
+    },
+  );
 }

@@ -338,6 +338,14 @@ class GuestGameController extends GameController {
   @override
   bool get canBeginBiddingFromPeek => false;
 
+  /// Spectator mirror: joined mid-game with no seat. The snapshot is read
+  /// in its own order (no rebase — there is no "me" to put first), no
+  /// seat reads as human, and every input getter stays closed.
+  bool get spectatorView => _session.isSpectator;
+
+  @override
+  bool get isHumanTurn => !spectatorView && super.isHumanTurn;
+
   /// Diagnostics for the field investigations during live rehearsals:
   /// the seed the mirror last applied, and how many snapshots arrived
   /// with no seed at all.
@@ -372,7 +380,10 @@ class GuestGameController extends GameController {
     final size = salonPlayers.length;
     if (size == 0) return;
     debugSnapshotCount++;
-    final mySeat = mySalonSeat;
+    // Spectator: no "me" — the snapshot order is kept as-is. With mySeat
+    // at 0 every modulo below collapses to the identity mapping, so the
+    // same code paths serve both modes.
+    final mySeat = spectatorView ? 0 : mySalonSeat;
     int reb(int salonSeat) => ((salonSeat - mySeat) % size + size) % size;
 
     // --- players, salon names preserved, ordering "me first".
@@ -399,8 +410,9 @@ class GuestGameController extends GameController {
             name: playerNames[(local + mySeat) % size],
             // Only "me" is the human at this table. Every other row shows a
             // real name — marking everyone human made the reveal, the
-            // standings and the journal read "Toi" on every line.
-            isHuman: local == 0,
+            // standings and the journal read "Toi" on every line. A
+            // spectator owns no seat at all.
+            isHuman: local == 0 && !spectatorView,
             sigil: crew[local % crew.length].sigil,
             accent: crew[local % crew.length].accent,
             nerve: crew[local % crew.length].nerve,
@@ -596,16 +608,19 @@ class GuestGameController extends GameController {
 
   @override
   void nextRound() {
+    if (spectatorView) return;
     _session.sendGame(const <String, dynamic>{'kind': 'nextRound'});
   }
 
   @override
   void rematch() {
+    if (spectatorView) return;
     _session.sendGame(const <String, dynamic>{'kind': 'rematch'});
   }
 
   @override
   void applyOutcome() {
+    if (spectatorView) return;
     // The reveal is host-authoritative: the guest's tap waves the host's
     // engine forward and the applied outcome comes back in a snapshot.
     _session.sendGame(const <String, dynamic>{'kind': 'apply'});

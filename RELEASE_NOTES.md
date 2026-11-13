@@ -1,4 +1,12 @@
-# Dudo 0.2.0 — bêta 29 : la table tient sans les absents
+# Dudo 0.2.0 — bêta 30 : spectateurs
+
+- **Un nouveau venu en pleine partie n'est plus refusé** : il devient spectateur. Table en lecture seule (aucune main « à soi », aucun envoi de jeu), il peut discuter dans le fil du salon.
+- **Il joue la manche suivante** : au `gameOver`, le Worker l'assoit au premier siège libre (jamais le siège de l'hôte ; salon plein → il reste spectateur et réessaiera à la fin d'partie suivante).
+- **Le retour d'un parti garde la priorité** : un pirate dont le nom correspond à un siège « à l'eau » reprend toujours son siège, même en pleine manche (bêta 29).
+- Le lobby affiche « Tu regardes la partie — tu joueras la prochaine » ; le dialogue de fin reste accessible, la barre de réactions est masquée pour un spectateur.
+- **Côté serveur (déjà déployé, hors APK)** : sièges `-1` pour les spectateurs, événement d'audit `spectate`, commandes de jeu ignorées (sauf la resynchronisation).
+
+## Bêta 29 : la table tient sans les absents
 
 - **Un invité qui quitte en pleine manche ne coule plus la table** : un pirate (bot) joue sa place jusqu'à la fin de la manche. Depuis le salon, « Reprendre ta place à la table » rend le siège. Le dialogue d'abandon explique désormais la différence : invité → la partie continue, hôte → la partie s'arrête.
 - **Un pirate dont le téléphone meurt (« à l'eau ») est aussi couvert** par un bot jusqu'à son retour ; la reprise par nom redonne le siège en pleine manche.
