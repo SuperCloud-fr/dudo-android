@@ -927,6 +927,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String reactionLine1Paco(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pacos',
+      one: 'one paco',
+    );
+    return 'You don\'t have to believe me, but I\'ve got $_temp0.';
+  }
+
+  @override
   String reactionLine2(String player) {
     return 'No, $player, that can\'t be.';
   }

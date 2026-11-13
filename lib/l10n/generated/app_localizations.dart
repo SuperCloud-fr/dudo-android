@@ -1520,6 +1520,12 @@ abstract class AppLocalizations {
   /// **'Tu n\'es pas obligé de me croire, mais j\'ai {count, plural, =1{un dé} other{{count} dés}} de {face}.'**
   String reactionLine1(int count, String face);
 
+  /// No description provided for @reactionLine1Paco.
+  ///
+  /// In fr, this message translates to:
+  /// **'Tu n\'es pas obligé de me croire, mais j\'ai {count, plural, =1{un paco} other{{count} pacos}}.'**
+  String reactionLine1Paco(int count);
+
   /// No description provided for @reactionLine2.
   ///
   /// In fr, this message translates to:

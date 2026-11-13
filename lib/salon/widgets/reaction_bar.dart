@@ -69,10 +69,19 @@ class _ReactionBarState extends State<ReactionBar> {
   String _faceName(AppLocalizations l10n, int face) =>
       face == 1 ? l10n.bidUnitPaco : '$face';
 
+  /// The canned "I've got…" claim line: pacos get their own wording
+  /// ("j'ai un paco", not "un dé de paco").
+  String _claimLine(AppLocalizations l10n, int count, int face) => face == 1
+      ? l10n.reactionLine1Paco(count)
+      : l10n.reactionLine1(count, '$face');
+
   Future<void> _chooseDiceClaim(
     BuildContext context,
     AppLocalizations l10n,
   ) async {
+    // Drop the keyboard first: a sheet opened while a text field holds
+    // focus starts underneath it and only climbs out at the next rebuild.
+    FocusManager.instance.primaryFocus?.unfocus();
     var count = _diceCount;
     var face = _defaultClaimFace;
     final message = await showModalBottomSheet<String>(
@@ -143,7 +152,7 @@ class _ReactionBarState extends State<ReactionBar> {
               ),
               const SizedBox(height: 16),
               Text(
-                l10n.reactionLine1(count, _faceName(l10n, face)),
+                _claimLine(l10n, count, face),
                 style: Theme.of(context).textTheme.bodyLarge
                     ?.copyWith(color: AppColors.parchment),
               ),
@@ -151,7 +160,7 @@ class _ReactionBarState extends State<ReactionBar> {
               FilledButton(
                 onPressed: () =>
                     Navigator.of(sheetContext)
-                        .pop(l10n.reactionLine1(count, _faceName(l10n, face))),
+                        .pop(_claimLine(l10n, count, face)),
                 child: Text(l10n.reactionDiceSend),
               ),
             ],
@@ -168,7 +177,7 @@ class _ReactionBarState extends State<ReactionBar> {
     // Canned table-talk, localized; {n}/{player} are filled by the
     // generated accessors.
     final recipes = <String>[
-      l10n.reactionLine1(_diceCount, _faceName(l10n, _defaultClaimFace)),
+      _claimLine(l10n, _diceCount, _defaultClaimFace),
       l10n.reactionLine2(_targetName),
       l10n.reactionLine3(_targetName),
       l10n.reactionLine4(_diceCount),

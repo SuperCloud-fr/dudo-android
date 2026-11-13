@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 32 : sous la barre Android
+# Dudo 0.2.0 — bêta 33 : la fable et le paco
+
+- La feuille « Choisis ta fable » s'ouvre désormais **au-dessus du clavier** (avant, elle démarrait dessous et ne remontait qu'après un premier appui).
+- La fable des pacos retrouve sa langue : « j'ai un paco » / « j'ai deux pacos » au lieu de « j'ai un dé de paco » (idem en anglais).
+
+## Bêta 32 : sous la barre Android
 
 - **Le bouton « Larguer la phrase » ne se fait plus manger** par la barre de navigation Android (téléphones à 3 boutons) : la feuille « Choisis ta fable », la feuille d'enchère et la barre de réactions prennent désormais leur espace bas depuis l'insert brut du système, que le mode plein écran et les réécritures de marges ne peuvent pas avaler.
 - Même soin pour le fil de discussion en pleine partie et le lobby (défilement qui passe sous la barre).
