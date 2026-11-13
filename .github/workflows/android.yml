@@ -30,7 +30,7 @@ jobs:
       - name: Secrets in code & history (gitleaks)
         run: |
           mkdir -p security
-          VERSION=$(curl -fsSL https://api.github.com/repos/gitleaks/gitleaks/releases/latest | jq -r .tag_name)
+          VERSION=$(curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/gitleaks/gitleaks/releases/latest | jq -r .tag_name)
           echo "gitleaks ${VERSION}"
           curl -fsSL "https://github.com/gitleaks/gitleaks/releases/download/${VERSION}/gitleaks_${VERSION#v}_linux_x64.tar.gz" | tar -xz gitleaks
           ./gitleaks detect \
@@ -41,7 +41,7 @@ jobs:
 
       - name: Vulnerable Dart dependencies (osv-scanner)
         run: |
-          VERSION=$(curl -fsSL https://api.github.com/repos/google/osv-scanner/releases/latest | jq -r .tag_name)
+          VERSION=$(curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/google/osv-scanner/releases/latest | jq -r .tag_name)
           echo "osv-scanner ${VERSION}"
           curl -fsSL -o security/osv-scanner "https://github.com/google/osv-scanner/releases/download/${VERSION}/osv-scanner_linux_amd64"
           chmod +x security/osv-scanner
