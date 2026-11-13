@@ -28,6 +28,8 @@ jobs:
           fetch-depth: 0 # full git history, so gitleaks scans every commit
 
       - name: Secrets in code & history (gitleaks)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p security
           VERSION=$(curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/gitleaks/gitleaks/releases/latest | jq -r .tag_name)
@@ -40,6 +42,8 @@ jobs:
             --report-path security/gitleaks.json
 
       - name: Vulnerable Dart dependencies (osv-scanner)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           VERSION=$(curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/repos/google/osv-scanner/releases/latest | jq -r .tag_name)
           echo "osv-scanner ${VERSION}"
