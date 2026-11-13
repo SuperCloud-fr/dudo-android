@@ -162,6 +162,8 @@ class HostGameRelay {
     );
     controller.addListener(_broadcasting);
     _tableSubscription = session.tableEvents.listen(handleTable);
+    session.addListener(_onSalonChanged);
+    _syncAwaySeats();
   }
 
   /// True: every game deals the salon seats around the engine table.
@@ -185,6 +187,27 @@ class HostGameRelay {
   late final GameController controller;
   StreamSubscription<RelayedTableMessage>? _tableSubscription;
 
+  /// Salon seats whose player quit mid-game (`abandon`) and is still
+  /// connected — merged with the session's "(à l'eau)" seats (dropped
+  /// sockets) into the controller's away set.
+  final Set<int> _abandoned = <int>{};
+
+  /// Seats the engine must cover while their human is gone. The host seat
+  /// is excluded: if the engine's owner phone vanishes, nobody runs this
+  /// relay anyway — the table waits for the host (step: host migration).
+  void _syncAwaySeats() {
+    final away = <int>{
+      for (final salonSeat in session.awaySeats)
+        if (salonSeat != 0) _engineSeatOf[salonSeat] ?? salonSeat,
+      for (final salonSeat in _abandoned) _engineSeatOf[salonSeat] ?? salonSeat,
+    };
+    controller.setAwaySeats(away);
+  }
+
+  void _onSalonChanged() {
+    _syncAwaySeats();
+  }
+
   /// The AFK guard for a human seat: configurable so faster rehearsals
   /// can script tight va-et-vient sessions.
   final Duration turnTimeout;
@@ -207,6 +230,7 @@ class HostGameRelay {
   void dispose() {
     _tableSubscription?.cancel();
     _tableSubscription = null;
+    session.removeListener(_onSalonChanged);
     controller.removeListener(_broadcasting);
     // Abandon: forcing the gameOver here is what revives the lobby —
     // without it `started` stays true on the Worker, `isStarting` stays
@@ -263,6 +287,16 @@ class HostGameRelay {
         // A player reconnected: hand them the full table immediately.
         _lastPayload = '';
         _broadcasting();
+      case 'abandon':
+        // The guest left the table mid-game but keeps the socket: their
+        // seat joins the bot-driven seats until they take it back.
+        _abandoned.add(message.fromSeat);
+        _syncAwaySeats();
+      case 'rejoin':
+        // The guest is back at the table: release the seat, bids flow
+        // from their phone again.
+        _abandoned.remove(message.fromSeat);
+        _syncAwaySeats();
       default:
         break;
     }

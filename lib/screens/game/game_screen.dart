@@ -750,6 +750,13 @@ class _GameScreenState extends State<GameScreen> {
   Future<void> _confirmQuit() async {
     _controller.pauseBots();
     final l10n = AppLocalizations.of(context)!;
+    final salon = widget.salonSession;
+    // Host (or offline table): leaving ends the game for everyone. Guest
+    // mid-game: the seat is covered by a bot until they return, so the
+    // wording must not scare them into thinking they sink the whole table.
+    final body = salon == null || salon.role == SalonRole.host
+        ? l10n.gameQuitBody
+        : l10n.gameQuitGuestBody;
     final quit = await showDialog<bool>(
       context: context,
       builder: (context) {
@@ -761,7 +768,7 @@ class _GameScreenState extends State<GameScreen> {
               color: AppColors.parchment,
             ),
           ),
-          content: Text(l10n.gameQuitBody),
+          content: Text(body),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),

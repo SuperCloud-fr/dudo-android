@@ -1,4 +1,11 @@
-# Dudo 0.2.0 — bêta 28 : plus de boucle sans issue
+# Dudo 0.2.0 — bêta 29 : la table tient sans les absents
+
+- **Un invité qui quitte en pleine manche ne coule plus la table** : un pirate (bot) joue sa place jusqu'à la fin de la manche. Depuis le salon, « Reprendre ta place à la table » rend le siège. Le dialogue d'abandon explique désormais la différence : invité → la partie continue, hôte → la partie s'arrête.
+- **Un pirate dont le téléphone meurt (« à l'eau ») est aussi couvert** par un bot jusqu'à son retour ; la reprise par nom redonne le siège en pleine manche.
+- **Côté serveur (déjà déployé, hors APK)** : au `gameOver`, le marqueur « à l'eau » est essuyé des sièges — plus de joueur nommé « X (à l'eau) » dans la partie suivante.
+- **Suite prévue** : spectateurs (nouveaux arrivants en pleine partie) puis migration d'hôte.
+
+## Bêta 28 : plus de boucle sans issue
 
 - **Un refus du serveur arrête la reconnexion** : salon fermé, « La partie a déjà commencé », nom refusé — l'app affichait en boucle « Connexion interrompue » sans jamais lâcher. Désormais le message annonce clairement que le salon est inaccessible et qu'il faut quitter puis rejoindre ou recréer. Les vraies pannes réseau déclenchent toujours une reconnexion automatique.
 - **Côté serveur (déjà déployé, hors APK)** : le garde-fou anti-flood passait de 4 Ko à 64 Ko — le journal de bord faisait grossir les snapshots au point d'expulser l'hôte en pleine manche et de geler la table.

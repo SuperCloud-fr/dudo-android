@@ -609,6 +609,20 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
                                     ? l10n.salonHostGoneHint
                                     : l10n.salonWaitingHost,
                               ),
+                              // Back from a mid-game leave: the table runs
+                              // without this sailor — one tap re-takes the
+                              // seat and reopens the mirror.
+                              if (session.isStarting &&
+                                  _tableOpened &&
+                                  !widget.session.hostGone) ...[
+                                const SizedBox(height: 10),
+                                TavernButton(
+                                  label: l10n.salonRejoinTable,
+                                  icon: Icons.chair_alt,
+                                  expand: true,
+                                  onPressed: () => _pushTable(context),
+                                ),
+                              ],
                             ],
                             const SizedBox(height: 18),
                             SalonSectionLabel(l10n.salonFeedSection),
@@ -750,6 +764,9 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
       session: network,
       names: names,
     );
+    // Back at the table (first hop or "reprendre ta place"): release the
+    // bot that covered this seat while the sailor was away. Idempotent.
+    network.sendGame(const <String, dynamic>{'kind': 'rejoin'});
     final route = MaterialPageRoute<void>(
       builder: (_) => GameScreen(controller: guest, salonSession: network),
     );
@@ -757,6 +774,12 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
     // only restores the lobby's start-button state after its route is gone.
     route.popped.then((_) {
       if (mounted) setState(() => _starting = false);
+      // Leaving mid-game must not end the game for everyone: the seat
+      // stays and the host's engine covers it until this sailor returns.
+      // A pop after the standings (Worker already reopened) sends nothing.
+      if (network.isStarting) {
+        network.sendGame(const <String, dynamic>{'kind': 'abandon'});
+      }
     });
     _tableRoute = route;
     navigator.push(route);

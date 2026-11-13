@@ -464,6 +464,12 @@ abstract class AppLocalizations {
   /// **'La partie s\'arrêtera et ne pourra pas être reprise.'**
   String get gameQuitBody;
 
+  /// No description provided for @gameQuitGuestBody.
+  ///
+  /// In fr, this message translates to:
+  /// **'Un pirate jouera ta place jusqu\'à la fin de la manche. Tu pourras reprendre ton siège depuis le salon.'**
+  String get gameQuitGuestBody;
+
   /// No description provided for @gameQuitStay.
   ///
   /// In fr, this message translates to:
@@ -1357,6 +1363,12 @@ abstract class AppLocalizations {
   /// In fr, this message translates to:
   /// **'L\'équipage attend le signal du capitaine…'**
   String get salonWaitingHost;
+
+  /// No description provided for @salonRejoinTable.
+  ///
+  /// In fr, this message translates to:
+  /// **'Reprendre ta place à la table'**
+  String get salonRejoinTable;
 
   /// No description provided for @salonHostGoneHint.
   ///

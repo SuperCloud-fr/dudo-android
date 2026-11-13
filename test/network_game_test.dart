@@ -582,4 +582,112 @@ void main() {
     guest.dispose();
     relay.dispose();
   });
+
+  test('un invité parti en pleine manche est couvert par un bot, puis récupère son siège', () async {
+    final phones = await openTable();
+    final relay = phones.startHostRelay();
+    final host = relay.controller;
+    expect(host.awaySeats, isEmpty);
+
+    // Anne quits mid-game but keeps her socket: 'abandon' reaches the
+    // host relay and her seat joins the bot-driven ones.
+    relay.handleTable(
+      const RelayedTableMessage(
+        kind: 'game',
+        fromSeat: 1,
+        payload: <String, dynamic>{'kind': 'abandon'},
+      ),
+    );
+    expect(host.awaySeats, [1], reason: 'Anne couverte par le bot');
+
+    host.beginBidding();
+    expect(
+      host.submitHumanBid(const Bid(quantity: 2, face: 2, playerSeat: 0)),
+      isTrue,
+    );
+    expect(host.currentPlayer, 1, reason: 'au tour du siège abandonné');
+
+    // The engine covers the gone pirate itself (not the 60s AFK wait).
+    host.performBotMove();
+    final covered = host.journal.last;
+    expect(covered.playerSeat, 1);
+    expect(
+      covered.kind == TableEventKind.bid ||
+          covered.kind == TableEventKind.dudo ||
+          covered.kind == TableEventKind.calza,
+      isTrue,
+      reason: 'le bot joue à la place d’Anne',
+    );
+
+    // Anne comes back: the seat is hers again, nobody plays it for her.
+    relay.handleTable(
+      const RelayedTableMessage(
+        kind: 'game',
+        fromSeat: 1,
+        payload: <String, dynamic>{'kind': 'rejoin'},
+      ),
+    );
+    expect(host.awaySeats, isEmpty, reason: 'siège rendu à Anne');
+  });
+
+  test(
+    'un socket tombé (« à l’eau ») est couvert, le siège repris le libère',
+    () async {
+      final phones = await openTable();
+      final relay = phones.startHostRelay();
+      final host = relay.controller;
+
+      // Anne's phone dies mid-game: the Worker renames her seat with the
+      // away marker and the salon frame reaches the host relay.
+      phones.hostChannel().serverSends(
+        salonFrame(
+          you: 0,
+          started: true,
+          players: const <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte', 'bot': false},
+            {'seat': 1, 'name': 'Anne (\u00e0 l\u2019eau)', 'bot': false},
+            {'seat': 2, 'name': 'Bob', 'bot': false},
+          ],
+        ),
+      );
+      await settle();
+      expect(host.awaySeats, [1], reason: 'socket mort → bot sur le siège 1');
+
+      // The host seat itself is never covered: if the engine's owner is
+      // gone, nobody runs this relay anyway.
+      phones.hostChannel().serverSends(
+        salonFrame(
+          you: 0,
+          started: true,
+          players: const <Map<String, dynamic>>[
+            {'seat': 0, 'name': 'Cap Hôte (\u00e0 l\u2019eau)', 'bot': false},
+            {'seat': 1, 'name': 'Anne', 'bot': false},
+            {'seat': 2, 'name': 'Bob', 'bot': false},
+          ],
+        ),
+      );
+      await settle();
+      expect(
+        host.awaySeats,
+        isEmpty,
+        reason: 'marqueur sur l’hôte ignoré, Anne revient siège vide',
+      );
+
+      // Anne reclaims: her covered seat comes back and plays like a human.
+      host.beginBidding();
+      expect(
+        host.submitHumanBid(const Bid(quantity: 2, face: 2, playerSeat: 0)),
+        isTrue,
+      );
+      expect(host.currentPlayer, 1);
+      host.enforceTurnTimeoutNow();
+      expect(
+        host.currentBid!.playerSeat,
+        1,
+        reason: 'siège redevenu humain : garde AFK, pas le bot',
+      );
+
+      relay.dispose();
+    },
+  );
 }

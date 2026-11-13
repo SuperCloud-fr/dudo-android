@@ -74,6 +74,7 @@
   "gameCalzaConfirm": "Confirmer la calza",
   "gameQuitTitle": "Abandonner la partie ?",
   "gameQuitBody": "La partie s'arrêtera et ne pourra pas être reprise.",
+  "gameQuitGuestBody": "Un pirate jouera ta place jusqu'à la fin de la manche. Tu pourras reprendre ton siège depuis le salon.",
   "gameQuitStay": "Continuer la partie",
   "gameQuitLeave": "Quitter la partie",
 
@@ -269,6 +270,7 @@
   "salonStartRound": "Démarrer la partie",
   "salonRoundPreparing": "L'équipage prend place…",
   "salonWaitingHost": "L'équipage attend le signal du capitaine…",
+  "salonRejoinTable": "Reprendre ta place à la table",
   "salonHostGoneHint": "L'hôte a quitté la manche. La partie reprendra à son retour.",
   "salonFeedSection": "Le journal de bord",
   "salonStartFailed": "Impossible de lancer la manche. Vérifie ta connexion et réessaie.",

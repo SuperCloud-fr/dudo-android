@@ -229,6 +229,14 @@ class NetworkSalonSession extends SalonSession
     _sendJson(const <String, dynamic>{'type': 'gameOver'});
   }
 
+  @override
+  Iterable<int> get awaySeats sync* {
+    if (!isStarting) return;
+    for (final player in players) {
+      if (player.name.endsWith(_awayMarker)) yield player.seat;
+    }
+  }
+
   // -------------------------------------------------------------- creation
 
   @override

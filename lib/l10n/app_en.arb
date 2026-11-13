@@ -74,6 +74,7 @@
   "gameCalzaConfirm": "Confirm Calza",
   "gameQuitTitle": "Abandon the game?",
   "gameQuitBody": "The game will end and can't be resumed.",
+  "gameQuitGuestBody": "A pirate will play your hand until the round ends. You can take your seat back from the tavern.",
   "gameQuitStay": "Continue the game",
   "gameQuitLeave": "Leave the game",
 
@@ -269,6 +270,7 @@
   "salonStartRound": "Start the game",
   "salonRoundPreparing": "The crew is coming aboard…",
   "salonWaitingHost": "The crew is waiting for the captain's signal…",
+  "salonRejoinTable": "Take your seat back at the table",
   "salonHostGoneHint": "The host left the round. The game will resume when they're back.",
   "salonFeedSection": "Ship's log",
   "salonStartFailed": "Couldn't start the round. Check your connection and try again.",

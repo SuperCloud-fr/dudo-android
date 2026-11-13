@@ -228,6 +228,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'La partie s\'arrêtera et ne pourra pas être reprise.';
 
   @override
+  String get gameQuitGuestBody =>
+      'Un pirate jouera ta place jusqu\'à la fin de la manche. Tu pourras reprendre ton siège depuis le salon.';
+
+  @override
   String get gameQuitStay => 'Continuer la partie';
 
   @override
@@ -830,6 +834,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get salonWaitingHost => 'L\'équipage attend le signal du capitaine…';
+
+  @override
+  String get salonRejoinTable => 'Reprendre ta place à la table';
 
   @override
   String get salonHostGoneHint =>

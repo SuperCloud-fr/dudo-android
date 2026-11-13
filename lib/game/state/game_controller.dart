@@ -64,6 +64,34 @@ class GameController extends ChangeNotifier {
   /// A listed seat is driven by this controller's bot loop.
   final Set<int> botSeats;
 
+  /// Engine seats whose human is gone (socket dropped or quit mid-game):
+  /// this controller drives them with the bot brain until their player
+  /// returns — reclaim by name, or "reprendre ta place" from the lobby.
+  /// A guest is only puppeted once they are actually gone, never while
+  /// they play on their own phone.
+  final Set<int> _awaySeats = <int>{};
+
+  /// Replaces the away set (the host relay diffs the salon state). A
+  /// no-op when nothing changed, so salon frames never re-notify.
+  void setAwaySeats(Set<int> seats) {
+    if (_awaySeats.length == seats.length && _awaySeats.containsAll(seats)) {
+      return;
+    }
+    _awaySeats
+      ..clear()
+      ..addAll(seats);
+    _notify();
+  }
+
+  /// True when this controller plays any seat by itself: explicit salon
+  /// bots or seats abandoned mid-game.
+  bool get _botsActive => autoPlayBots || _awaySeats.isNotEmpty;
+
+  /// Test/debug view: engine seats currently covered while their human
+  /// is away.
+  @visibleForTesting
+  Iterable<int> get awaySeats => List.of(_awaySeats);
+
   /// How long a human turn may sit untouched before the table moves
   /// without its player (issue #7: an AFK pirate must not stall the sea,
   /// solo table or online salon). Zero disables it entirely.
@@ -586,14 +614,17 @@ class GameController extends ChangeNotifier {
     _scheduleSpectatorAdvance();
   }
 
-  /// Seats this engine plays by itself: explicit salon bots, or (offline
-  /// table) every non-human seat. Guests are NOT bots — they play on their
-  /// own phones and must never be puppeted here.
+  /// Seats this engine plays by itself: explicit salon bots, abandoned
+  /// seats whose human is gone, or (offline table) every non-human seat.
+  /// Guests are NOT bots — they play on their own phones and must never
+  /// be puppeted here.
   bool _seatIsBot(int seat) =>
-      botSeats.contains(seat) || (tableNames == null && !players[seat].isHuman);
+      botSeats.contains(seat) ||
+      _awaySeats.contains(seat) ||
+      (tableNames == null && !players[seat].isHuman);
 
   void _scheduleBot() {
-    if (!autoPlayBots || _disposed || _paused) return;
+    if (!_botsActive || _disposed || _paused) return;
     _botTimer?.cancel();
     _botTimer = null;
     if (phase != GamePhase.bidding) return;
@@ -650,7 +681,7 @@ class GameController extends ChangeNotifier {
   void _scheduleSpectatorAdvance() {
     _spectatorTimer?.cancel();
     _spectatorTimer = null;
-    if (!autoPlayBots || _disposed || _paused) return;
+    if (!_botsActive || _disposed || _paused) return;
     if (human.isAlive) return;
     if (players.where((player) => player.isAlive).length <= 1) return;
     final Duration wait;

@@ -225,6 +225,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameQuitBody => 'The game will end and can\'t be resumed.';
 
   @override
+  String get gameQuitGuestBody =>
+      'A pirate will play your hand until the round ends. You can take your seat back from the tavern.';
+
+  @override
   String get gameQuitStay => 'Continue the game';
 
   @override
@@ -825,6 +829,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get salonWaitingHost =>
       'The crew is waiting for the captain\'s signal…';
+
+  @override
+  String get salonRejoinTable => 'Take your seat back at the table';
 
   @override
   String get salonHostGoneHint =>

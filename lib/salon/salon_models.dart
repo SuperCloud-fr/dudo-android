@@ -109,6 +109,11 @@ abstract class SalonSession extends ChangeNotifier {
   /// freezing on a dead mirror. Network sessions only; local stays false.
   bool hostGone = false;
 
+  /// Salon seats currently carrying the Worker's "(à l'eau)" marker while
+  /// a game runs: their socket is gone, so the host engine must cover
+  /// their turns until they reclaim the seat. Empty offline.
+  Iterable<int> get awaySeats => const <int>{};
+
   static const List<String> botNames = [
     'Barbe-Noire',
     'Anne Bonny',
