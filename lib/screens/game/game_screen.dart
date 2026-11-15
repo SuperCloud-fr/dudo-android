@@ -143,22 +143,6 @@ class _GameScreenState extends State<GameScreen> {
                             _buildTable(context, compact),
                             _buildPlayerTray(context),
                             _buildActionBar(context, compact),
-                            if (widget.salonSession != null &&
-                                _controller.phase == GamePhase.bidding)
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  12,
-                                  0,
-                                  12,
-                                  6,
-                                ),
-                                child: Align(
-                                  alignment: Alignment.centerRight,
-                                  child: _buildSalonChatButton(
-                                    AppLocalizations.of(context)!,
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
                       ),
@@ -174,6 +158,24 @@ class _GameScreenState extends State<GameScreen> {
                   child: _buildOverlay(context),
                 ),
               ),
+              // The salon chat lives at ONE fixed spot: pinned bottom-right
+              // above everything (content and overlays), so it never drifts
+              // with the screen contents.
+              if (widget.salonSession != null &&
+                  _controller.phase != GamePhase.gameOver)
+                Positioned.fill(
+                  child: SafeArea(
+                    child: Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: _buildSalonChatButton(
+                          AppLocalizations.of(context)!,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
         ),
@@ -545,9 +547,6 @@ class _GameScreenState extends State<GameScreen> {
             palifico: _controller.palifico,
             canBeginBidding: eliminated && _controller.canBeginBiddingFromPeek,
             onReady: _controller.beginBidding,
-            chatAction: widget.salonSession == null
-                ? null
-                : _buildSalonChatButton(l10n),
           );
         }
         return PeekOverlay(
@@ -559,9 +558,6 @@ class _GameScreenState extends State<GameScreen> {
           starterName: _controller.players[_controller.starter].name,
           canBeginBidding: _controller.canBeginBiddingFromPeek,
           onReady: _controller.beginBidding,
-          chatAction: widget.salonSession == null
-              ? null
-              : _buildSalonChatButton(l10n),
         );
       case GamePhase.reveal:
       case GamePhase.roundOver:
@@ -577,9 +573,6 @@ class _GameScreenState extends State<GameScreen> {
           onContinue: applied
               ? _controller.nextRound
               : _controller.applyOutcome,
-          chatAction: widget.salonSession == null
-              ? null
-              : _buildSalonChatButton(l10n),
         );
       case GamePhase.gameOver:
         final result = _controller.result;
@@ -822,12 +815,16 @@ class _GameScreenState extends State<GameScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final navigator = Navigator.of(context, rootNavigator: true);
-      navigator.pop();
       if (closeSalon) {
-        // The salon is gone on the server side: fold the lobby too, back
-        // to the home screen.
-        navigator.pop();
+        // The salon is gone AND the session under the remaining salon
+        // screens is disposed: fold everything back to the home screen.
+        // Landing on those dead screens made every later join answer
+        // "salon injoignable pour l'instant" WITHOUT ever dialing — the
+        // host could not return to a live table until a full app restart.
+        navigator.popUntil((route) => route.isFirst);
+        return;
       }
+      navigator.pop();
     });
   }
 }

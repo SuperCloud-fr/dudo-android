@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 35 : le tueur de salons en retard
+# Dudo 0.2.0 — bêta 36 : le retour de l'hôte et le chat ancré
+
+- **L'hôte qui quitte une partie en cours peut revenir** : la fermeture repliait les écrans du salon sur une session déjà détruite — chaque nouvelle tentative de jointure répondait « salon injoignable pour l'instant » sans même appeler le serveur. La sortie replie désormais tout jusqu'à l'accueil ; une nouvelle jointure reprend le fauteuil de l'hôte sur la table vivante.
+- **L'icône de discussion tient un seul endroit** : ancrée en bas à droite au-dessus de tout (contenu et voiles), elle ne flotte plus au centre ni ne se déplace avec l'écran ; le compteur de messages non lus reste en place.
+
+## Bêta 35 : le tueur de salons en retard
 
 - **Les salons ne meurent plus quelques secondes après leur création** : un timer de reprise armé par un échec précédent pouvait frapper en pleine connexion, couper la socket saine du nouveau salon — le serveur voyait l'hôte partir et fermait la taverne. Les timings observés (salon mort 6 à 9 secondes après « le salon est prêt ») correspondent exactement au backoff de reprise ; corrigé par trois verrous (annulation des timers en attente à chaque nouvelle table, reprise retirée si une prise vit déjà, fermeture « patrouillée » pour qu'un handshake supplanté ne coupe jamais la socket d'un autre).
 - **Le verrouillage/déverrouillage après la fermeture d'une taverne ne boucle plus** : un salon fermé par le serveur est un état terminal, le réveil ne relance plus rien.
