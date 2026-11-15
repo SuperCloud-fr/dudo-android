@@ -35,17 +35,23 @@ class FakeWebSocketChannel extends StreamChannelMixin
   @override
   String? get protocol => null;
 
-  @override
-  int? get closeCode => null;
+  /// The close frame the test script asked [serverCloses] to deliver.
+  int? closeCodeOverride;
+  String? closeReasonOverride;
 
   @override
-  String? get closeReason => null;
+  int? get closeCode => closeCodeOverride;
+
+  @override
+  String? get closeReason => closeReasonOverride;
 
   void serverSends(Map<String, dynamic> frame) {
     _incoming.add(jsonEncode(frame));
   }
 
-  Future<void> serverCloses() async {
+  Future<void> serverCloses({int? code, String? reason}) async {
+    closeCodeOverride = code;
+    closeReasonOverride = reason;
     await _incoming.close();
   }
 }

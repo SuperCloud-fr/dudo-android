@@ -2012,6 +2012,12 @@ abstract class AppLocalizations {
   /// **'Connexion interrompue{detail}. Nouvelle tentative…'**
   String systemLost(String detail);
 
+  /// No description provided for @systemSeatStolen.
+  ///
+  /// In fr, this message translates to:
+  /// **'Ton siège a été repris sur un autre appareil. Ce salon est terminé pour toi : rejoins-le à nouveau pour récupérer ta place.'**
+  String get systemSeatStolen;
+
   /// No description provided for @systemUnreachableTrack.
   ///
   /// In fr, this message translates to:

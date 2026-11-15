@@ -404,6 +404,7 @@
   "@systemClosed": {"placeholders": {"reason": {"type": "String"}}},
   "systemLost": "Connection interrupted{detail}. Trying again…",
   "@systemLost": {"placeholders": {"detail": {"type": "String"}}},
+  "systemSeatStolen": "Your seat was taken over on another device. This salon is over for you: join it again to reclaim your spot.",
   "systemUnreachableTrack": "Can't reach the salon: {reason}. Trying again.",
   "@systemUnreachableTrack": {"placeholders": {"reason": {"type": "String"}}},
   "systemUnreachableBackoff": "The salon is still unreachable: {brief}. I'll try again after a longer wait.",

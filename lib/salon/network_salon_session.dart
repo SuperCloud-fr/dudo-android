@@ -882,6 +882,18 @@ class NetworkSalonSession extends SalonSession
     // without a proper close frame).
     final closeCode = _channel?.closeCode;
     final closeReason = _channel?.closeReason;
+    // The server handed our seat to another socket ("Siège repris sur un
+    // autre téléphone"): a TERMINAL state. Dialing back would steal the
+    // seat in return — two phones trading the host engine forever, two
+    // parallel games (live salon 9VP2FY). Stand down; the sailor returns
+    // by joining again when they choose to.
+    if (closeReason != null && closeReason.contains('Siège repris')) {
+      _closedByServer = true;
+      unawaited(_shutSocket());
+      pushSystemMessage(SalonSystem.seatStolen);
+      notifyListeners();
+      return;
+    }
     final detail = closeCode == null
         ? ''
         : ' (fermeture $closeCode${closeReason == null || closeReason.isEmpty ? '' : ' — $closeReason'})';

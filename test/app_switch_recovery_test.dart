@@ -389,4 +389,60 @@ void main() {
     );
     session.dispose();
   });
+
+  test('H: siège repris sur un autre appareil — état terminal', () async {
+    final created = <FakeWebSocketChannel>[];
+    final session = NetworkSalonSession(
+      handshakeTimeout: const Duration(milliseconds: 40),
+      reconnectDelay: const Duration(milliseconds: 20),
+      createSalonCode: (_, _) async => 'S99FTH',
+      channelFactory: (uri) {
+        final channel = FakeWebSocketChannel.confirmed(uri);
+        created.add(channel);
+        return channel;
+      },
+    );
+
+    final creating = session.createSalon('Cap Hôte', 0);
+    await settle();
+    final first = created.first;
+    await untilOneSent(first);
+    first.serverSends(<String, dynamic>{
+      'type': 'salon',
+      'salon': <String, dynamic>{
+        'code': 'S99FTH',
+        'started': true,
+        'hostSeat': 0,
+        'players': _players,
+        'you': 0,
+      },
+    });
+    await creating;
+
+    // Another phone with the same name reclaims the seat: the Worker
+    // closes THIS socket with a distinctive reason. Dialing back would
+    // trade the host engine forever (two parallel games, salon 9VP2FY).
+    await first.serverCloses(
+      code: 1000,
+      reason: 'Siège repris sur un autre téléphone',
+    );
+    for (var tick = 0; tick < 60; tick++) {
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    }
+
+    expect(created, hasLength(1), reason: 'aucun dial de revanche');
+    expect(
+      session.messages.map((m) => m.body),
+      contains(contains('repris sur un autre appareil')),
+      reason: 'le fil explique le transfert de siège',
+    );
+    // Lock and unlock: still terminal, nothing dials.
+    _switchAway(session);
+    _switchBack(session);
+    for (var tick = 0; tick < 40; tick++) {
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    }
+    expect(created, hasLength(1), reason: 'le réveil ne relance rien non plus');
+    session.dispose();
+  });
 }

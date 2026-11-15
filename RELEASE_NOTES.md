@@ -1,4 +1,10 @@
-# Dudo 0.2.0 — bêta 36 : le retour de l'hôte et le chat ancré
+# Dudo 0.2.0 — bêta 37 : un siège, un nom, un chat bien placé
+
+- **Deux parties en parallèle, c'est fini** : quand le serveur transfère un siège à un autre appareil (« Siège repris sur un autre téléphone »), le téléphone évincé marque la taverne comme terminée pour lui et ne repart plus en quête de revanche — auparavant les deux téléphones se volaient le fauteuil d'hôte en boucle, chacun avec son propre moteur de jeu (salon 9VP2FY : pluie de 50 reconnexions à la seconde près).
+- **Un nom par siège vivant** : le serveur refuse désormais une jointure au lobby avec un nom déjà occupé (« Ce nom est déjà pris dans ce salon. Un autre nom ? ») — la genèse du doublon disparaît ; la reprise après veille reste instantanée.
+- **L'icône de discussion tient une seule place** : ancrée en bas à droite, juste au-dessus de la barre d'action, bord droit aligné, y compris pendant les voiles de levée de coupe et de révélation — elle ne chevauche plus CALZA / DUDO / SURENCHE.
+
+## Bêta 36 : le retour de l'hôte et le chat ancré
 
 - **L'hôte qui quitte une partie en cours peut revenir** : la fermeture repliait les écrans du salon sur une session déjà détruite — chaque nouvelle tentative de jointure répondait « salon injoignable pour l'instant » sans même appeler le serveur. La sortie replie désormais tout jusqu'à l'accueil ; une nouvelle jointure reprend le fauteuil de l'hôte sur la table vivante.
 - **L'icône de discussion tient un seul endroit** : ancrée en bas à droite au-dessus de tout (contenu et voiles), elle ne flotte plus au centre ni ne se déplace avec l'écran ; le compteur de messages non lus reste en place.

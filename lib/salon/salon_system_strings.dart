@@ -27,6 +27,9 @@ abstract final class SalonSystem {
   static String lost([String detail = '']) =>
       _words?.systemLost(detail) ??
       'Connexion interrompue$detail. Nouvelle tentative…';
+  static String get seatStolen =>
+      _words?.systemSeatStolen ??
+      'Ton siège a été repris sur un autre appareil. Ce salon est terminé pour toi : rejoins-le à nouveau pour récupérer ta place.';
   static String unreachableTrack(String reason) =>
       _words?.systemUnreachableTrack(reason) ??
       'Impossible de joindre le salon : $reason. Je réessaie.';

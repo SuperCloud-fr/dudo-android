@@ -1260,6 +1260,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get systemSeatStolen =>
+      'Your seat was taken over on another device. This salon is over for you: join it again to reclaim your spot.';
+
+  @override
   String systemUnreachableTrack(String reason) {
     return 'Can\'t reach the salon: $reason. Trying again.';
   }

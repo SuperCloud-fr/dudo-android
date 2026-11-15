@@ -404,6 +404,7 @@
   "@systemClosed": {"placeholders": {"reason": {"type": "String"}}},
   "systemLost": "Connexion interrompue{detail}. Nouvelle tentative…",
   "@systemLost": {"placeholders": {"detail": {"type": "String"}}},
+  "systemSeatStolen": "Ton siège a été repris sur un autre appareil. Ce salon est terminé pour toi : rejoins-le à nouveau pour récupérer ta place.",
   "systemUnreachableTrack": "Impossible de joindre le salon : {reason}. Je réessaie.",
   "@systemUnreachableTrack": {"placeholders": {"reason": {"type": "String"}}},
   "systemUnreachableBackoff": "Le salon reste inaccessible : {brief}. Je réessaierai après un délai plus long.",

@@ -158,9 +158,10 @@ class _GameScreenState extends State<GameScreen> {
                   child: _buildOverlay(context),
                 ),
               ),
-              // The salon chat lives at ONE fixed spot: pinned bottom-right
-              // above everything (content and overlays), so it never drifts
-              // with the screen contents.
+              // The salon chat has ONE spot: bottom-right, just above the
+              // action bar (its right edge aligns with the bar's 12px
+              // inset). Rendered above the overlays so the same spot
+              // serves during peek and reveal — no floating, no overlap.
               if (widget.salonSession != null &&
                   _controller.phase != GamePhase.gameOver)
                 Positioned.fill(
@@ -168,7 +169,7 @@ class _GameScreenState extends State<GameScreen> {
                     child: Align(
                       alignment: Alignment.bottomRight,
                       child: Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.only(right: 12, bottom: 70),
                         child: _buildSalonChatButton(
                           AppLocalizations.of(context)!,
                         ),
