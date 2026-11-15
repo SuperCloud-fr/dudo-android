@@ -198,6 +198,18 @@ class NetworkSalonSession extends SalonSession
   bool _recovering = false;
   Timer? _recoveryTimer;
 
+  /// True while a create/join handshake owns the line. A recovery timer
+  /// firing mid-handshake must NOT steal the line: `_attemptHandshake`
+  /// opens with a close of whatever socket is live, so an ungated
+  /// recovery would kill a healthy in-flight dial.
+  bool _dialing = false;
+
+  /// Monotonic dial token: a handshake superseded by a newer dial (a
+  /// create/join started while a recovery dial was still in flight) must
+  /// unwind WITHOUT closing the newer dial's socket or clearing its
+  /// fields — closing shared state blind was the second salon killer.
+  int _dialToken = 0;
+
   final StreamController<RelayedTableMessage> _tableEvents =
       StreamController<RelayedTableMessage>.broadcast();
 
@@ -253,6 +265,17 @@ class NetworkSalonSession extends SalonSession
     isStarting = false;
     hostGone = false;
     _gameOverPending = false;
+    // A brand-new table wipes any "the server closed us" history: only a
+    // fresh session state may dial again.
+    _closedByServer = false;
+    // A fresh table owns the line: a recovery timer armed by a PREVIOUS
+    // failure would fire seconds into the new salon, close its healthy
+    // socket (the server logs a host leave and tears the lobby down) and
+    // farm failure lines. This was the ~6-9 s salon killer.
+    _recoveryTimer?.cancel();
+    _recoveryTimer = null;
+    _recoveryScheduled = false;
+    _recoveryFailures = 0;
     // A fresh table starts a clean thread, even when no server answers.
     resetThread();
     _onceStamps.clear();
@@ -268,7 +291,7 @@ class NetworkSalonSession extends SalonSession
           pushSystemMessage(SalonSystem.throttledCreate(error.retryAfter));
           return;
         }
-        lastFailure = error.toString();
+        lastFailure = _friendlyError(error);
       }
     }
     code = '';
@@ -344,6 +367,14 @@ class NetworkSalonSession extends SalonSession
     isStarting = false;
     hostGone = false;
     _gameOverPending = false;
+    // A brand-new table wipes any "the server closed us" history.
+    _closedByServer = false;
+    // Same killer as createSalon: a pending recovery timer from a previous
+    // failure must not fire into the new handshake.
+    _recoveryTimer?.cancel();
+    _recoveryTimer = null;
+    _recoveryScheduled = false;
+    _recoveryFailures = 0;
     // A new table starts a clean thread (recovery never goes through here).
     resetThread();
     _onceStamps.clear();
@@ -363,7 +394,7 @@ class NetworkSalonSession extends SalonSession
         // server never answered and we try the next one.
         if (result.message != null) return result;
       } catch (error) {
-        refusal = error.toString();
+        refusal = _friendlyError(error);
       }
     }
     return SalonJoinResult(
@@ -385,11 +416,17 @@ class NetworkSalonSession extends SalonSession
     unawaited(_shutSocket());
     final completer = Completer<SalonJoinResult>();
     _joinCompleter = completer;
-    _closedByServer = false;
     WebSocketChannel? channel;
+    // From here to the outcome (answer, failure or throw) the line is
+    // owned: a recovery timer firing meanwhile must stand down instead of
+    // closing this very socket.
+    _dialing = true;
+    final token = ++_dialToken;
     try {
       channel = await _connect(base);
-      if (_disposed) {
+      if (_disposed || token != _dialToken) {
+        // Superseded: a newer dial owns the line already — leave its
+        // fields strictly alone.
         await _closeChannel(channel);
         return const SalonJoinResult(ok: false);
       }
@@ -403,23 +440,39 @@ class NetworkSalonSession extends SalonSession
         },
       );
       await channel.ready.timeout(handshakeTimeout);
+      if (token != _dialToken) {
+        unawaited(_shutOwn(channel));
+        return const SalonJoinResult(ok: false);
+      }
       _sendJson({'type': 'join', 'name': name});
       final result = await completer.future.timeout(
         handshakeTimeout,
         onTimeout: () {
-          _joinCompleter = null;
+          if (identical(_joinCompleter, completer)) {
+            _joinCompleter = null;
+          }
           return const SalonJoinResult(ok: false);
         },
       );
-      _joinCompleter = null;
+      if (identical(_joinCompleter, completer)) {
+        _joinCompleter = null;
+      }
       if (!result.ok) {
-        unawaited(_shutSocket());
+        // Close OUR channel only: a concurrent newer dial may own the
+        // fields by now.
+        unawaited(_shutOwn(channel));
       }
       return result;
     } catch (error) {
-      _joinCompleter = null;
-      unawaited(_shutSocket());
+      if (identical(_joinCompleter, completer)) {
+        _joinCompleter = null;
+      }
+      unawaited(_shutOwn(channel));
       rethrow;
+    } finally {
+      if (token == _dialToken) {
+        _dialing = false;
+      }
     }
   }
 
@@ -554,6 +607,21 @@ class NetworkSalonSession extends SalonSession
     if (channel != null) {
       await _closeChannel(channel);
     }
+  }
+
+  /// The ownership-safe sibling of [_shutSocket]: closes OUR channel, but
+  /// only clears the shared fields if they still point at it. A handshake
+  /// superseded by a newer dial must never close the newer dial's socket
+  /// or rip its listener out — that was the fresh-salon killer.
+  Future<void> _shutOwn(WebSocketChannel? channel) async {
+    if (channel == null) return;
+    final frames = _frames;
+    if (identical(_channel, channel)) {
+      _frames = null;
+      _channel = null;
+      unawaited(frames?.cancel());
+    }
+    await _closeChannel(channel);
   }
 
   Future<void> _closeChannel(WebSocketChannel channel) async {
@@ -849,7 +917,11 @@ class NetworkSalonSession extends SalonSession
       case AppLifecycleState.resumed:
         final wasSuspended = _appSuspended;
         _appSuspended = false;
-        if (!wasSuspended || _disposed || code.isEmpty) return;
+        // A salon the server closed is terminal: no phoneSlept story, no
+        // dial — a dead salon only farms failure lines on resume.
+        if (!wasSuspended || _disposed || code.isEmpty || _closedByServer) {
+          return;
+        }
         if (_channel != null) {
           final silence = DateTime.now().difference(_lastServerFrame);
           if (silence < livenessStroke) return; // socket survived the doze
@@ -911,7 +983,17 @@ class NetworkSalonSession extends SalonSession
   }
 
   Future<void> _recover() async {
-    if (_disposed || _recovering) return;
+    // A salon closed by the server stays closed: no recovery dial.
+    // A live socket or an in-flight create/join handshake mean the same:
+    // recovery would close that healthy channel (the server would log a
+    // leave and tear a host lobby down) — the late-timer salon killer.
+    if (_disposed ||
+        _recovering ||
+        _closedByServer ||
+        _dialing ||
+        _channel != null) {
+      return;
+    }
     _recovering = true;
     final base = activeBaseUrl ?? baseUrls.first;
     try {
@@ -939,13 +1021,8 @@ class NetworkSalonSession extends SalonSession
       _threadOnce(SalonSystem.unreachableTrack(reason), key: 'unreachable');
     } catch (error) {
       // On a phone, "why" is everything: DNS, proxy, captive portal. The
-      // terse edition goes to the thread; the raw error stays in adb.
-      final brief = switch (error) {
-        SocketException(:final message, :final osError) when osError != null =>
-          '$message (${osError.message})',
-        _ => '$error',
-      };
-      debugPrint('salon: reconnexion a échoué : $brief');
+      // raw error stays in adb; the thread gets a human label only.
+      debugPrint('salon: reconnexion a échoué : $error');
       // WebSocketChannelException "not upgraded" = the server answered an
       // HTTP code instead of 101: ghosted sockets (429) on our side, or a
       // phone-side captor (captive portal, VPN). The /healthz probe tells
@@ -956,7 +1033,7 @@ class NetworkSalonSession extends SalonSession
       }
       _recoveryFailures++;
       _threadOnce(
-        SalonSystem.unreachableBackoff('$brief$probe'),
+        SalonSystem.unreachableBackoff('${_friendlyError(error)}$probe'),
         key: 'unreachable',
       );
     } finally {
@@ -989,10 +1066,24 @@ class NetworkSalonSession extends SalonSession
       final short = body.length > 22 ? '${body.substring(0, 22)}…' : body;
       return SalonSystem.networkResponse('${response.statusCode}', short);
     } catch (error) {
-      return SalonSystem.networkProbeFailed('$error');
+      return SalonSystem.networkProbeFailed(_friendlyError(error));
     } finally {
       client.close();
     }
+  }
+
+  /// A short, human label for a network failure — the thread must never
+  /// read like a stack trace ("WebSocketChannelException: SocketException:
+  /// Connection reset by peer (OS Error…)"). The raw error stays in adb.
+  static String _friendlyError(Object error) {
+    final raw = '$error';
+    if (raw.contains('TimeoutException')) {
+      return 'le serveur n\u2019a pas répondu';
+    }
+    if (raw.contains('SocketException')) {
+      return 'réseau indisponible';
+    }
+    return 'la connexion a échoué';
   }
 
   /// Same failure twice in a minute reads like spam in the thread. The

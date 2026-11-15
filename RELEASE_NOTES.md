@@ -1,4 +1,11 @@
-# Dudo 0.2.0 — bêta 34 : la reprise après bascule d'application
+# Dudo 0.2.0 — bêta 35 : le tueur de salons en retard
+
+- **Les salons ne meurent plus quelques secondes après leur création** : un timer de reprise armé par un échec précédent pouvait frapper en pleine connexion, couper la socket saine du nouveau salon — le serveur voyait l'hôte partir et fermait la taverne. Les timings observés (salon mort 6 à 9 secondes après « le salon est prêt ») correspondent exactement au backoff de reprise ; corrigé par trois verrous (annulation des timers en attente à chaque nouvelle table, reprise retirée si une prise vit déjà, fermeture « patrouillée » pour qu'un handshake supplanté ne coupe jamais la socket d'un autre).
+- **Le verrouillage/déverrouillage après la fermeture d'une taverne ne boucle plus** : un salon fermé par le serveur est un état terminal, le réveil ne relance plus rien.
+- **Plus aucune trace technique dans le fil** (« WebSocketChannelException… », détails OS) : les erreurs brutes restent dans les journaux, le fil lit des phrases humaines.
+- Les lignes d'échec de reprise restent dédupliquées par motif (60 s), et un close jamais acquitté ne bloque plus la machine de reprise (corrections bêta 34, embarquées ici).
+
+## Bêta 34 : la reprise après bascule d'application
 
 - **Basculer sur une autre application puis revenir ne boucle plus sur les messages d'échec** : deux défauts réels corrigés dans la machine de reconnexion. Une prise qui ne répond jamais (radio morte en pleine négociation) pouvait enfouir la machine à reprendre — plus aucune reconnexion n'était tentée ; les sockets sont désormais coupées avec un garde-fou de 2 s, jamais attendues au point de bloquer.
 - Le fil du salon ne répète plus la même histoire minute après minute : les lignes d'échec de reprise sont dédupliquées par motif (« injoignable », « refusé »), plus par texte exact — l'erreur brute qui varie (DNS, refus, délai) ne duplique plus la ligne.

@@ -221,7 +221,172 @@ void main() {
         reason:
             'un même motif d\u2019échec ne se répète pas minute après minute',
       );
+      // The thread must read like a tavern, not a stack trace: no
+      // exception class names, no OS error dumps — those stay in adb.
+      for (final message in session.messages) {
+        expect(
+          message.body,
+          isNot(contains('Exception')),
+          reason: 'erreur technique dans le fil : ${message.body}',
+        );
+        expect(
+          message.body,
+          isNot(contains('OS Error')),
+          reason: 'détail OS dans le fil : ${message.body}',
+        );
+      }
       session.dispose();
     },
   );
+
+  test(
+    'F: taverne fermée par le serveur — le réveil ne relance rien',
+    () async {
+      final created = <FakeWebSocketChannel>[];
+      final session = NetworkSalonSession(
+        handshakeTimeout: const Duration(milliseconds: 40),
+        reconnectDelay: const Duration(milliseconds: 20),
+        createSalonCode: (_, _) async => 'S99FTH',
+        channelFactory: (uri) {
+          final channel = FakeWebSocketChannel.confirmed(uri);
+          created.add(channel);
+          return channel;
+        },
+      );
+
+      final creating = session.createSalon('Cap Hôte', 0);
+      await settle();
+      final first = created.first;
+      await untilOneSent(first);
+      first.serverSends(<String, dynamic>{
+        'type': 'salon',
+        'salon': <String, dynamic>{
+          'code': 'S99FTH',
+          'started': false,
+          'hostSeat': 0,
+          'players': _players,
+          'you': 0,
+        },
+      });
+      await creating;
+
+      // The host quits: the Worker closes the salon for everyone. This is a
+      // TERMINAL state — the thread says so once and the session is done.
+      first.serverSends(<String, dynamic>{
+        'type': 'closed',
+        'reason': 'L\u2019hôte a quitté la taverne.',
+      });
+      await settle();
+      await Future<void>.delayed(const Duration(milliseconds: 30));
+      expect(session.connected, isFalse);
+
+      // Lock, unlock: nothing may dial, nothing may speak. The salon is
+      // gone; "reconnexion au salon" would be a lie, and dialing a dead
+      // salon only farms "Connexion interrompue" lines.
+      final threadBefore = session.messages.map((m) => m.body).toList();
+      _switchAway(session);
+      _switchBack(session);
+      for (var tick = 0; tick < 80; tick++) {
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+
+      expect(
+        created,
+        hasLength(1),
+        reason: 'aucune reprise sur une taverne morte',
+      );
+      expect(
+        session.messages.map((m) => m.body).toList(),
+        threadBefore,
+        reason: 'le réveil ne doit rien dire ni relancer',
+      );
+      session.dispose();
+    },
+  );
+
+  test('G: un timer de reprise en retard ne tue pas le salon frais', () async {
+    final created = <FakeWebSocketChannel>[];
+    var doorOpen = false;
+    final session = NetworkSalonSession(
+      handshakeTimeout: const Duration(milliseconds: 40),
+      reconnectDelay: const Duration(milliseconds: 20),
+      createSalonCode: (_, _) async => 'S99FTH',
+      channelFactory: (uri) {
+        // Closed door: every dial hangs (unreachable). Open door: the
+        // dial works. This lets the test script the outage, then the
+        // fresh creation.
+        if (!doorOpen) {
+          return FakeWebSocketChannel.unreachable(uri);
+        }
+        final channel = FakeWebSocketChannel.confirmed(uri);
+        created.add(channel);
+        return channel;
+      },
+    );
+
+    // A salon lives, then dies: the recovery machinery arms itself with a
+    // growing backoff (1.2s, 2.4s… in production) — those pending timers
+    // firing into a FRESH salon were the ~6-9 s salon killer seen live on
+    // BL8QD4 / 9CXR7P / CRPLJ5 (host socket closed seconds after a good
+    // join, lobby torn down, failure loop).
+    doorOpen = true;
+    final joining = session.joinSalon('S99FTH', 'Invité');
+    await settle();
+    final first = created.first;
+    await untilOneSent(first);
+    first.serverSends(<String, dynamic>{
+      'type': 'salon',
+      'salon': <String, dynamic>{
+        'code': 'S99FTH',
+        'started': false,
+        'hostSeat': 0,
+        'players': _players,
+        'you': 0,
+      },
+    });
+    await joining;
+
+    doorOpen = false;
+    await first.serverCloses();
+    for (var tick = 0; tick < 15; tick++) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    final dialsBefore = created.length;
+
+    // A fresh table is created while recovery timers are still pending.
+    doorOpen = true;
+    final creating = session.createSalon('Cap Hôte', 0);
+    await settle();
+    final fresh = created.last;
+    await untilOneSent(fresh);
+    fresh.serverSends(<String, dynamic>{
+      'type': 'salon',
+      'salon': <String, dynamic>{
+        'code': 'S99FTH',
+        'started': false,
+        'hostSeat': 0,
+        'players': _players,
+        'you': 0,
+      },
+    });
+    await creating;
+    expect(session.connected, isTrue);
+
+    // Whatever timers the outage armed, they must NOT fire into the new
+    // salon: no parasite dial, the connection stays up.
+    for (var tick = 0; tick < 80; tick++) {
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    }
+    expect(
+      created,
+      hasLength(dialsBefore + 1),
+      reason: 'aucun dial parasite après la création du salon frais',
+    );
+    expect(
+      session.connected,
+      isTrue,
+      reason: 'le salon frais doit rester vivant malgré les timers en retard',
+    );
+    session.dispose();
+  });
 }
