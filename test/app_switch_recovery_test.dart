@@ -533,4 +533,69 @@ void main() {
     );
     session.dispose();
   });
+
+  test('J: un changement d’epoch tue le vieux cliché de partie', () async {
+    final created = <FakeWebSocketChannel>[];
+    final session = NetworkSalonSession(
+      handshakeTimeout: const Duration(seconds: 2),
+      reconnectDelay: const Duration(milliseconds: 20),
+      createSalonCode: (_, _) async => 'S99FTH',
+      channelFactory: (uri) {
+        final channel = FakeWebSocketChannel.confirmed(uri);
+        created.add(channel);
+        return channel;
+      },
+    );
+
+    final creating = session.createSalon('Cap Hôte', 0);
+    await settle();
+    final first = created.first;
+    await untilOneSent(first);
+    first.serverSends(<String, dynamic>{
+      'type': 'salon',
+      'salon': <String, dynamic>{
+        'code': 'S99FTH',
+        'started': false,
+        'hostSeat': 0,
+        'players': _players,
+        'you': 0,
+      },
+    });
+    await creating;
+
+    // The engine's last picture lands in the session: a takeover would
+    // rebuild from it.
+    first.serverSends(<String, dynamic>{
+      'type': 'snapshot',
+      'payload': <String, dynamic>{
+        'round': 12,
+        'phase': 'bidding',
+        'players': _players,
+      },
+    });
+    await Future<void>.delayed(const Duration(milliseconds: 30));
+    expect(session.lastSnapshot, isNotNull);
+
+    // A NEW game begins (the rematch bumped the epoch). The phone that
+    // missed the previous game's fold must NOT keep the old picture:
+    // restoring it resurrected last round's table ("back at round 12").
+    first.serverSends(<String, dynamic>{
+      'type': 'salon',
+      'salon': <String, dynamic>{
+        'code': 'S99FTH',
+        'started': true,
+        'epoch': 2,
+        'hostSeat': 0,
+        'players': _players,
+        'you': 0,
+      },
+    });
+    await Future<void>.delayed(const Duration(milliseconds: 30));
+    expect(
+      session.lastSnapshot,
+      isNull,
+      reason: 'le cliché de la partie précédente est mort avec son epoch',
+    );
+    session.dispose();
+  });
 }

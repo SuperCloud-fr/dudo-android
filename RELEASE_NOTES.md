@@ -1,4 +1,10 @@
-# Dudo 0.2.0 — bêta 38 : ton siège est inviolable
+# Dudo 0.2.0 — bêta 39 : la table qui ne regarde pas en arrière
+
+- **Plus de retour en tour 12 à la revanche** : chaque partie porte désormais un numéro (epoch). Un téléphone qui s'était endormi à la fin d'une manche gardait le vieux cliché de la table et, en reprenant le statut d'hôte à la revanche, resuscitait la partie d'avant en plein tour 12. Un changement d'epoch jette le cliché : la nouvelle partie démarre à la manche 1.
+- **Arrivée en pleine partie : la table s'ouvre toute seule** — l'attente d'une notification qui ne venait jamais (d'où l'astuce du message dans le chat pour forcer l'affichage) est morte : l'écran évalue l'ouverture dès son montage.
+- **Codes de salon sans C ni G** : dans la police du titre, C et G se confondent. Les nouveaux codes n'utilisent plus ces lettres (les codes en circulation restent valables).
+
+## Bêta 38 : ton siège est inviolable
 
 - **Le siège d'un téléphone connecté ne peut plus être volé** : le serveur refuse désormais la reprise d'un siège quand son propriétaire a répondu au dernier battement de cœur (« Ce nom est déjà pris : le siège est encore tenu par un téléphone connecté. Réessaie dans un instant ou change de nom. »). La preuve de vie, c'est le pong au ping serveur — un téléphone endormi (fantôme muet) reste lui, balaieable en moins de 20 s : la reprise après veille ne ralentit pas. L'app, de son côté, retente gentiment tant que le siège est « encore tenu » au lieu d'abandonner.
 - **Boutons épurés** : CALZA ? → CALZA, Dudo ! → Dudo.

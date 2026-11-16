@@ -148,7 +148,10 @@ abstract class SalonSession extends ChangeNotifier {
     'Mérou',
   ];
 
-  static const String alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  /// C and G are banned: the display face renders them nearly alike and
+  /// the code is read aloud across a table. Codes already handed out
+  /// with either letter keep joining (generation-only constraint).
+  static const String alphabet = 'ABDEFHJKLMNPQRSTUVWXYZ23456789';
 
   /// A new table starts a clean thread: the previous salon's chat must not
   /// haunt the next one (create/join entry points call this). Auto
@@ -247,7 +250,8 @@ class LocalSalonSession extends SalonSession implements SalonBackend {
     final random = DateTime.now().microsecondsSinceEpoch;
     final texts = List<String>.generate(
       6,
-      (i) => SalonSession.alphabet[(random >> (i * 5)) & 31],
+      (i) => SalonSession.alphabet[(random >> (i * 5)) %
+          SalonSession.alphabet.length],
     );
     return texts.join();
   }

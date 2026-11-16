@@ -402,6 +402,13 @@ class _SalonLobbyScreenState extends State<SalonLobbyScreen> {
   void initState() {
     super.initState();
     widget.session.addListener(_refresh);
+    // The salon frame of a mid-game arrival is processed BEFORE this
+    // screen exists (the join handshake completes first), so no later
+    // notify may ever come — a quiet game pushes nothing. The hop-to-
+    // table check then waited for ANY session notification: in the
+    // field, the arriving sailor had to send a CHAT message to finally
+    // reach the table. Evaluate once at mount, whatever the traffic.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refresh());
   }
 
   @override

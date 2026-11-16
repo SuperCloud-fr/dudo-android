@@ -188,6 +188,11 @@ class NetworkSalonSession extends SalonSession
   /// hammering the network; reset on each success.
   int _recoveryFailures = 0;
 
+  /// The last game epoch seen in a salon frame (Worker-stamped). A change
+  /// between frames kills [lastSnapshot] and [hostTakeover] — a new game
+  /// began, the previous one's picture is history.
+  int _seenSalonEpoch = -1;
+
   /// Last "once" stamp per failure kind, for the keyed thread dedupe.
   final Map<String, DateTime> _onceStamps = <String, DateTime>{};
 
@@ -718,6 +723,18 @@ class NetworkSalonSession extends SalonSession
     if (salonCode.isNotEmpty) code = salonCode.toUpperCase();
     you = (state['you'] as num?)?.toInt() ?? -1;
     isStarting = state['started'] as bool? ?? false;
+    // The Worker stamps a game epoch in every salon frame, bumped at
+    // every `start` (fresh deal or rematch). A phone that dozed through
+    // the previous game's end misses its `started=false` frame and would
+    // otherwise keep last round's snapshot — the takeover restore then
+    // resurrects the OLD table ("back at round 12", live report). An
+    // epoch change means a new game began: the stale picture dies.
+    final epoch = (state['epoch'] as num?)?.toInt() ?? -1;
+    if (epoch != _seenSalonEpoch) {
+      _seenSalonEpoch = epoch;
+      lastSnapshot = null;
+      hostTakeover = false;
+    }
     // Mid-game join without a seat: the Worker seats the socket at -1.
     // The flag clears as soon as a real seat shows up (gameOver auto-seat).
     isSpectator = you < 0 && isStarting;
