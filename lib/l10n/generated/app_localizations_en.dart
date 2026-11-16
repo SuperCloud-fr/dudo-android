@@ -152,10 +152,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get gameYourTurnPrompt => 'Your turn to play.';
 
   @override
-  String get gameCalzaAsk => 'CALZA?';
+  String get gameCalzaAsk => 'CALZA';
 
   @override
-  String get gameDudoCall => 'Dudo!';
+  String get gameDudoCall => 'Dudo';
 
   @override
   String get gameRaise => 'Raise the bid';

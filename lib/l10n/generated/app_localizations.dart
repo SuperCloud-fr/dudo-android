@@ -341,13 +341,13 @@ abstract class AppLocalizations {
   /// No description provided for @gameCalzaAsk.
   ///
   /// In fr, this message translates to:
-  /// **'CALZA ?'**
+  /// **'CALZA'**
   String get gameCalzaAsk;
 
   /// No description provided for @gameDudoCall.
   ///
   /// In fr, this message translates to:
-  /// **'Dudo !'**
+  /// **'Dudo'**
   String get gameDudoCall;
 
   /// No description provided for @gameRaise.

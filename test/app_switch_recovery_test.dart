@@ -445,4 +445,92 @@ void main() {
     expect(created, hasLength(1), reason: 'le réveil ne relance rien non plus');
     session.dispose();
   });
+
+  test('I: refus siège encore tenu — la reprise continue', () async {
+    final created = <FakeWebSocketChannel>[];
+    final session = NetworkSalonSession(
+      // Wide handshake window: this test pins the REFUSAL path (the
+      // server answers with an error frame, then closes), so the error
+      // must always beat the timeout — a 40 ms timeout flakes on a slow
+      // test runner and turns the refusal into a plain outage.
+      handshakeTimeout: const Duration(seconds: 2),
+      reconnectDelay: const Duration(milliseconds: 20),
+      createSalonCode: (_, _) async => 'S99FTH',
+      channelFactory: (uri) {
+        final channel = FakeWebSocketChannel.confirmed(uri);
+        created.add(channel);
+        return channel;
+      },
+    );
+
+    final creating = session.createSalon('Cap Hôte', 0);
+    await settle();
+    final first = created.first;
+    await untilOneSent(first);
+    first.serverSends(<String, dynamic>{
+      'type': 'salon',
+      'salon': <String, dynamic>{
+        'code': 'S99FTH',
+        'started': true,
+        'hostSeat': 0,
+        'players': _players,
+        'you': 0,
+      },
+    });
+    await creating;
+
+    // Plain transport drop: recovery arms itself.
+    await first.serverCloses(code: 1006);
+    for (var tick = 0; tick < 300 && created.length < 2; tick++) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    final second = created[1];
+    await untilOneSent(second);
+    // The Worker refuses the reclaim: the seat's owner is still connected
+    // (alive = answered the last heartbeat ping). The seat frees within a
+    // heartbeat, so the session must NOT stand down — pre-fix, any
+    // refusal set _closedByServer and the recovery died here.
+    second.serverSends(<String, dynamic>{
+      'type': 'error',
+      'message':
+          'Ce nom est déjà pris : le siège est encore tenu par un téléphone '
+          'connecté. Réessaie dans un instant ou change de nom.',
+    });
+    await second.serverCloses(code: 1008, reason: 'Siège encore tenu');
+
+    for (var tick = 0; tick < 300 && created.length < 3; tick++) {
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+    }
+    expect(
+      created,
+      hasLength(3),
+      reason: 'le refus "siège encore tenu" reste retryable',
+    );
+    final third = created[2];
+    await untilOneSent(third);
+    third.serverSends(<String, dynamic>{
+      'type': 'salon',
+      'salon': <String, dynamic>{
+        'code': 'S99FTH',
+        'started': true,
+        'hostSeat': 0,
+        'players': _players,
+        'you': 0,
+      },
+    });
+    for (var tick = 0; tick < 30; tick++) {
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+    }
+    expect(
+      session.connected,
+      isTrue,
+      reason: 'le siège libéré, la reprise aboutit',
+    );
+    expect(
+      session.messages.map((m) => m.body),
+      contains(contains('encore tenu')),
+      reason: 'le fil explique pourquoi la reprise a été repoussée',
+    );
+    session.dispose();
+  });
 }

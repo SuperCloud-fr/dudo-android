@@ -1,4 +1,9 @@
-# Dudo 0.2.0 — bêta 37 : un siège, un nom, un chat bien placé
+# Dudo 0.2.0 — bêta 38 : ton siège est inviolable
+
+- **Le siège d'un téléphone connecté ne peut plus être volé** : le serveur refuse désormais la reprise d'un siège quand son propriétaire a répondu au dernier battement de cœur (« Ce nom est déjà pris : le siège est encore tenu par un téléphone connecté. Réessaie dans un instant ou change de nom. »). La preuve de vie, c'est le pong au ping serveur — un téléphone endormi (fantôme muet) reste lui, balaieable en moins de 20 s : la reprise après veille ne ralentit pas. L'app, de son côté, retente gentiment tant que le siège est « encore tenu » au lieu d'abandonner.
+- **Boutons épurés** : CALZA ? → CALZA, Dudo ! → Dudo.
+
+## Bêta 37 : un siège, un nom, un chat bien placé
 
 - **Deux parties en parallèle, c'est fini** : quand le serveur transfère un siège à un autre appareil (« Siège repris sur un autre téléphone »), le téléphone évincé marque la taverne comme terminée pour lui et ne repart plus en quête de revanche — auparavant les deux téléphones se volaient le fauteuil d'hôte en boucle, chacun avec son propre moteur de jeu (salon 9VP2FY : pluie de 50 reconnexions à la seconde près).
 - **Un nom par siège vivant** : le serveur refuse désormais une jointure au lobby avec un nom déjà occupé (« Ce nom est déjà pris dans ce salon. Un autre nom ? ») — la genèse du doublon disparaît ; la reprise après veille reste instantanée.

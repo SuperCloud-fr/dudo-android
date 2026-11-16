@@ -1022,12 +1022,18 @@ class NetworkSalonSession extends SalonSession
       _recoveryFailures++;
       final reason = result.message ?? SalonSystem.noServerReply;
       if (result.message != null) {
-        // The server ANSWERED with a refusal (salon unknown, table started
-        // without a reclaimable seat, name refused). Retrying knocks on a
-        // door that stays shut — the endless "connexion interrompue" loop.
-        // Stop chasing it; the sailor leaves and joins/creates anew.
-        _closedByServer = true;
-        _threadOnce(SalonSystem.salonRefused(reason), key: 'refused');
+        // "Siège encore tenu": the seat's owner is still connected — a
+        // Worker rule, not a dead salon. The seat frees within a
+        // heartbeat (the next 20 s ping); keep retrying instead of
+        // standing down.
+        final held = reason.contains('encore tenu');
+        if (!held) {
+          _closedByServer = true;
+        }
+        _threadOnce(
+          SalonSystem.salonRefused(reason),
+          key: held ? 'held' : 'refused',
+        );
         return;
       }
       _threadOnce(SalonSystem.unreachableTrack(reason), key: 'unreachable');
